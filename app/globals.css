@@ -35,14 +35,14 @@
 
 /* Authentic Titanium Slate-Lavender / Violet matching user's exact reference photo */
 [data-theme="silverblue"] {
-  --titanium-1: #d0d4e8;
-  --titanium-2: #9297b4;
-  --titanium-3: #686d8c;
-  --titanium-4: #434764;
-  --titanium-5: #25283c;
-  --titanium-back: #8589a5;
-  --titanium-back-grad: linear-gradient(175deg, #a4a8c3 0%, #898ea9 30%, #767b96 65%, #626781 100%);
-  --titanium-chamfer: rgba(255, 255, 255, 0.75);
+  --titanium-1: #c4c8e2;
+  --titanium-2: #9196b8;
+  --titanium-3: #6b7092;
+  --titanium-4: #484c6c;
+  --titanium-5: #292c44;
+  --titanium-back: #7b80a0;
+  --titanium-back-grad: linear-gradient(165deg, #999dc0 0%, #8589ab 25%, #737798 55%, #626584 85%, #525470 100%);
+  --titanium-chamfer: rgba(255, 255, 255, 0.5);
 }
 
 *,
@@ -293,6 +293,7 @@ a {
   filter: blur(14px);
   animation: shadow 6s ease-in-out infinite;
   pointer-events: none;
+  z-index: 2;
 }
 
 @keyframes shadow {
@@ -306,31 +307,48 @@ a {
   }
 }
 
-/* =========================================================
-   GAPLESS 3D TITANIUM CHASSIS CORE (24 SLICES)
-   ========================================================= */
-
-.chassis-stack {
+/* Atmospheric Overhead Studio Spotlight Beam */
+.stage-spotlight {
   position: absolute;
-  inset: 0;
-  transform-style: preserve-3d;
+  top: -15%;
+  left: 50%;
+  translate: -50% 0;
+  width: min(130vw, 1250px);
+  height: min(95vh, 900px);
+  background: radial-gradient(
+    ellipse 48% 68% at 50% 0%,
+    rgba(215, 230, 255, 0.18) 0%,
+    rgba(147, 197, 253, 0.09) 35%,
+    rgba(59, 130, 246, 0.03) 65%,
+    transparent 82%
+  );
   pointer-events: none;
+  z-index: 1;
+  mix-blend-mode: screen;
 }
 
-.chassis-slice {
+/* Specular Floor Reflection Under Spotlight */
+.spotlight-floor {
   position: absolute;
-  inset: 0;
-  border-radius: var(--corner);
-  border: 2px solid var(--titanium-2);
-  background: var(--titanium-3);
-  box-shadow: inset 0 0 0 1px var(--titanium-4);
-  transform: translateZ(var(--tz));
-  backface-visibility: visible;
-  -webkit-backface-visibility: visible;
+  width: calc(var(--dw) * 1.9);
+  height: calc(var(--dh) * 0.42);
+  left: 50%;
+  bottom: calc(var(--dh) * -0.05);
+  translate: -50% 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse closest-side,
+    rgba(147, 197, 253, 0.2) 0%,
+    rgba(59, 130, 246, 0.06) 45%,
+    transparent 78%
+  );
+  filter: blur(24px);
+  pointer-events: none;
+  z-index: 0;
 }
 
 /* =========================================================
-   SEAMLESS 3D CORNER CYLINDERS (NO GAPS AT THE 4 CORNERS)
+   SEAMLESS 3D CORNER CYLINDERS (SUPER SMOOTH TITANIUM CURVES)
    ========================================================= */
 
 .corner-cylinder {
@@ -362,51 +380,42 @@ a {
   left: var(--corner);
 }
 
+/* 16 seamless micro-facets forming a silky smooth 90° circular curve */
 .corner-facet {
   position: absolute;
   left: 0;
   top: 0;
-  width: calc(var(--corner) * 0.165);
+  width: calc(var(--corner) * 0.104);
   height: var(--depth);
-  margin-left: calc(var(--corner) * -0.0825);
+  margin-left: calc(var(--corner) * -0.052);
   margin-top: calc(var(--depth) * -0.5);
   background: linear-gradient(
-    90deg,
-    var(--titanium-4) 0%,
-    var(--titanium-2) 32%,
+    180deg,
+    rgba(255, 255, 255, 0.45) 0%,
+    var(--titanium-4) 3%,
+    var(--titanium-2) 20%,
     var(--titanium-1) 50%,
-    var(--titanium-3) 72%,
-    var(--titanium-5) 100%
+    var(--titanium-3) 78%,
+    var(--titanium-5) 97%,
+    rgba(255, 255, 255, 0.45) 100%
   );
-  box-shadow: inset 0 1px 0 var(--titanium-chamfer), inset 0 -1px 0 var(--titanium-chamfer);
   transform: rotateZ(var(--facet-deg)) translateY(calc(-1 * var(--corner))) rotateX(90deg);
   transform-origin: center center;
-  backface-visibility: visible;
-  -webkit-backface-visibility: visible;
-}
-
-/* Antenna band crossing seamlessly through the corner curve */
-.corner-antenna {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  height: 2px;
-  translate: 0 -50%;
-  background: #0f131a;
-  box-shadow: 0 0.5px 0.5px rgba(255, 255, 255, 0.4);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  outline: 1px solid transparent;
 }
 
 /* =========================================================
-   PERIMETER EDGES & TACTILE 3D BUTTONS (AS IN REFERENCE IMAGES)
+   PERIMETER EDGES & TACTILE 3D BUTTONS (SUPER SMOOTH RAILS)
    ========================================================= */
 
 .edge {
   position: absolute;
-  backface-visibility: visible;
-  -webkit-backface-visibility: visible;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
   transform-style: preserve-3d;
-  box-shadow: inset 0 1px 0 var(--titanium-chamfer), inset 0 -1px 0 var(--titanium-chamfer);
+  outline: 1px solid transparent;
 }
 
 .edge-top {
@@ -417,11 +426,13 @@ a {
   height: var(--depth);
   background: linear-gradient(
     180deg,
-    var(--titanium-4) 0%,
-    var(--titanium-2) 28%,
+    rgba(255, 255, 255, 0.45) 0%,
+    var(--titanium-4) 3%,
+    var(--titanium-2) 20%,
     var(--titanium-1) 50%,
     var(--titanium-3) 78%,
-    var(--titanium-5) 100%
+    var(--titanium-5) 97%,
+    rgba(255, 255, 255, 0.45) 100%
   );
   transform: rotateX(90deg);
   transform-origin: center center;
@@ -435,11 +446,13 @@ a {
   height: var(--depth);
   background: linear-gradient(
     180deg,
-    var(--titanium-4) 0%,
-    var(--titanium-2) 28%,
+    rgba(255, 255, 255, 0.45) 0%,
+    var(--titanium-4) 3%,
+    var(--titanium-2) 20%,
     var(--titanium-1) 50%,
     var(--titanium-3) 78%,
-    var(--titanium-5) 100%
+    var(--titanium-5) 97%,
+    rgba(255, 255, 255, 0.45) 100%
   );
   transform: rotateX(-90deg);
   transform-origin: center center;
@@ -454,11 +467,13 @@ a {
   height: calc(var(--dh) - var(--corner) * 2);
   background: linear-gradient(
     90deg,
-    var(--titanium-4) 0%,
-    var(--titanium-2) 28%,
+    rgba(255, 255, 255, 0.45) 0%,
+    var(--titanium-4) 3%,
+    var(--titanium-2) 20%,
     var(--titanium-1) 50%,
     var(--titanium-3) 78%,
-    var(--titanium-5) 100%
+    var(--titanium-5) 97%,
+    rgba(255, 255, 255, 0.45) 100%
   );
   transform: rotateY(-90deg);
   transform-origin: center center;
@@ -473,14 +488,70 @@ a {
   height: calc(var(--dh) - var(--corner) * 2);
   background: linear-gradient(
     90deg,
-    var(--titanium-4) 0%,
-    var(--titanium-2) 28%,
+    rgba(255, 255, 255, 0.45) 0%,
+    var(--titanium-4) 3%,
+    var(--titanium-2) 20%,
     var(--titanium-1) 50%,
     var(--titanium-3) 78%,
-    var(--titanium-5) 100%
+    var(--titanium-5) 97%,
+    rgba(255, 255, 255, 0.45) 100%
   );
   transform: rotateY(90deg);
   transform-origin: center center;
+}
+
+/* Dynamic Spotlight Sheen Traveling Along Side Rails */
+.edge-left::after,
+.edge-right::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 80% 35% at 50% var(--spot-front-y, 30%),
+    rgba(255, 255, 255, 0.35) 0%,
+    rgba(216, 230, 255, 0.15) 35%,
+    transparent 70%
+  );
+  pointer-events: none;
+  transition: opacity 0.12s ease-out;
+}
+
+.edge-right::after {
+  opacity: var(--light-right, 0.5);
+}
+
+.edge-left::after {
+  opacity: var(--light-left, 0.5);
+}
+
+.edge-top::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 35% 80% at var(--spot-front-x, 30%) 50%,
+    rgba(255, 255, 255, 0.35) 0%,
+    rgba(216, 230, 255, 0.15) 35%,
+    transparent 70%
+  );
+  pointer-events: none;
+  opacity: var(--light-top, 0.5);
+  transition: opacity 0.12s ease-out;
+}
+
+.edge-bottom::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 35% 80% at var(--spot-front-x, 30%) 50%,
+    rgba(255, 255, 255, 0.35) 0%,
+    rgba(216, 230, 255, 0.15) 35%,
+    transparent 70%
+  );
+  pointer-events: none;
+  opacity: var(--light-bottom, 0.5);
+  transition: opacity 0.12s ease-out;
 }
 
 /* Antenna band lines matching side profile photos */
@@ -703,10 +774,9 @@ a {
     var(--titanium-3) 85%,
     var(--titanium-1) 100%
   );
-  box-shadow:
-    inset 0 0 0 1px var(--titanium-chamfer),
-    inset 0 0 0 2px rgba(0, 0, 0, 0.85);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.85);
   transform: translateZ(calc(var(--depth) / 2));
+  outline: 1px solid transparent;
 }
 
 .front-earpiece {
@@ -766,17 +836,22 @@ a {
   inset: 0;
   z-index: 50;
   pointer-events: none;
-  background: linear-gradient(
-    calc(125deg + var(--sheen-angle, 0deg)),
-    rgba(255, 255, 255, 0.16) 0%,
-    rgba(255, 255, 255, 0.05) 24%,
-    transparent 52%,
-    rgba(255, 255, 255, 0.03) 85%,
-    transparent 100%
-  );
-  opacity: var(--glare-opacity, 0.85);
-  transition: opacity 0.2s ease;
-  mix-blend-mode: overlay;
+  background:
+    radial-gradient(
+      circle 320px at var(--spot-front-x, 32%) var(--spot-front-y, 22%),
+      rgba(255, 255, 255, 0.45) 0%,
+      rgba(191, 219, 254, 0.22) 28%,
+      transparent 65%
+    ),
+    linear-gradient(
+      calc(130deg + var(--sheen-angle, 0deg)),
+      rgba(255, 255, 255, 0.18) 0%,
+      rgba(255, 255, 255, 0.04) 30%,
+      transparent 60%
+    );
+  opacity: calc(0.08 + var(--light-front, 0.7) * 0.92);
+  transition: opacity 0.12s ease-out;
+  mix-blend-mode: screen;
 }
 
 .ui {
@@ -815,377 +890,438 @@ a {
 .face.back {
   background: var(--titanium-back-grad);
   border-radius: var(--corner);
-  box-shadow:
-    inset 0 0 0 1px var(--titanium-chamfer),
-    inset 0 0 20px rgba(0, 0, 0, 0.4);
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.35);
   transform: rotateY(180deg) translateZ(calc(var(--depth) / 2));
   overflow: visible;
   transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  backface-visibility: visible !important;
+  -webkit-backface-visibility: visible !important;
 }
 
 .back-satin-sheen {
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: radial-gradient(
-    140% 90% at calc(50% + var(--sheen-x, 0) * 1%) calc(30% + var(--sheen-y, 0) * 1%),
-    rgba(255, 255, 255, 0.25) 0%,
-    rgba(255, 255, 255, 0.08) 45%,
-    transparent 75%
-  );
+  background:
+    radial-gradient(
+      circle 360px at var(--spot-back-x, 32%) var(--spot-back-y, 22%),
+      rgba(255, 255, 255, 0.45) 0%,
+      rgba(216, 226, 255, 0.22) 32%,
+      rgba(165, 180, 252, 0.08) 55%,
+      transparent 75%
+    ),
+    linear-gradient(
+      calc(140deg + var(--sheen-angle, 0deg)),
+      rgba(255, 255, 255, 0.22) 0%,
+      rgba(255, 255, 255, 0.06) 40%,
+      transparent 70%
+    );
+  opacity: calc(0.12 + var(--light-back, 0.7) * 0.88);
+  transition: opacity 0.12s ease-out;
   pointer-events: none;
+  transform: translateZ(0.5px);
 }
 
 .camera-system {
   position: absolute;
   inset: 0;
   transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  backface-visibility: visible;
+  -webkit-backface-visibility: visible;
+  pointer-events: none;
+  transform: translateZ(1px);
+}
+/* =========================================================
+   CONTINUOUS RAISED 3D PILL ISLAND (EXACT TO REFERENCE PHOTO)
+   ========================================================= */
+
+.cam-island-shadow {
+  position: absolute;
+  top: 3.8%;
+  left: 9.2%;
+  width: 21.2%;
+  height: 26.9%;
+  border-radius: 999px;
+  box-shadow:
+    0 5px 15px rgba(0, 0, 0, 0.4),
+    -2px 2px 6px rgba(0, 0, 0, 0.22);
+  transform: translateZ(0.5px);
   pointer-events: none;
 }
 
-/* Signature Continuous Pill Island Frame Enclosing the 3 Primary Lenses (From Reference Photo) */
-.cam-island-pill {
+.cam-island-wall {
   position: absolute;
-  top: 5.2%;
-  left: 7.6%;
-  width: 26.2%;
-  height: 36.6%;
+  top: 3.7%;
+  left: 9.0%;
+  width: 21.6%;
+  height: 27.1%;
   border-radius: 999px;
   background: linear-gradient(
     155deg,
     rgba(255, 255, 255, 0.35) 0%,
-    rgba(42, 46, 64, 0.65) 35%,
-    rgba(18, 20, 32, 0.88) 100%
+    rgba(100, 105, 135, 0.8) 45%,
+    rgba(35, 38, 55, 0.95) 100%
   );
-  border: 1.5px solid rgba(255, 255, 255, 0.55);
-  box-shadow:
-    0 6px 18px rgba(0, 0, 0, 0.55),
-    inset 0 1.5px 2px rgba(255, 255, 255, 0.85),
-    inset 0 -1.5px 2px rgba(0, 0, 0, 0.8);
-  transform: translateZ(calc(var(--dh) * 0.0025));
+  transform: translateZ(1.5px);
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  backface-visibility: visible;
+  -webkit-backface-visibility: visible;
   pointer-events: none;
 }
 
-/* 3D Stepped Camera Cylinder Container */
+.cam-island-pill {
+  position: absolute;
+  top: 3.8%;
+  left: 9.2%;
+  width: 21.2%;
+  height: 26.9%;
+  border-radius: 999px;
+  background: var(--titanium-back-grad);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  box-shadow:
+    inset 0 1.5px 2px rgba(255, 255, 255, 0.4),
+    inset 0 -1.5px 2.5px rgba(0, 0, 0, 0.3);
+  transform: translateZ(2.5px);
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  backface-visibility: visible;
+  -webkit-backface-visibility: visible;
+  pointer-events: none;
+}
+
+.cam-island-pill::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    circle 220px at var(--spot-back-x, 30%) var(--spot-back-y, 20%),
+    rgba(255, 255, 255, 0.32) 0%,
+    rgba(196, 200, 226, 0.12) 50%,
+    transparent 75%
+  );
+  opacity: calc(var(--light-back, 0.7) * 1.1);
+  pointer-events: none;
+  transition: opacity 0.12s ease-out;
+}
+
+/* 3D Stepped Camera Cylinder Container (Perfect Round Circular Geometry) */
 .cam-barrel-3d {
   position: absolute;
   top: var(--cam-top);
   left: var(--cam-left);
   width: var(--cam-diam);
+  height: var(--cam-diam);
   aspect-ratio: 1;
+  border-radius: 50%;
+  transform: translateZ(2.5px);
   transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  backface-visibility: visible;
+  -webkit-backface-visibility: visible;
   pointer-events: none;
+}
+
+/* The 3x Telephoto floats directly on the backplate */
+.cam-barrel-3d.cam-telephoto {
+  transform: translateZ(1px);
 }
 
 .cam-tier {
   position: absolute;
   inset: 0;
+  border-radius: 50%;
   transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  backface-visibility: visible;
+  -webkit-backface-visibility: visible;
 }
 
-/* Stepped Silver Base Tier Facets */
+/* Stepped Matte Dark Charcoal Base Tier Facets (32 Micro-Facets for Perfect Round Cylinders) */
 .barrel-facet.base-facet {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: calc(var(--cam-diam) * 3.14159 / 12 * 1.15);
-  height: calc(var(--cam-h) * 0.35);
-  margin-left: calc(var(--cam-diam) * 3.14159 / 12 * -0.575);
-  margin-top: calc(var(--cam-h) * -0.175);
+  width: calc(var(--cam-diam) * 3.14159 / 32 * 1.08);
+  height: calc(var(--cam-h) * 0.28);
+  margin-left: calc(var(--cam-diam) * 3.14159 / 32 * -0.54);
+  margin-top: calc(var(--cam-h) * -0.14);
   background: linear-gradient(
     90deg,
-    #94a3b8 0%,
-    #e2e8f0 35%,
-    #ffffff 50%,
-    #cbd5e1 75%,
-    #64748b 100%
+    #101217 0%,
+    #1a1c22 30%,
+    #262932 50%,
+    #1a1c22 70%,
+    #101217 100%
   );
-  box-shadow: inset 0 0.5px 0.5px rgba(255, 255, 255, 0.85);
-  transform: rotateZ(var(--facet-deg)) translateY(calc(-0.52 * var(--cam-diam))) translateZ(calc(var(--cam-h) * 0.175)) rotateX(90deg);
+  box-shadow: none;
+  transform: rotateZ(var(--facet-deg)) translateY(calc(-0.535 * var(--cam-diam))) translateZ(calc(var(--cam-h) * 0.14)) rotateX(90deg);
   transform-origin: center center;
   backface-visibility: visible;
   -webkit-backface-visibility: visible;
 }
 
-/* Main Titanium Barrel Facets (Solid Wall in Side Profile) */
+/* Stepped Dark Base Shelf (Matching Stealth Matte Pedestal) */
+.cam-step-shelf {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(var(--cam-diam) * 1.07);
+  height: calc(var(--cam-diam) * 1.07);
+  margin-left: calc(var(--cam-diam) * -0.535);
+  margin-top: calc(var(--cam-diam) * -0.535);
+  border-radius: 50%;
+  background: radial-gradient(circle, transparent 86%, #121419 87%, #1e212a 93%, #15171d 97%, #0b0c10 100%);
+  box-shadow: none;
+  transform: translateZ(calc(var(--cam-h) * 0.28));
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  backface-visibility: visible;
+  -webkit-backface-visibility: visible;
+}
+
+/* Main Cylinder Barrel Facets (Deep Matte Titanium Charcoal Solid Wall) */
 .barrel-facet.main-facet {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: calc(var(--cam-diam) * 3.14159 / 12 * 1.08);
-  height: var(--cam-h);
-  margin-left: calc(var(--cam-diam) * 3.14159 / 12 * -0.54);
-  margin-top: calc(var(--cam-h) * -0.5);
+  width: calc(var(--cam-diam) * 3.14159 / 32 * 1.06);
+  height: calc(var(--cam-h) * 0.72);
+  margin-left: calc(var(--cam-diam) * 3.14159 / 32 * -0.53);
+  margin-top: calc(var(--cam-h) * -0.36);
   background: linear-gradient(
     90deg,
-    var(--titanium-4) 0%,
-    var(--titanium-2) 30%,
-    var(--titanium-1) 50%,
-    var(--titanium-3) 75%,
-    var(--titanium-5) 100%
+    #0e1014 0%,
+    #181a20 28%,
+    #252832 50%,
+    #181a20 76%,
+    #0e1014 100%
   );
-  box-shadow: inset 0 0.5px 0.5px var(--titanium-chamfer);
-  transform: rotateZ(var(--facet-deg)) translateY(calc(-0.5 * var(--cam-diam))) translateZ(calc(var(--cam-h) * 0.5)) rotateX(90deg);
+  box-shadow: none;
+  transform: rotateZ(var(--facet-deg)) translateY(calc(-0.5 * var(--cam-diam))) translateZ(calc(var(--cam-h) * 0.64)) rotateX(90deg);
   transform-origin: center center;
   backface-visibility: visible;
   -webkit-backface-visibility: visible;
 }
 
-/* Top Beveled Cap with Stepped Polished Silver Rim */
+/* Top Beveled Cap in Deep Matte Obsidian (Matching Close-Up Photo) */
 .cam-cap {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: linear-gradient(145deg, #222632 0%, #0d1017 60%, #06080c 100%);
+  background: linear-gradient(145deg, #1c1f26 0%, #101217 60%, #06070a 100%);
   box-shadow:
-    0 3px 8px rgba(0, 0, 0, 0.75),
-    0 0 0 2px rgba(255, 255, 255, 0.92),
-    inset 0 1.5px 2px rgba(255, 255, 255, 0.95),
-    inset 0 -1.5px 2.5px rgba(0, 0, 0, 0.9);
+    0 4px 12px rgba(0, 0, 0, 0.8),
+    inset 0 1px 1px rgba(255, 255, 255, 0.08),
+    inset 0 -1.5px 2px rgba(0, 0, 0, 0.9);
   transform: translateZ(var(--cam-h));
   transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  backface-visibility: visible;
+  -webkit-backface-visibility: visible;
 }
 
+.cam-rim-chamfer {
+  display: none;
+}
+
+/* Wide Concentric Sunken Matte Black Bezel Washer */
 .cam-cap .cam-bezel {
   position: absolute;
-  inset: 5.5%;
+  inset: 6.5%;
   border-radius: 50%;
-  background: radial-gradient(circle, #0e1116 52%, #1a1e28 80%, #767b8d 100%);
-  box-shadow:
-    inset 0 0 0 1px rgba(0, 0, 0, 0.95),
-    inset 0 1px 1px rgba(255, 255, 255, 0.35);
+  background: radial-gradient(circle, #090b0e 45%, #121419 70%, #1a1d24 92%, #22262f 100%);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.95);
 }
 
-/* Deep Optical Glass with Multi-Coated Reflections (Shine in the Lens!) */
+/* Deep Velvety Smoky Obsidian Optical Glass (Matching Reference Photo) */
 .cam-glass {
   position: absolute;
-  inset: 14%;
+  inset: 15%;
   border-radius: 50%;
   background: radial-gradient(
-    circle at calc(38% + var(--sheen-x, 0) * 0.18%) calc(34% + var(--sheen-y, 0) * 0.18%),
-    #173048 0%,
-    #0a1828 35%,
-    #03070d 75%,
+    circle at calc(44% + var(--sheen-x, 0) * 0.12%) calc(42% + var(--sheen-y, 0) * 0.12%),
+    #141720 0%,
+    #0c0f16 40%,
+    #05070a 75%,
     #010204 100%
   );
   box-shadow:
-    inset 0 0 10px rgba(0, 0, 0, 0.95),
-    inset 0 0 2px rgba(56, 189, 248, 0.5);
-  overflow: hidden;
+    inset 0 0 10px rgba(0, 0, 0, 0.96),
+    inset 0 0 1px rgba(255, 255, 255, 0.1);
 }
 
-/* Multi-Coated Vibrant Cyan, Blue & Violet Anti-Reflective Optical Coating Shine */
+/* Soft Diffuse Ambient Sheen (No Loud Blue Glare) */
 .cam-glass::before {
   content: "";
   position: absolute;
   inset: 0;
   border-radius: 50%;
   background: radial-gradient(
-    circle at calc(30% + var(--sheen-x, 0) * 0.35%) calc(26% + var(--sheen-y, 0) * 0.35%),
-    rgba(34, 211, 238, 0.92) 0%,
-    rgba(59, 130, 246, 0.75) 25%,
-    rgba(168, 85, 247, 0.55) 48%,
-    rgba(14, 165, 233, 0.15) 68%,
-    transparent 78%
+    circle at calc(38% + var(--sheen-x, 0) * 0.25%) calc(35% + var(--sheen-y, 0) * 0.25%),
+    rgba(148, 163, 184, 0.14) 0%,
+    rgba(51, 65, 85, 0.06) 45%,
+    transparent 75%
   );
-  filter: blur(0.8px);
-  mix-blend-mode: screen;
+  opacity: calc(0.3 + var(--spec-lens, 0.7) * 0.35);
+  transition: opacity 0.12s ease-out;
+  pointer-events: none;
 }
 
-/* Razor-sharp Specular Pinpoint Studio Light Catchlight Glint */
+/* Subtle Diffuse Catchlight */
 .cam-glass::after {
   content: "";
   position: absolute;
-  top: calc(20% + var(--sheen-y, 0) * 0.22%);
-  left: calc(24% + var(--sheen-x, 0) * 0.22%);
+  top: calc(24% + var(--sheen-y, 0) * 0.18%);
+  left: calc(28% + var(--sheen-x, 0) * 0.18%);
   width: 22%;
   height: 22%;
   border-radius: 50%;
-  background: radial-gradient(circle, #ffffff 0%, rgba(255, 255, 255, 0.92) 30%, rgba(186, 230, 253, 0.45) 55%, transparent 72%);
-  box-shadow:
-    0 0 6px rgba(255, 255, 255, 0.95),
-    0 0 14px rgba(56, 189, 248, 0.7);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.2) 30%, transparent 68%);
+  box-shadow: 0 0 calc(2px + var(--spec-lens, 0.7) * 4px) rgba(255, 255, 255, 0.35);
+  opacity: calc(0.25 + var(--spec-lens, 0.7) * 0.35);
+  transition: opacity 0.12s ease-out;
+  pointer-events: none;
 }
 
-/* Internal Camera Pupil & Aperture Iris */
+/* Upper Subtle Dark Circular Depth Impression (Matching Twin Apertures in Photo) */
 .cam-pupil-iris {
   position: absolute;
-  inset: 24%;
+  inset: 18%;
   border-radius: 50%;
-  background: radial-gradient(circle at 45% 45%, #182d45 0%, #08111d 55%, #020509 90%);
+  background: radial-gradient(
+    circle at 50% 36%,
+    #171b24 0%,
+    #0d1017 38%,
+    #05070b 72%,
+    #010204 100%
+  );
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.2),
-    inset 0 0 6px rgba(0, 0, 0, 0.95);
+    inset 0 0 6px rgba(0, 0, 0, 0.95),
+    0 0 0 1px rgba(255, 255, 255, 0.04);
 }
 
+/* Lower Subtle Dark Circular Depth Impression (Matching Twin Apertures in Photo) */
 .cam-pupil-dot {
   position: absolute;
-  top: 50%;
+  top: 64%;
   left: 50%;
   translate: -50% -50%;
-  width: 38%;
-  height: 38%;
+  width: 44%;
+  height: 44%;
   border-radius: 50%;
-  background: #010204;
+  background: radial-gradient(
+    circle at 45% 45%,
+    #181c26 0%,
+    #0e1118 40%,
+    #05070a 75%,
+    #010203 100%
+  );
   box-shadow:
-    inset 0 0 3px rgba(34, 211, 238, 0.6),
-    0 0 1px rgba(255, 255, 255, 0.3);
-}
-
-.cam-cap .periscope-prism {
-  position: absolute;
-  top: 24%;
-  left: 24%;
-  width: 52%;
-  height: 52%;
-  border-radius: 3px;
-  background: linear-gradient(135deg, #09121a 0%, #020406 60%, #132433 100%);
-  box-shadow:
-    inset 0 0 4px rgba(0, 0, 0, 0.95),
-    0 0 0 1px rgba(0, 0, 0, 0.8),
-    inset 0 0 0 0.5px rgba(56, 189, 248, 0.35);
+    inset 0 0 4px rgba(0, 0, 0, 0.9),
+    0 0 1px rgba(255, 255, 255, 0.06);
 }
 
 /* =========================================================
    SECONDARY RIGHT COLUMN SENSORS (EXACT TO REFERENCE PHOTO)
    ========================================================= */
 
-/* Top Right: Laser Auto-Focus Sensor */
+/* Top Right: Laser Auto-Focus Sensor (Dual Vertical Diodes) */
 .cam-module.cam-laser {
   position: absolute;
-  top: 9.4%;
-  left: 37.2%;
+  top: 6.2%;
+  left: 36.6%;
   width: calc(var(--dw) * 0.102);
   aspect-ratio: 1;
   border-radius: 50%;
-  background: linear-gradient(145deg, #222632, #0a0d14);
+  background: linear-gradient(145deg, #181920, #090a0d);
   box-shadow:
-    0 2px 6px rgba(0, 0, 0, 0.65),
-    0 0 0 1.5px rgba(255, 255, 255, 0.85),
-    inset 0 1px 1.5px rgba(255, 255, 255, 0.75),
-    inset 0 -1px 2px rgba(0, 0, 0, 0.8);
-  transform: translateZ(calc(var(--dh) * 0.0035));
+    0 3px 8px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(25, 27, 34, 0.95),
+    inset 0 1px 1px rgba(255, 255, 255, 0.08),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.9);
+  transform: translateZ(1.2px);
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  backface-visibility: visible;
+  -webkit-backface-visibility: visible;
+}
+
+.cam-laser .laser-ring {
+  display: none;
 }
 
 .cam-laser .laser-glass {
   position: absolute;
-  inset: 12%;
+  inset: 10%;
   border-radius: 50%;
-  background: radial-gradient(circle at 40% 40%, #0e121a 0%, #030508 70%);
+  background: radial-gradient(circle at 40% 40%, #0c0d12 0%, #030406 80%);
   box-shadow: inset 0 0 4px #000;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 3px;
 }
 
 .cam-laser .laser-diode {
-  width: 32%;
-  height: 32%;
+  width: 36%;
+  height: 36%;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #ff2a48 0%, #850b1b 55%, #150205 95%);
-  box-shadow: 0 0 5px rgba(255, 42, 72, 0.65), inset 0 0 2px #000;
+  background: radial-gradient(circle at 35% 35%, #181922 0%, #0c0d12 60%, #020304 100%);
+  box-shadow: 0 0 1px rgba(255, 255, 255, 0.15), inset 0 0 2px #000;
 }
 
 .cam-laser .laser-sensor {
-  width: 32%;
-  height: 32%;
+  width: 36%;
+  height: 36%;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #1e3a58 0%, #09131f 65%, #020406 100%);
-  box-shadow: inset 0 0 2px #000;
+  background: radial-gradient(circle at 35% 35%, #181922 0%, #0c0d12 60%, #020304 100%);
+  box-shadow: 0 0 1px rgba(255, 255, 255, 0.15), inset 0 0 2px #000;
 }
 
-/* Middle Right: High-CRI LED Flash */
+/* Middle Right: Clean Circular Warm-White LED Flash */
 .cam-module.cam-flash {
   position: absolute;
-  top: 15.8%;
-  left: 38.5%;
-  width: calc(var(--dw) * 0.076);
+  top: 12.35%;
+  left: 38.9%;
+  width: calc(var(--dw) * 0.056);
   aspect-ratio: 1;
   border-radius: 50%;
-  background: linear-gradient(145deg, #e2e8f0, #94a3b8);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.55), rgba(200, 204, 225, 0.35));
   box-shadow:
-    0 2px 5px rgba(0, 0, 0, 0.55),
-    0 0 0 1.2px rgba(255, 255, 255, 0.9),
-    inset 0 1px 1.5px rgba(255, 255, 255, 0.9),
-    inset 0 -1px 2px rgba(0, 0, 0, 0.6);
-  transform: translateZ(calc(var(--dh) * 0.0035));
+    0 2px 6px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(255, 255, 255, 0.35),
+    inset 0 1px 1px rgba(255, 255, 255, 0.6);
+  transform: translateZ(1.2px);
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  backface-visibility: visible;
+  -webkit-backface-visibility: visible;
+}
+
+.cam-flash .flash-ring {
+  display: none;
 }
 
 .cam-flash .flash-core {
   position: absolute;
-  inset: 14%;
+  inset: 12%;
   border-radius: 50%;
   background: radial-gradient(
     circle at 45% 45%,
     #ffffff 0%,
-    #fef9c3 30%,
-    #facc15 65%,
-    #a16207 90%,
-    #451a03 100%
+    #fef08a 35%,
+    #fde047 65%,
+    #ca8a04 88%,
+    #713f12 100%
   );
   box-shadow:
-    inset 0 0 2px rgba(0, 0, 0, 0.6),
-    0 0 4px rgba(250, 204, 21, 0.4);
-}
-
-/* Bottom Right: 3x Portrait Telephoto Sensor */
-.cam-module.cam-telephoto {
-  position: absolute;
-  top: 21.0%;
-  left: 37.2%;
-  width: calc(var(--dw) * 0.102);
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: linear-gradient(145deg, #222632, #0a0d14);
-  box-shadow:
-    0 2px 6px rgba(0, 0, 0, 0.65),
-    0 0 0 1.5px rgba(255, 255, 255, 0.85),
-    inset 0 1px 1.5px rgba(255, 255, 255, 0.75),
-    inset 0 -1px 2px rgba(0, 0, 0, 0.8);
-  transform: translateZ(calc(var(--dh) * 0.004));
-}
-
-.cam-telephoto .tele-glass {
-  position: absolute;
-  inset: 13%;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle at calc(38% + var(--sheen-x, 0) * 0.18%) calc(34% + var(--sheen-y, 0) * 0.18%),
-    #173048 0%,
-    #0a1828 40%,
-    #020509 90%
-  );
-  box-shadow:
-    inset 0 0 8px #000,
-    inset 0 0 2px rgba(34, 211, 238, 0.5);
-  overflow: hidden;
-}
-
-.cam-telephoto .tele-glass::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle at calc(30% + var(--sheen-x, 0) * 0.35%) calc(26% + var(--sheen-y, 0) * 0.35%),
-    rgba(34, 211, 238, 0.9) 0%,
-    rgba(168, 85, 247, 0.6) 40%,
-    transparent 75%
-  );
-  mix-blend-mode: screen;
-}
-
-.cam-telephoto .tele-glass::after {
-  content: "";
-  position: absolute;
-  top: calc(20% + var(--sheen-y, 0) * 0.22%);
-  left: calc(24% + var(--sheen-x, 0) * 0.22%);
-  width: 26%;
-  height: 26%;
-  border-radius: 50%;
-  background: radial-gradient(circle, #ffffff 0%, rgba(255, 255, 255, 0.88) 35%, transparent 72%);
-  box-shadow: 0 0 5px rgba(255, 255, 255, 0.95);
+    0 0 4px rgba(254, 240, 138, 0.85),
+    inset 0 0 2px rgba(0, 0, 0, 0.5);
 }
 
 /* =========================================================

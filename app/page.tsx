@@ -367,7 +367,7 @@ type TitaniumColor = "gray" | "black" | "silverblue";
 
 function CornerCylinder({
   corner,
-  numFacets = 14,
+  numFacets = 16,
 }: {
   corner: "top-left" | "top-right" | "bottom-right" | "bottom-left";
   numFacets?: number;
@@ -398,13 +398,7 @@ function CornerCylinder({
           key={f.id}
           className="corner-facet"
           style={{ "--facet-deg": `${f.deg.toFixed(2)}deg` } as CSSProperties}
-        >
-          {/* Antenna band cut matching reference image near top-left and top-right corners */}
-          {corner === "top-left" && (f.id === 2 || f.id === 3) && <i className="corner-antenna" />}
-          {corner === "top-right" && (f.id === 10 || f.id === 11) && <i className="corner-antenna" />}
-          {corner === "bottom-left" && (f.id === 10 || f.id === 11) && <i className="corner-antenna" />}
-          {corner === "bottom-right" && (f.id === 2 || f.id === 3) && <i className="corner-antenna" />}
-        </div>
+        />
       ))}
     </div>
   );
@@ -429,7 +423,7 @@ function CamRing3D({
   isPeriscope?: boolean;
   isMain?: boolean;
 }) {
-  const numFacets = 12;
+  const numFacets = 32;
   const facets = Array.from({ length: numFacets }, (_, i) => ({
     id: i,
     deg: (i * 360) / numFacets,
@@ -458,6 +452,9 @@ function CamRing3D({
         ))}
       </div>
 
+      {/* Solid Polished Silver Chamfer Shelf Connecting Base Pedestal to Main Barrel */}
+      <div className="cam-step-shelf" aria-hidden="true" />
+
       {/* Main Titanium Cylinder Facets (Solid Wall Visible In Side Profile) */}
       <div className="cam-tier main-tier" aria-hidden="true">
         {facets.map((f) => (
@@ -469,14 +466,14 @@ function CamRing3D({
         ))}
       </div>
 
-      {/* Top Cap at translateZ(protrusionPx) */}
+      {/* Top Cap at translateZ(protrusionPx) with Polished Chamfer Rim */}
       <div className="cam-cap">
+        <div className="cam-rim-chamfer" />
         <div className="cam-bezel" />
         <div className="cam-glass">
           <div className="cam-pupil-iris">
             <div className="cam-pupil-dot" />
           </div>
-          {isPeriscope && <div className="periscope-prism" />}
         </div>
       </div>
     </div>
@@ -513,16 +510,73 @@ function PhoneStage({
     el.style.setProperty("--rx", `${rot.current.rx.toFixed(2)}deg`);
     el.style.setProperty("--ry", `${rot.current.ry.toFixed(2)}deg`);
 
-    // Studio specular reflections and glass sheen angles
-    const sheenX = ((rot.current.ry % 360) / 180) * 50;
-    const sheenY = (rot.current.rx / 90) * 50;
-    const sheenAngle = rot.current.ry * 0.75;
-    const glareOpacity = Math.max(0.2, 1 - Math.abs(rot.current.ry % 180) / 130);
+    // Fixed Studio Key Spotlight in World Coordinates (elevated top-left-front)
+    const lx_world = -0.32;
+    const ly_world = -0.65;
+    const lz_world = 0.69;
 
-    el.style.setProperty("--sheen-x", `${sheenX.toFixed(1)}`);
-    el.style.setProperty("--sheen-y", `${sheenY.toFixed(1)}`);
+    const radX = (rot.current.rx * Math.PI) / 180;
+    const radY = (rot.current.ry * Math.PI) / 180;
+
+    const cosX = Math.cos(radX);
+    const sinX = Math.sin(radX);
+    const cosY = Math.cos(radY);
+    const sinY = Math.sin(radY);
+
+    // Transform world light vector into phone's local coordinates
+    const y1 = ly_world * cosX + lz_world * sinX;
+    const z1 = -ly_world * sinX + lz_world * cosX;
+    const x1 = lx_world;
+
+    const lx = x1 * cosY - z1 * sinY;
+    const lz = x1 * sinY + z1 * cosY;
+    const ly = y1;
+
+    // Spotlight reflection center on Front and Back surfaces (% coordinates)
+    const spotFrontX = Math.min(96, Math.max(4, 50 + lx * 55));
+    const spotFrontY = Math.min(96, Math.max(4, 50 + ly * 55));
+    const spotBackX = Math.min(96, Math.max(4, 50 - lx * 55));
+    const spotBackY = Math.min(96, Math.max(4, 50 + ly * 55));
+
+    // Surface lighting intensities (dot product with surface normals)
+    const frontIntensity = Math.max(0, lz);
+    const backIntensity = Math.max(0, -lz);
+    const rightIntensity = Math.max(0, lx);
+    const leftIntensity = Math.max(0, -lx);
+    const topIntensity = Math.max(0, -ly);
+    const bottomIntensity = Math.max(0, ly);
+
+    // Specular highlights (exponential falloff for crisp shine)
+    const frontSpec = Math.pow(frontIntensity, 2.8);
+    const backSpec = Math.pow(backIntensity, 2.8);
+    const lensSpec = Math.pow(backIntensity, 1.8);
+
+    // Lens coating sheen offsets
+    const sheenX = -lx * 40;
+    const sheenY = -ly * 40;
+    const sheenAngle = Math.atan2(ly, lx) * (180 / Math.PI);
+
+    // Set dynamic custom properties for realistic spotlight interaction
+    el.style.setProperty("--spot-front-x", `${spotFrontX.toFixed(1)}%`);
+    el.style.setProperty("--spot-front-y", `${spotFrontY.toFixed(1)}%`);
+    el.style.setProperty("--spot-back-x", `${spotBackX.toFixed(1)}%`);
+    el.style.setProperty("--spot-back-y", `${spotBackY.toFixed(1)}%`);
+
+    el.style.setProperty("--light-front", frontIntensity.toFixed(3));
+    el.style.setProperty("--light-back", backIntensity.toFixed(3));
+    el.style.setProperty("--light-right", rightIntensity.toFixed(3));
+    el.style.setProperty("--light-left", leftIntensity.toFixed(3));
+    el.style.setProperty("--light-top", topIntensity.toFixed(3));
+    el.style.setProperty("--light-bottom", bottomIntensity.toFixed(3));
+
+    el.style.setProperty("--spec-front", frontSpec.toFixed(3));
+    el.style.setProperty("--spec-back", backSpec.toFixed(3));
+    el.style.setProperty("--spec-lens", lensSpec.toFixed(3));
+
+    el.style.setProperty("--sheen-x", sheenX.toFixed(1));
+    el.style.setProperty("--sheen-y", sheenY.toFixed(1));
     el.style.setProperty("--sheen-angle", `${sheenAngle.toFixed(1)}deg`);
-    el.style.setProperty("--glare-opacity", `${glareOpacity.toFixed(2)}`);
+    el.style.setProperty("--glare-opacity", (0.15 + frontIntensity * 0.85).toFixed(2));
 
     el.classList.toggle("snap", snap);
   }, []);
@@ -644,13 +698,13 @@ function PhoneStage({
         rot.current = { rx: 12, ry: -24 };
         break;
       case "back":
-        rot.current = { rx: 4, ry: 180 };
+        rot.current = { rx: 10, ry: 162 };
         break;
       case "right-side":
-        rot.current = { rx: 0, ry: 90 };
+        rot.current = { rx: 2, ry: -86 };
         break;
       case "left-side":
-        rot.current = { rx: 0, ry: -90 };
+        rot.current = { rx: 2, ry: 86 };
         break;
       case "spen":
         rot.current = { rx: -48, ry: 14 };
@@ -682,12 +736,6 @@ function PhoneStage({
     };
   }, []);
 
-  // 24 continuous gapless chassis layers from -depth/2 to +depth/2
-  const chassisLayers = Array.from({ length: 24 }, (_, i) => {
-    const fraction = (i / 23) * 2 - 1; // -1 to +1
-    return `calc(var(--depth) / 2 * ${fraction.toFixed(3)})`;
-  });
-
   return (
     <>
       {/* Studio Header Brand */}
@@ -708,20 +756,11 @@ function PhoneStage({
         onPointerCancel={endDrag}
         onDoubleClick={onDoubleClick}
       >
+        <div className="stage-spotlight" aria-hidden="true" />
+        <div className="spotlight-floor" aria-hidden="true" />
         <div className="ground-shadow" aria-hidden="true" />
 
         <div className={`phone3d snap${isAutoRotate ? " no-float" : ""}`} ref={phoneRef}>
-          {/* 16-Layer Gapless Solid Titanium Chassis Core */}
-          <div className="chassis-stack" aria-hidden="true">
-            {chassisLayers.map((tz, i) => (
-              <div
-                key={i}
-                className="chassis-slice"
-                style={{ "--tz": tz } as CSSProperties}
-              />
-            ))}
-          </div>
-
           {/* FRONT FACE: Razor-thin Bezel, AMOLED Screen & Infinity-O Camera */}
           <div className="face front">
             <div className="front-earpiece" aria-hidden="true" />
@@ -737,57 +776,64 @@ function PhoneStage({
           <div className="face back">
             <div className="back-satin-sheen" aria-hidden="true" />
 
-            {/* Signature 3D Floating Camera Array (Stepped Cylinders Visible In Side Profile!) */}
+            {/* Signature 3D Floating Camera Array (Stepped Cylinders Matching Reference Photo) */}
             <div className="camera-system" aria-hidden="true">
-              {/* Continuous Raised Pill Island Frame Enclosing Primary 3 Lenses */}
-              <div className="cam-island-pill" />
+              {/* Continuous Raised 3D Pill Island Plateau Enclosing Primary 3 Lenses */}
+              <div className="cam-island-shadow" aria-hidden="true" />
+              <div className="cam-island-wall" aria-hidden="true" />
+              <div className="cam-island-pill" aria-hidden="true">
+                <div className="cam-island-surface" />
+              </div>
 
               {/* 1. 12MP Ultra-Wide Camera (Top Left) */}
               <CamRing3D
                 className="cam-ultrawide"
-                diameterPercent={22.2}
-                topPercent={6.6}
-                leftPercent={9.6}
-                protrusionPx={8.5}
+                diameterPercent={17.4}
+                topPercent={4.8}
+                leftPercent={11.1}
+                protrusionPx={6}
               />
 
               {/* 2. 200MP Main Wide Camera (Middle Left - Raised Bezel) */}
               <CamRing3D
                 className="cam-main"
-                diameterPercent={22.2}
-                topPercent={18.2}
-                leftPercent={9.6}
-                protrusionPx={10}
+                diameterPercent={17.4}
+                topPercent={13.7}
+                leftPercent={11.1}
+                protrusionPx={6.5}
                 isMain
               />
 
-              {/* 3. 50MP 5x Periscope Telephoto (Bottom Left - Dark Prism Cutout) */}
+              {/* 3. 50MP 5x Telephoto Camera (Bottom Left) */}
               <CamRing3D
                 className="cam-periscope"
-                diameterPercent={22.2}
-                topPercent={29.8}
-                leftPercent={9.6}
-                protrusionPx={8.5}
-                isPeriscope
+                diameterPercent={17.4}
+                topPercent={22.6}
+                leftPercent={11.1}
+                protrusionPx={6}
               />
 
-              {/* 4. Laser Auto-Focus Sensor (Top Right) */}
+              {/* 4. Laser Auto-Focus Sensor (Top Right - Vertical Dual Sensor Diodes) */}
               <div className="cam-module cam-laser">
                 <div className="laser-glass">
-                  <div className="laser-diode" />
-                  <div className="laser-sensor" />
+                  <div className="laser-diode laser-sensor-top" />
+                  <div className="laser-sensor laser-sensor-bottom" />
                 </div>
               </div>
 
-              {/* 5. Dual-Tone High-CRI LED Flash (Middle Right) */}
+              {/* 5. Clean Circular LED Flash (Middle Right) */}
               <div className="cam-module cam-flash">
                 <div className="flash-core" />
               </div>
 
-              {/* 6. 10MP 3x Portrait Telephoto Camera (Bottom Right) */}
-              <div className="cam-module cam-telephoto">
-                <div className="tele-glass" />
-              </div>
+              {/* 6. 10MP 3x Portrait Telephoto Camera (Bottom Right - Protruding 3D Ring) */}
+              <CamRing3D
+                className="cam-telephoto"
+                diameterPercent={12.0}
+                topPercent={16.4}
+                leftPercent={35.5}
+                protrusionPx={5}
+              />
             </div>
 
             {/* Samsung Wordmark Matching Reference Photo */}
