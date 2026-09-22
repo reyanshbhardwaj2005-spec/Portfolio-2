@@ -1,95 +1,452 @@
 "use client";
 
-import { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import {
-  ArrowUpRight,
-  BatteryFull,
-  Camera,
-  Check,
-  ChevronRight,
-  Code2,
-  Github,
-  Globe2,
-  Headphones,
-  Mail,
-  MapPin,
-  MessageCircle,
-  Moon,
-  Music2,
-  Play,
-  Search,
-  Send,
-  Settings,
-  Sparkles,
-  Sun,
-  UserRound,
-  Wifi,
-  X,
-  Zap,
-} from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import type {
+  AnimationEvent,
+  CSSProperties,
+  PointerEvent as ReactPointerEvent,
+  ReactNode,
+  RefObject,
+} from "react";
+import { apps, profile } from "./data";
+import type { AppDef, Block } from "./data";
+import { Icon } from "./icons";
 
-type AppName = "about" | "work" | "camera" | "music" | "contact" | "settings" | "github" | "resume";
+/* ---------- helpers ---------- */
 
-const apps: { id: AppName; label: string; icon: typeof UserRound; color: string }[] = [
-  { id: "about", label: "About", icon: UserRound, color: "about" },
-  { id: "work", label: "My work", icon: Code2, color: "work" },
-  { id: "camera", label: "Photos", icon: Camera, color: "photos" },
-  { id: "music", label: "Music", icon: Music2, color: "music" },
-  { id: "contact", label: "Contact", icon: MessageCircle, color: "contact" },
-  { id: "settings", label: "Settings", icon: Settings, color: "settings" },
-];
-
-function AndroidLauncherIcon({ app }: { app: AppName }) {
-  if (app === "about") return <svg className="launcher-logo" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="16" r="7" fill="#fff" /><path fill="#fff" d="M11 39c.8-8.3 5.2-12.5 13-12.5S36.2 30.7 37 39H11Z" /></svg>;
-  if (app === "work") return <svg className="launcher-logo" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="17" fill="none" stroke="#fff" strokeWidth="2.5" /><path fill="none" stroke="#fff" strokeLinecap="round" strokeWidth="2.5" d="M7 24h34M24 7c5 4.7 7.5 10.3 7.5 17S29 36.3 24 41c-5-4.7-7.5-10.3-7.5-17S19 11.7 24 7ZM10 15h28M10 33h28" /></svg>;
-  if (app === "camera") return <img className="launcher-logo photos-image-logo" src="/photos-app-icon.png" alt="" />;
-  if (app === "music") return <svg className="launcher-logo" viewBox="0 0 48 48" aria-hidden="true"><path fill="#fff" d="M18 10h18v22.5a6.5 6.5 0 1 1-3-5.4V16H22v20.5a6.5 6.5 0 1 1-4-5.9V10Z" /><circle cx="14.5" cy="36.5" r="3.5" fill="#803cff" /><circle cx="29.5" cy="35.5" r="3.5" fill="#803cff" /></svg>;
-  if (app === "contact") return <svg className="launcher-logo" viewBox="0 0 48 48" aria-hidden="true"><path fill="#fff" d="M8 11h32v23H20l-8 6v-6H8V11Z" /><path fill="#4385f4" d="M15 19h18v3H15zm0 6h12v3H15z" /></svg>;
-  return <svg className="launcher-logo" viewBox="0 0 48 48" aria-hidden="true"><path fill="#fff" d="m39.5 27.2-4-2.3c.1-.6.1-1.3 0-1.9l4-2.3-3.2-5.5-4.5 1.7c-.5-.4-1.1-.7-1.7-1L29.5 11h-6.4l-.7 4.9c-.6.3-1.2.6-1.7 1l-4.5-1.7L13 20.7l4 2.3a12 12 0 0 0 0 1.9l-4 2.3 3.2 5.5 4.5-1.7c.5.4 1.1.7 1.7 1l.7 4.9h6.4l.7-4.9c.6-.3 1.2-.6 1.7-1l4.5 1.7 3.2-5.5Z" /><circle cx="26.3" cy="24" r="5" fill="#687080" /></svg>;
+function useNow() {
+  const [now, setNow] = useState<Date | null>(null);
+  useEffect(() => {
+    setNow(new Date());
+    const t = setInterval(() => setNow(new Date()), 10_000);
+    return () => clearInterval(t);
+  }, []);
+  return now;
 }
 
-const projects = [
-  ["Pulse Finance", "Fintech · Android", "A calmer way to understand your money, built for 4M+ moments."],
-  ["Wanderly", "Travel · Android", "Tiny trips, beautifully planned. An offline-first companion for curious people."],
-  ["Loop Health", "Wellness · Android", "Making everyday movement feel like a game worth returning to."],
-];
+const fmtTime = (d: Date | null) =>
+  d
+    ? d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hourCycle: "h23" })
+    : "\u2009";
 
-function AppWindow({ app, close }: { app: AppName; close: () => void }) {
-  const content = {
-    about: { title: "About Arjun", icon: UserRound, body: <><p className="window-lede">I&apos;m Arjun — an Android engineer who likes turning complex systems into calm, delightful experiences.</p><p>Currently crafting mobile products in Bengaluru. When I&apos;m not in Android Studio, you&apos;ll find me collecting typefaces, making coffee, or walking a long way home.</p><div className="stats"><b>06 <small>years building</small></b><b>18 <small>apps shipped</small></b><b>∞ <small>curiosity</small></b></div></> },
-    work: { title: "My work", icon: Code2, body: <div className="projects">{projects.map(([title, type, description], index) => <a href="#" className="project" key={title}><span className={`project-art art-${index}`}>{title[0]}</span><span><small>{type}</small><strong>{title}</strong><em>{description}</em></span><ArrowUpRight size={16} /></a>)}</div> },
-    camera: { title: "Photos", icon: Camera, body: <div className="photos"><div className="photo p1">01</div><div className="photo p2">02</div><div className="photo p3">03</div><div className="photo p4">04</div></div> },
-    music: { title: "Music", icon: Music2, body: <div className="music-player"><div className="album"><span /></div><div><small>PLAYING NOW</small><h3>Quietly ambitious</h3><p>Arjun Mehta · 2025</p></div><div className="progress"><i /></div><div className="controls"><ChevronRight className="previous" /><button><Play size={17} fill="currentColor" /></button><ChevronRight /></div></div> },
-    contact: { title: "Contact", icon: MessageCircle, body: <><p className="window-lede">Have a good idea? I&apos;d love to hear it.</p><a className="email" href="mailto:hello@arjunmehta.dev">hello@arjunmehta.dev <ArrowUpRight size={16} /></a><div className="socials"><a href="https://github.com" target="_blank" rel="noreferrer"><Github size={16} /> GitHub</a><a href="https://linkedin.com" target="_blank" rel="noreferrer"><Globe2 size={16} /> LinkedIn</a></div></> },
-    settings: { title: "Settings", icon: Settings, body: <div className="preferences"><label><span><Moon size={16} /> Dark mode</span><i className="toggle on"><b /></i></label><label><span><Sparkles size={16} /> Motion effects</span><i className="toggle on"><b /></i></label><label><span><Zap size={16} /> Haptic feedback</span><i className="toggle"><b /></i></label></div> },
-    github: { title: "GitHub", icon: Github, body: <><p className="window-lede">Open source, shipped often.</p><p>Browse my code, experiments, and contribution history on GitHub.</p><a className="email" href="https://github.com" target="_blank" rel="noreferrer">Open GitHub <ArrowUpRight size={16} /></a></> },
-    resume: { title: "Résumé", icon: Mail, body: <><p className="window-lede">Six years of building for small screens.</p><p>Android engineering, product thinking, and a soft spot for details.</p><a className="email" href="mailto:hello@arjunmehta.dev">Request résumé <Send size={16} /></a></> },
-  }[app];
-  const Icon = content.icon;
-  return <motion.section className="app-window" initial={{ opacity: 1, scale: 0.2 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 1, scaleY: 0 }} transition={{ type: "spring", stiffness: 360, damping: 30 }}><header><span><Icon size={16} />{content.title}</span><button onClick={close} aria-label="Close app"><X size={18} /></button></header><div className="window-content">{content.body}</div></motion.section>;
+const fmtDate = (d: Date | null) =>
+  d ? d.toLocaleDateString("en-US", { weekday: "short", month: "long", day: "numeric" }) : "\u2009";
+
+/* ---------- status bar ---------- */
+
+function StatusBar({ now }: { now: Date | null }) {
+  return (
+    <div className="status" aria-hidden="true">
+      <span className="status-time">{fmtTime(now)}</span>
+      <span className="status-icons">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <rect x="3" y="15" width="3.2" height="6" rx="1" />
+          <rect x="8" y="11" width="3.2" height="10" rx="1" />
+          <rect x="13" y="7" width="3.2" height="14" rx="1" />
+          <rect x="18" y="3" width="3.2" height="18" rx="1" />
+        </svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+          <path d="M2.5 9a14 14 0 0119 0" />
+          <path d="M5.8 12.6a9.4 9.4 0 0112.4 0" />
+          <path d="M9 16.1a4.8 4.8 0 016 0" />
+          <circle cx="12" cy="19.4" r="0.9" fill="currentColor" />
+        </svg>
+        <span className="battery">
+          <i style={{ width: "82%" }} />
+        </span>
+        <span className="battery-pct">82%</span>
+      </span>
+    </div>
+  );
 }
 
-export default function Home() {
-  const [openApp, setOpenApp] = useState<AppName | null>(null);
-  return <main className="phone-stage">
-    <div className="phone-hardware phone-hardware-left" />
-    <div className="phone-hardware phone-hardware-right" />
-    <div className="galaxy-phone">
-      <div className="camera-cutout"><span /></div>
-      <div className="android-home">
-    <div className="wallpaper-glow glow-a" /><div className="wallpaper-glow glow-b" /><div className="wallpaper-glow glow-c" />
-    <div className="home-status"><span>9:41</span><span>Sat 21 Sep</span><span className="signals"><Wifi size={14} /><span>5G</span><BatteryFull size={16} /></span></div>
-    <section className="home-grid">
-      <motion.div className="widget github-widget" initial={{ opacity: 1, y: -15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: .1 }}><div><small>GITHUB ACTIVITY</small><strong>Building in public</strong></div><Github size={18} /><div className="contributions">{Array.from({ length: 35 }).map((_, i) => <i className={`c-${(i * 5 + i % 3) % 5}`} key={i} />)}</div></motion.div>
-      <div className="welcome-copy"><span>ANDROID ENGINEER · PRODUCT BUILDER</span><h1>Building things<br /><em>worth</em> tapping.</h1><p>Explore my portfolio like an Android home screen. Open an app to see what I&apos;ve been making.</p></div>
-      <div className="app-grid">{apps.map(({ id, label, color }, index) => <motion.button key={id} className="app-icon-button" onClick={() => setOpenApp(id)} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: .08 * index + .25 }} whileTap={{ scale: .92, transition: { duration: .05 } }}><span className={`app-icon ${color}`}><AndroidLauncherIcon app={id} /></span><span>{label}</span></motion.button>)}</div>
-      <motion.button className="search-pill" onClick={() => setOpenApp("work")} whileHover={{ scale: 1.02 }}><Search size={16} /><span>Search portfolio</span><kbd>⌕</kbd></motion.button>
-    </section>
-    <footer><button onClick={() => setOpenApp("about")}><UserRound size={15} /><span>About</span></button><button onClick={() => setOpenApp("github")}><Github size={15} /><span>GitHub</span></button><button onClick={() => setOpenApp("contact")}><MessageCircle size={15} /><span>Contact</span></button><button onClick={() => setOpenApp("resume")}><Mail size={15} /><span>Résumé</span></button></footer>
-    <div className="gesture"><span /></div>
-      <AnimatePresence>{openApp && <div className="modal" onClick={() => setOpenApp(null)}><div onClick={(event) => event.stopPropagation()}><AppWindow app={openApp} close={() => setOpenApp(null)} /></div></div>}</AnimatePresence>
+/* ---------- home screen ---------- */
+
+function AppIcon({
+  app,
+  onOpen,
+  showLabel = true,
+}: {
+  app: AppDef;
+  onOpen: (app: AppDef, el: HTMLElement) => void;
+  showLabel?: boolean;
+}) {
+  return (
+    <button
+      className="app"
+      onClick={(e) => onOpen(app, e.currentTarget.querySelector(".icon") as HTMLElement)}
+      aria-label={app.label}
+    >
+      <span className="icon" style={{ "--c1": app.c1, "--c2": app.c2 } as CSSProperties}>
+        <Icon name={app.icon} />
+      </span>
+      {showLabel && <span className="label">{app.label}</span>}
+    </button>
+  );
+}
+
+function Home({ now, onOpen }: { now: Date | null; onOpen: (app: AppDef, el: HTMLElement) => void }) {
+  const grid = apps.filter((a) => !a.dock);
+  const dock = apps.filter((a) => a.dock);
+
+  return (
+    <div className="home">
+      <div className="widget">
+        <div className="time">{fmtTime(now)}</div>
+        <div className="date">{fmtDate(now)}</div>
+        <div className="who">{profile.name}</div>
+        <div className="role">{profile.role}</div>
+        <div className="badge">
+          <i /> {profile.status}
+        </div>
+      </div>
+
+      <div className="grid">
+        {grid.map((a) => (
+          <AppIcon key={a.id} app={a} onOpen={onOpen} />
+        ))}
+      </div>
+
+      <div className="dots" aria-hidden="true">
+        <i className="on" />
+        <i />
+      </div>
+
+      <div className="dock">
+        {dock.map((a) => (
+          <AppIcon key={a.id} app={a} onOpen={onOpen} showLabel={false} />
+        ))}
       </div>
     </div>
-  </main>;
+  );
+}
+
+/* ---------- app window ---------- */
+
+function BlockView({ block }: { block: Block }) {
+  switch (block.kind) {
+    case "text":
+      return (
+        <div className="card">
+          <p className="body">{block.body}</p>
+        </div>
+      );
+    case "items":
+      return (
+        <div className="card list">
+          {block.heading && <h2>{block.heading}</h2>}
+          {block.items.map((it, i) => (
+            <div className="row" key={i}>
+              <div>
+                <div className="t">{it.title}</div>
+                {it.sub && <div className="s">{it.sub}</div>}
+              </div>
+              {it.meta && <div className="m">{it.meta}</div>}
+            </div>
+          ))}
+        </div>
+      );
+    case "chips":
+      return (
+        <div className="card">
+          <h2>{block.heading}</h2>
+          <div className="chips">
+            {block.chips.map((c) => (
+              <span className="chip" key={c}>
+                {c}
+              </span>
+            ))}
+          </div>
+        </div>
+      );
+    case "links":
+      return (
+        <div className="card list">
+          {block.heading && <h2>{block.heading}</h2>}
+          {block.links.map((l) => (
+            <a className="row link" key={l.label} href={l.href} target="_blank" rel="noreferrer">
+              <div className="t">{l.label}</div>
+              {l.hint && <div className="m">{l.hint}</div>}
+            </a>
+          ))}
+        </div>
+      );
+  }
+}
+
+function AppWindow({
+  app,
+  origin,
+  closing,
+  onBack,
+  onClosed,
+}: {
+  app: AppDef;
+  origin: { x: string; y: string };
+  closing: boolean;
+  onBack: () => void;
+  onClosed: () => void;
+}) {
+  const handleEnd = (e: AnimationEvent<HTMLElement>) => {
+    if (e.target !== e.currentTarget) return;
+    if (closing) onClosed();
+  };
+
+  return (
+    <section
+      className={`app-window${closing ? " closing" : ""}`}
+      style={{ "--ox": origin.x, "--oy": origin.y } as CSSProperties}
+      onAnimationEnd={handleEnd}
+      role="dialog"
+      aria-label={app.title ?? app.label}
+    >
+      <header className="app-head">
+        <button className="back-btn" onClick={onBack} aria-label="Back">
+          <Icon name="chevron" />
+        </button>
+        <h1>{app.title ?? app.label}</h1>
+        {app.subtitle && <p>{app.subtitle}</p>}
+      </header>
+      <div className="app-body">
+        {app.blocks?.map((b, i) => (
+          <BlockView block={b} key={i} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* ---------- 3D phone stage ----------
+   .scene provides perspective. .phone3d is the rotated cube: its
+   transform is driven by --rx/--ry custom properties, written
+   directly to the DOM node (not React state) while dragging, so
+   dragging stays smooth. Faces are positioned with the standard
+   CSS-cube recipe: translateZ(half the box's own size) then rotate. */
+
+const REST_RX = 10;
+const REST_RY = -22;
+const MAX_RX = 26;
+
+function PhoneStage({
+  children,
+}: {
+  children: (screenRef: RefObject<HTMLDivElement | null>) => ReactNode;
+}) {
+  const sceneRef = useRef<HTMLDivElement>(null);
+  const phoneRef = useRef<HTMLDivElement>(null);
+  const screenRef = useRef<HTMLDivElement>(null);
+
+  const rot = useRef({ rx: REST_RX, ry: REST_RY });
+  const drag = useRef({ active: false, x: 0, y: 0, vx: 0, moved: false });
+  const raf = useRef<number | null>(null);
+  const [hint, setHint] = useState(true);
+
+  const apply = (snap: boolean) => {
+    const el = phoneRef.current;
+    if (!el) return;
+    el.style.setProperty("--rx", `${rot.current.rx}deg`);
+    el.style.setProperty("--ry", `${rot.current.ry}deg`);
+    el.classList.toggle("snap", snap);
+  };
+
+  useEffect(() => {
+    apply(true);
+  }, []);
+
+  const stopInertia = () => {
+    if (raf.current !== null) {
+      cancelAnimationFrame(raf.current);
+      raf.current = null;
+    }
+  };
+
+  const runInertia = () => {
+    const step = () => {
+      drag.current.vx *= 0.94;
+      rot.current.ry += drag.current.vx;
+      apply(false);
+      if (Math.abs(drag.current.vx) > 0.02) {
+        raf.current = requestAnimationFrame(step);
+      } else {
+        raf.current = null;
+      }
+    };
+    raf.current = requestAnimationFrame(step);
+  };
+
+  const onPointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
+    // Let taps/scrolls on the live screen behave normally.
+    if (screenRef.current?.contains(e.target as Node)) return;
+    if (window.matchMedia("(max-width: 520px)").matches) return;
+
+    stopInertia();
+    drag.current = { active: true, x: e.clientX, y: e.clientY, vx: 0, moved: false };
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    phoneRef.current?.classList.remove("snap");
+    setHint(false);
+  };
+
+  const onPointerMove = (e: ReactPointerEvent<HTMLDivElement>) => {
+    if (!drag.current.active) return;
+    const dx = e.clientX - drag.current.x;
+    const dy = e.clientY - drag.current.y;
+    drag.current.x = e.clientX;
+    drag.current.y = e.clientY;
+    if (Math.abs(dx) + Math.abs(dy) > 2) drag.current.moved = true;
+
+    rot.current.ry += dx * 0.35;
+    rot.current.rx = Math.max(-MAX_RX, Math.min(MAX_RX, rot.current.rx - dy * 0.28));
+    drag.current.vx = dx * 0.35;
+    apply(false);
+  };
+
+  const endDrag = () => {
+    if (!drag.current.active) return;
+    drag.current.active = false;
+    if (Math.abs(drag.current.vx) > 0.5) runInertia();
+  };
+
+  const onDoubleClick = () => {
+    stopInertia();
+    drag.current.vx = 0;
+    rot.current = { rx: REST_RX, ry: REST_RY };
+    apply(true);
+  };
+
+  useEffect(() => stopInertia, []);
+
+  return (
+    <>
+      <div
+        className="scene"
+        ref={sceneRef}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
+        onDoubleClick={onDoubleClick}
+      >
+        <div className="ground-shadow" aria-hidden="true" />
+        <div className="phone3d snap" ref={phoneRef}>
+          <div className="face front">{children(screenRef)}</div>
+
+          <div className="face back">
+            <div className="lens lens-tele">
+              <i className="glass" />
+            </div>
+            <div className="lens lens-ultra">
+              <i className="glass" />
+            </div>
+            <div className="lens lens-main">
+              <i className="glass" />
+            </div>
+            <span className="laser" />
+            <span className="flash" />
+            <div className="brand">SAMSUNG</div>
+          </div>
+
+          <div className="edge edge-top">
+            <i className="hole" />
+          </div>
+          <div className="edge edge-bottom">
+            <i className="port" />
+            <i className="grille" />
+            <i className="grille" />
+          </div>
+          <div className="edge edge-left">
+            <i className="tray" />
+          </div>
+          <div className="edge edge-right">
+            <i className="key power" />
+            <i className="key volume" />
+          </div>
+        </div>
+      </div>
+      <p className={`hint${hint ? "" : " hidden"}`}>Drag to rotate &middot; double-click to reset</p>
+    </>
+  );
+}
+
+/* ---------- page ---------- */
+
+export default function Page() {
+  const now = useNow();
+  const [openId, setOpenId] = useState<string | null>(null);
+  const [closing, setClosing] = useState(false);
+  const [origin, setOrigin] = useState({ x: "50%", y: "50%" });
+  const screenElRef = useRef<HTMLDivElement | null>(null);
+
+  const openApp = apps.find((a) => a.id === openId) ?? null;
+
+  const handleOpen = (app: AppDef, el: HTMLElement) => {
+    if (app.href) {
+      window.open(app.href, "_blank", "noreferrer");
+      return;
+    }
+    const s = screenElRef.current?.getBoundingClientRect();
+    const r = el.getBoundingClientRect();
+    if (s) {
+      setOrigin({
+        x: `${r.left - s.left + r.width / 2}px`,
+        y: `${r.top - s.top + r.height / 2}px`,
+      });
+    }
+    setClosing(false);
+    setOpenId(app.id);
+  };
+
+  const goHome = () => {
+    if (openId && !closing) setClosing(true);
+  };
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") goHome();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  });
+
+  return (
+    <main className="stage">
+      <PhoneStage>
+        {(screenRef) => (
+          <>
+            <i className="hole-front" aria-hidden="true" />
+            <div
+              className="screen"
+              ref={(node) => {
+                screenRef.current = node;
+                screenElRef.current = node;
+              }}
+            >
+              <div className="ui">
+                <div className="wallpaper" />
+                <StatusBar now={now} />
+
+                <Home now={now} onOpen={handleOpen} />
+
+                {openApp && (
+                  <AppWindow
+                    app={openApp}
+                    origin={origin}
+                    closing={closing}
+                    onBack={goHome}
+                    onClosed={() => {
+                      setOpenId(null);
+                      setClosing(false);
+                    }}
+                  />
+                )}
+
+                <button className="navbar" onClick={goHome} aria-label="Home">
+                  <span className="pill" />
+                </button>
+              </div>
+            </div>
+          </>
+        )}
+      </PhoneStage>
+    </main>
+  );
 }
