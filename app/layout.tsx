@@ -10,14 +10,14 @@ const ui = Figtree({
 });
 
 export const metadata: Metadata = {
-  title: "Your Name | Portfolio",
-  description: "Portfolio of Your Name, styled as a Galaxy S26 Ultra home screen.",
+  title: "Reyansh Bhardwaj | Samsung Galaxy S26 Ultra 3D Portfolio",
+  description: "Interactive 3D portfolio of Reyansh Bhardwaj, engineered as a photorealistic Samsung Galaxy S26 Ultra with floating camera system, titanium chassis, S-Pen, and full One UI experience.",
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#07090c",
+  themeColor: "#07090e",
   viewportFit: "cover",
 };
 

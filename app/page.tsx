@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import type {
   AnimationEvent,
   CSSProperties,
@@ -11,8 +11,9 @@ import type {
 import { apps, profile } from "./data";
 import type { AppDef, Block } from "./data";
 import { Icon } from "./icons";
+import type { IconName } from "./icons";
 
-/* ---------- helpers ---------- */
+/* ---------- Date & Time Hooks ---------- */
 
 function useNow() {
   const [now, setNow] = useState<Date | null>(null);
@@ -27,23 +28,24 @@ function useNow() {
 const fmtTime = (d: Date | null) =>
   d
     ? d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hourCycle: "h23" })
-    : "\u2009";
+    : "12:45";
 
 const fmtDate = (d: Date | null) =>
-  d ? d.toLocaleDateString("en-US", { weekday: "short", month: "long", day: "numeric" }) : "\u2009";
+  d ? d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" }) : "Tue, Sep 22";
 
-/* ---------- status bar ---------- */
+/* ---------- Samsung One UI Status Bar ---------- */
 
 function StatusBar({ now }: { now: Date | null }) {
   return (
     <div className="status" aria-hidden="true">
       <span className="status-time">{fmtTime(now)}</span>
       <span className="status-icons">
+        <span className="status-badge-5g">5G+</span>
         <svg viewBox="0 0 24 24" fill="currentColor">
-          <rect x="3" y="15" width="3.2" height="6" rx="1" />
-          <rect x="8" y="11" width="3.2" height="10" rx="1" />
-          <rect x="13" y="7" width="3.2" height="14" rx="1" />
-          <rect x="18" y="3" width="3.2" height="18" rx="1" />
+          <rect x="3" y="15" width="3.2" height="6" rx="0.8" />
+          <rect x="8" y="11" width="3.2" height="10" rx="0.8" />
+          <rect x="13" y="7" width="3.2" height="14" rx="0.8" />
+          <rect x="18" y="3" width="3.2" height="18" rx="0.8" />
         </svg>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
           <path d="M2.5 9a14 14 0 0119 0" />
@@ -52,15 +54,107 @@ function StatusBar({ now }: { now: Date | null }) {
           <circle cx="12" cy="19.4" r="0.9" fill="currentColor" />
         </svg>
         <span className="battery">
-          <i style={{ width: "82%" }} />
+          <i style={{ width: "88%" }} />
         </span>
-        <span className="battery-pct">82%</span>
+        <span className="battery-pct">88%</span>
       </span>
     </div>
   );
 }
 
-/* ---------- home screen ---------- */
+/* ---------- S-Pen Interactive Canvas Block ---------- */
+
+function SpenCanvas() {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const drawingRef = useRef(false);
+  const [currentColor, setCurrentColor] = useState("#38bdf8");
+
+  const colors = ["#38bdf8", "#a855f7", "#34d399", "#f59e0b", "#ffffff"];
+
+  const getPos = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return { x: 0, y: 0 };
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    return {
+      x: (e.clientX - rect.left) * scaleX,
+      y: (e.clientY - rect.top) * scaleY,
+    };
+  };
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    drawingRef.current = true;
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    const { x, y } = getPos(e);
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.strokeStyle = currentColor;
+    ctx.lineWidth = 3.5;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+  };
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (!drawingRef.current) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    const { x, y } = getPos(e);
+    ctx.lineTo(x, y);
+    ctx.stroke();
+  };
+
+  const handlePointerUp = () => {
+    drawingRef.current = false;
+  };
+
+  const clearCanvas = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  };
+
+  return (
+    <div className="spen-canvas-box">
+      <div className="spen-canvas-toolbar">
+        <div className="spen-colors">
+          {colors.map((c) => (
+            <button
+              key={c}
+              className={`spen-ink-dot${c === currentColor ? " active" : ""}`}
+              style={{ backgroundColor: c }}
+              onClick={() => setCurrentColor(c)}
+              aria-label={`Select ink color ${c}`}
+            />
+          ))}
+        </div>
+        <button className="spen-clear-btn" onClick={clearCanvas}>
+          Clear Ink
+        </button>
+      </div>
+      <canvas
+        ref={canvasRef}
+        width={360}
+        height={220}
+        className="spen-draw-area"
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
+      />
+    </div>
+  );
+}
+
+/* ---------- One UI App Icon & Home Screen ---------- */
 
 function AppIcon({
   app,
@@ -85,33 +179,70 @@ function AppIcon({
   );
 }
 
-function Home({ now, onOpen }: { now: Date | null; onOpen: (app: AppDef, el: HTMLElement) => void }) {
+function Home({
+  now,
+  onOpen,
+}: {
+  now: Date | null;
+  onOpen: (app: AppDef, el: HTMLElement) => void;
+}) {
   const grid = apps.filter((a) => !a.dock);
   const dock = apps.filter((a) => a.dock);
 
+  const aboutApp = apps.find((a) => a.id === "about") || apps[0];
+
   return (
     <div className="home">
-      <div className="widget">
-        <div className="time">{fmtTime(now)}</div>
-        <div className="date">{fmtDate(now)}</div>
-        <div className="who">{profile.name}</div>
-        <div className="role">{profile.role}</div>
-        <div className="badge">
-          <i /> {profile.status}
+      {/* Samsung One UI Weather & Clock Widget */}
+      <div className="oneui-widget">
+        <div className="widget-top-row">
+          <div className="widget-time">{fmtTime(now)}</div>
+          <div className="widget-weather-icon">
+            <Icon name="sun" />
+            <span className="widget-temp">26°</span>
+          </div>
+        </div>
+        <div className="widget-date">{fmtDate(now)} &bull; New Delhi</div>
+
+        <div className="widget-profile">
+          <div className="widget-name">{profile.name}</div>
+          <div className="widget-role">{profile.role}</div>
+          <div className="widget-status-badge">
+            <i /> {profile.status}
+          </div>
         </div>
       </div>
 
+      {/* Galaxy AI Quick Pill */}
+      <div
+        className="galaxy-ai-pill"
+        onClick={(e) => onOpen(aboutApp, e.currentTarget)}
+        role="button"
+        tabIndex={0}
+      >
+        <div className="galaxy-ai-left">
+          <span className="galaxy-ai-sparkle">
+            <Icon name="sparkles" />
+          </span>
+          <span className="galaxy-ai-text">Explore Reyansh's portfolio...</span>
+        </div>
+        <span className="galaxy-ai-badge">Galaxy AI</span>
+      </div>
+
+      {/* App Grid */}
       <div className="grid">
         {grid.map((a) => (
           <AppIcon key={a.id} app={a} onOpen={onOpen} />
         ))}
       </div>
 
+      {/* Screen pagination indicator */}
       <div className="dots" aria-hidden="true">
         <i className="on" />
         <i />
       </div>
 
+      {/* Dock */}
       <div className="dock">
         {dock.map((a) => (
           <AppIcon key={a.id} app={a} onOpen={onOpen} showLabel={false} />
@@ -121,7 +252,7 @@ function Home({ now, onOpen }: { now: Date | null; onOpen: (app: AppDef, el: HTM
   );
 }
 
-/* ---------- app window ---------- */
+/* ---------- App Window Modal ---------- */
 
 function BlockView({ block }: { block: Block }) {
   switch (block.kind) {
@@ -162,13 +293,20 @@ function BlockView({ block }: { block: Block }) {
     case "links":
       return (
         <div className="card list">
-          {block.heading && <h2>{block.heading}</h2>}
+          {block.heading && 2 ? <h2>{block.heading}</h2> : null}
           {block.links.map((l) => (
             <a className="row link" key={l.label} href={l.href} target="_blank" rel="noreferrer">
               <div className="t">{l.label}</div>
               {l.hint && <div className="m">{l.hint}</div>}
             </a>
           ))}
+        </div>
+      );
+    case "spen-canvas":
+      return (
+        <div className="card">
+          {block.heading && <h2>{block.heading}</h2>}
+          <SpenCanvas />
         </div>
       );
   }
@@ -216,42 +354,183 @@ function AppWindow({
   );
 }
 
-/* ---------- 3D phone stage ----------
-   .scene provides perspective. .phone3d is the rotated cube: its
-   transform is driven by --rx/--ry custom properties, written
-   directly to the DOM node (not React state) while dragging, so
-   dragging stays smooth. Faces are positioned with the standard
-   CSS-cube recipe: translateZ(half the box's own size) then rotate. */
+/* ---------- 3D Phone Stage & Inspection Studio ---------- */
 
-const REST_RX = 10;
-const REST_RY = -22;
-const MAX_RX = 26;
+const REST_RX = 12;
+const REST_RY = -24;
+const MAX_RX = 65;
+
+type ViewPreset = "front" | "angle" | "back" | "right-side" | "left-side" | "spen";
+type TitaniumColor = "gray" | "black" | "silverblue";
+
+/* ---------- Seamless 3D Corner Cylinders (No Gaps) ---------- */
+
+function CornerCylinder({
+  corner,
+  numFacets = 14,
+}: {
+  corner: "top-left" | "top-right" | "bottom-right" | "bottom-left";
+  numFacets?: number;
+}) {
+  const facets = Array.from({ length: numFacets }, (_, i) => {
+    const fraction = (i + 0.5) / numFacets;
+    let baseDeg = 0;
+    if (corner === "top-left") {
+      baseDeg = -90 + fraction * 90;
+    } else if (corner === "top-right") {
+      baseDeg = 0 + fraction * 90;
+    } else if (corner === "bottom-right") {
+      baseDeg = 90 + fraction * 90;
+    } else if (corner === "bottom-left") {
+      baseDeg = 180 + fraction * 90;
+    }
+
+    return {
+      id: i,
+      deg: baseDeg,
+    };
+  });
+
+  return (
+    <div className={`corner-cylinder ${corner}`} aria-hidden="true">
+      {facets.map((f) => (
+        <div
+          key={f.id}
+          className="corner-facet"
+          style={{ "--facet-deg": `${f.deg.toFixed(2)}deg` } as CSSProperties}
+        >
+          {/* Antenna band cut matching reference image near top-left and top-right corners */}
+          {corner === "top-left" && (f.id === 2 || f.id === 3) && <i className="corner-antenna" />}
+          {corner === "top-right" && (f.id === 10 || f.id === 11) && <i className="corner-antenna" />}
+          {corner === "bottom-left" && (f.id === 10 || f.id === 11) && <i className="corner-antenna" />}
+          {corner === "bottom-right" && (f.id === 2 || f.id === 3) && <i className="corner-antenna" />}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ---------- 3D Stepped Camera Cylinders (Protrudes From Back In Side Profile!) ---------- */
+
+function CamRing3D({
+  className,
+  diameterPercent,
+  topPercent,
+  leftPercent,
+  protrusionPx,
+  isPeriscope = false,
+  isMain = false,
+}: {
+  className: string;
+  diameterPercent: number;
+  topPercent: number;
+  leftPercent: number;
+  protrusionPx: number;
+  isPeriscope?: boolean;
+  isMain?: boolean;
+}) {
+  const numFacets = 12;
+  const facets = Array.from({ length: numFacets }, (_, i) => ({
+    id: i,
+    deg: (i * 360) / numFacets,
+  }));
+
+  return (
+    <div
+      className={`cam-barrel-3d ${className}`}
+      style={
+        {
+          "--cam-diam": `calc(var(--dw) * ${diameterPercent / 100})`,
+          "--cam-top": `${topPercent}%`,
+          "--cam-left": `${leftPercent}%`,
+          "--cam-h": `${protrusionPx}px`,
+        } as CSSProperties
+      }
+    >
+      {/* Stepped Silver Base Tier Facets */}
+      <div className="cam-tier base-tier" aria-hidden="true">
+        {facets.map((f) => (
+          <div
+            key={f.id}
+            className="barrel-facet base-facet"
+            style={{ "--facet-deg": `${f.deg}deg` } as CSSProperties}
+          />
+        ))}
+      </div>
+
+      {/* Main Titanium Cylinder Facets (Solid Wall Visible In Side Profile) */}
+      <div className="cam-tier main-tier" aria-hidden="true">
+        {facets.map((f) => (
+          <div
+            key={f.id}
+            className="barrel-facet main-facet"
+            style={{ "--facet-deg": `${f.deg}deg` } as CSSProperties}
+          />
+        ))}
+      </div>
+
+      {/* Top Cap at translateZ(protrusionPx) */}
+      <div className="cam-cap">
+        <div className="cam-bezel" />
+        <div className="cam-glass">
+          <div className="cam-pupil-iris">
+            <div className="cam-pupil-dot" />
+          </div>
+          {isPeriscope && <div className="periscope-prism" />}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function PhoneStage({
   children,
+  onOpenSpen,
 }: {
-  children: (screenRef: RefObject<HTMLDivElement | null>) => ReactNode;
+  children: ReactNode;
+  onOpenSpen: () => void;
 }) {
   const sceneRef = useRef<HTMLDivElement>(null);
   const phoneRef = useRef<HTMLDivElement>(null);
   const screenRef = useRef<HTMLDivElement>(null);
 
   const rot = useRef({ rx: REST_RX, ry: REST_RY });
-  const drag = useRef({ active: false, x: 0, y: 0, vx: 0, moved: false });
+  const drag = useRef({ active: false, x: 0, y: 0, vx: 0, vy: 0, moved: false });
   const raf = useRef<number | null>(null);
-  const [hint, setHint] = useState(true);
+  const autoRotateRaf = useRef<number | null>(null);
 
-  const apply = (snap: boolean) => {
+  const [hint, setHint] = useState(true);
+  const [activePreset, setActivePreset] = useState<ViewPreset>("angle");
+  const [colorTheme, setColorTheme] = useState<TitaniumColor>("silverblue");
+  const [spenEjected, setSpenEjected] = useState(false);
+  const [isAutoRotate, setIsAutoRotate] = useState(false);
+
+  // Apply rotation and dynamic studio lighting custom properties to DOM
+  const applyTransform = useCallback((snap: boolean) => {
     const el = phoneRef.current;
     if (!el) return;
-    el.style.setProperty("--rx", `${rot.current.rx}deg`);
-    el.style.setProperty("--ry", `${rot.current.ry}deg`);
+
+    el.style.setProperty("--rx", `${rot.current.rx.toFixed(2)}deg`);
+    el.style.setProperty("--ry", `${rot.current.ry.toFixed(2)}deg`);
+
+    // Studio specular reflections and glass sheen angles
+    const sheenX = ((rot.current.ry % 360) / 180) * 50;
+    const sheenY = (rot.current.rx / 90) * 50;
+    const sheenAngle = rot.current.ry * 0.75;
+    const glareOpacity = Math.max(0.2, 1 - Math.abs(rot.current.ry % 180) / 130);
+
+    el.style.setProperty("--sheen-x", `${sheenX.toFixed(1)}`);
+    el.style.setProperty("--sheen-y", `${sheenY.toFixed(1)}`);
+    el.style.setProperty("--sheen-angle", `${sheenAngle.toFixed(1)}deg`);
+    el.style.setProperty("--glare-opacity", `${glareOpacity.toFixed(2)}`);
+
     el.classList.toggle("snap", snap);
-  };
+  }, []);
 
   useEffect(() => {
-    apply(true);
-  }, []);
+    applyTransform(true);
+    document.documentElement.setAttribute("data-theme", colorTheme);
+  }, [applyTransform, colorTheme]);
 
   const stopInertia = () => {
     if (raf.current !== null) {
@@ -260,12 +539,26 @@ function PhoneStage({
     }
   };
 
+  const stopAutoRotate = () => {
+    if (autoRotateRaf.current !== null) {
+      cancelAnimationFrame(autoRotateRaf.current);
+      autoRotateRaf.current = null;
+    }
+    setIsAutoRotate(false);
+  };
+
+  // Inertia momentum release
   const runInertia = () => {
     const step = () => {
-      drag.current.vx *= 0.94;
+      drag.current.vx *= 0.93;
+      drag.current.vy *= 0.93;
+
       rot.current.ry += drag.current.vx;
-      apply(false);
-      if (Math.abs(drag.current.vx) > 0.02) {
+      rot.current.rx = Math.max(-MAX_RX, Math.min(MAX_RX, rot.current.rx - drag.current.vy));
+
+      applyTransform(false);
+
+      if (Math.abs(drag.current.vx) > 0.03 || Math.abs(drag.current.vy) > 0.03) {
         raf.current = requestAnimationFrame(step);
       } else {
         raf.current = null;
@@ -274,13 +567,39 @@ function PhoneStage({
     raf.current = requestAnimationFrame(step);
   };
 
+  // Auto-rotate presentation mode
+  const toggleAutoRotate = () => {
+    if (isAutoRotate) {
+      stopAutoRotate();
+    } else {
+      stopInertia();
+      setIsAutoRotate(true);
+      phoneRef.current?.classList.remove("snap");
+
+      const spin = () => {
+        rot.current.ry = (rot.current.ry + 0.45) % 360;
+        applyTransform(false);
+        autoRotateRaf.current = requestAnimationFrame(spin);
+      };
+      autoRotateRaf.current = requestAnimationFrame(spin);
+    }
+  };
+
   const onPointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
-    // Let taps/scrolls on the live screen behave normally.
+    // Avoid hijacking taps on the interactive screen
     if (screenRef.current?.contains(e.target as Node)) return;
-    if (window.matchMedia("(max-width: 520px)").matches) return;
 
     stopInertia();
-    drag.current = { active: true, x: e.clientX, y: e.clientY, vx: 0, moved: false };
+    stopAutoRotate();
+
+    drag.current = {
+      active: true,
+      x: e.clientX,
+      y: e.clientY,
+      vx: 0,
+      vy: 0,
+      moved: false,
+    };
     (e.target as HTMLElement).setPointerCapture(e.pointerId);
     phoneRef.current?.classList.remove("snap");
     setHint(false);
@@ -292,31 +611,94 @@ function PhoneStage({
     const dy = e.clientY - drag.current.y;
     drag.current.x = e.clientX;
     drag.current.y = e.clientY;
+
     if (Math.abs(dx) + Math.abs(dy) > 2) drag.current.moved = true;
 
-    rot.current.ry += dx * 0.35;
-    rot.current.rx = Math.max(-MAX_RX, Math.min(MAX_RX, rot.current.rx - dy * 0.28));
-    drag.current.vx = dx * 0.35;
-    apply(false);
+    rot.current.ry += dx * 0.38;
+    rot.current.rx = Math.max(-MAX_RX, Math.min(MAX_RX, rot.current.rx - dy * 0.32));
+    drag.current.vx = dx * 0.38;
+    drag.current.vy = dy * 0.32;
+
+    applyTransform(false);
   };
 
   const endDrag = () => {
     if (!drag.current.active) return;
     drag.current.active = false;
-    if (Math.abs(drag.current.vx) > 0.5) runInertia();
+    if (Math.abs(drag.current.vx) > 0.4 || Math.abs(drag.current.vy) > 0.4) {
+      runInertia();
+    }
   };
 
-  const onDoubleClick = () => {
+  // Quick View Preset Angles
+  const setPreset = (preset: ViewPreset) => {
     stopInertia();
-    drag.current.vx = 0;
-    rot.current = { rx: REST_RX, ry: REST_RY };
-    apply(true);
+    stopAutoRotate();
+    setActivePreset(preset);
+
+    switch (preset) {
+      case "front":
+        rot.current = { rx: 0, ry: 0 };
+        break;
+      case "angle":
+        rot.current = { rx: 12, ry: -24 };
+        break;
+      case "back":
+        rot.current = { rx: 4, ry: 180 };
+        break;
+      case "right-side":
+        rot.current = { rx: 0, ry: 90 };
+        break;
+      case "left-side":
+        rot.current = { rx: 0, ry: -90 };
+        break;
+      case "spen":
+        rot.current = { rx: -48, ry: 14 };
+        break;
+    }
+    applyTransform(true);
   };
 
-  useEffect(() => stopInertia, []);
+  // Interactive S-Pen toggle
+  const toggleSpen = () => {
+    setSpenEjected((prev) => {
+      const next = !prev;
+      if (next) {
+        onOpenSpen();
+      }
+      return next;
+    });
+  };
+
+  // Reset to default angle on double click
+  const onDoubleClick = () => {
+    setPreset("angle");
+  };
+
+  useEffect(() => {
+    return () => {
+      stopInertia();
+      stopAutoRotate();
+    };
+  }, []);
+
+  // 24 continuous gapless chassis layers from -depth/2 to +depth/2
+  const chassisLayers = Array.from({ length: 24 }, (_, i) => {
+    const fraction = (i / 23) * 2 - 1; // -1 to +1
+    return `calc(var(--depth) / 2 * ${fraction.toFixed(3)})`;
+  });
 
   return (
     <>
+      {/* Studio Header Brand */}
+      <header className="studio-header">
+        <div className="studio-brand">
+          <span className="studio-title">Samsung Galaxy S26 Ultra</span>
+          <span className="studio-subtitle">Titanium Grade 5 &bull; Reyansh Bhardwaj Portfolio</span>
+        </div>
+      </header>
+
+      {/* 3D Scene Viewport */}
       <div
         className="scene"
         ref={sceneRef}
@@ -327,47 +709,264 @@ function PhoneStage({
         onDoubleClick={onDoubleClick}
       >
         <div className="ground-shadow" aria-hidden="true" />
-        <div className="phone3d snap" ref={phoneRef}>
-          <div className="face front">{children(screenRef)}</div>
 
+        <div className={`phone3d snap${isAutoRotate ? " no-float" : ""}`} ref={phoneRef}>
+          {/* 16-Layer Gapless Solid Titanium Chassis Core */}
+          <div className="chassis-stack" aria-hidden="true">
+            {chassisLayers.map((tz, i) => (
+              <div
+                key={i}
+                className="chassis-slice"
+                style={{ "--tz": tz } as CSSProperties}
+              />
+            ))}
+          </div>
+
+          {/* FRONT FACE: Razor-thin Bezel, AMOLED Screen & Infinity-O Camera */}
+          <div className="face front">
+            <div className="front-earpiece" aria-hidden="true" />
+            <div className="front-camera" aria-hidden="true" />
+
+            <div className="screen" ref={screenRef}>
+              <div className="screen-glare" aria-hidden="true" />
+              {children}
+            </div>
+          </div>
+
+          {/* BACK FACE: Frosted Gorilla Armor + Signature S26 Ultra Floating Camera System */}
           <div className="face back">
-            <div className="lens lens-tele">
-              <i className="glass" />
+            <div className="back-satin-sheen" aria-hidden="true" />
+
+            {/* Signature 3D Floating Camera Array (Stepped Cylinders Visible In Side Profile!) */}
+            <div className="camera-system" aria-hidden="true">
+              {/* Continuous Raised Pill Island Frame Enclosing Primary 3 Lenses */}
+              <div className="cam-island-pill" />
+
+              {/* 1. 12MP Ultra-Wide Camera (Top Left) */}
+              <CamRing3D
+                className="cam-ultrawide"
+                diameterPercent={22.2}
+                topPercent={6.6}
+                leftPercent={9.6}
+                protrusionPx={8.5}
+              />
+
+              {/* 2. 200MP Main Wide Camera (Middle Left - Raised Bezel) */}
+              <CamRing3D
+                className="cam-main"
+                diameterPercent={22.2}
+                topPercent={18.2}
+                leftPercent={9.6}
+                protrusionPx={10}
+                isMain
+              />
+
+              {/* 3. 50MP 5x Periscope Telephoto (Bottom Left - Dark Prism Cutout) */}
+              <CamRing3D
+                className="cam-periscope"
+                diameterPercent={22.2}
+                topPercent={29.8}
+                leftPercent={9.6}
+                protrusionPx={8.5}
+                isPeriscope
+              />
+
+              {/* 4. Laser Auto-Focus Sensor (Top Right) */}
+              <div className="cam-module cam-laser">
+                <div className="laser-glass">
+                  <div className="laser-diode" />
+                  <div className="laser-sensor" />
+                </div>
+              </div>
+
+              {/* 5. Dual-Tone High-CRI LED Flash (Middle Right) */}
+              <div className="cam-module cam-flash">
+                <div className="flash-core" />
+              </div>
+
+              {/* 6. 10MP 3x Portrait Telephoto Camera (Bottom Right) */}
+              <div className="cam-module cam-telephoto">
+                <div className="tele-glass" />
+              </div>
             </div>
-            <div className="lens lens-ultra">
-              <i className="glass" />
+
+            {/* Samsung Wordmark Matching Reference Photo */}
+            <div className="back-branding" aria-hidden="true">
+              <span className="brand-samsung">SAMSUNG</span>
             </div>
-            <div className="lens lens-main">
-              <i className="glass" />
+          </div>
+
+          {/* PERIMETER TITANIUM EDGES (MATCHING REFERENCE IMAGES) */}
+          <div className="edge edge-left">
+            {/* Left Frame: Clean satin titanium with antenna bands (Image 2) */}
+            <i className="antenna-line antenna-1" />
+            <i className="antenna-line antenna-2" />
+          </div>
+
+          <div className="edge edge-right">
+            {/* Right Frame: Tactile 3D Volume & Power buttons with recessed trenches (Image 1) */}
+            <div className="button-recess volume-recess">
+              <div className="button-key volume-key" />
             </div>
-            <span className="laser" />
-            <span className="flash" />
-            <div className="brand">SAMSUNG</div>
+            <div className="button-recess power-recess">
+              <div className="button-key power-key" />
+            </div>
+            <i className="antenna-line antenna-1" />
+            <i className="antenna-line antenna-2" />
           </div>
 
           <div className="edge edge-top">
-            <i className="hole" />
+            <i className="mic-hole" />
+            <i className="mic-hole" />
           </div>
+
           <div className="edge edge-bottom">
-            <i className="port" />
-            <i className="grille" />
-            <i className="grille" />
+            {/* Interactive S-Pen Silo on Bottom Left */}
+            <div
+              className={`spen-silo${spenEjected ? " ejected" : ""}`}
+              onClick={toggleSpen}
+              title="Click S-Pen to eject"
+            >
+              <div className="spen-cap" />
+            </div>
+
+            {/* USB Type-C Port */}
+            <div className="usb-port">
+              <div className="usb-pin" />
+            </div>
+
+            {/* CNC Speaker Slot Bar */}
+            <div className="speaker-slot">
+              <i />
+              <i />
+              <i />
+              <i />
+              <i />
+            </div>
+
+            <i className="mic-bottom" />
           </div>
-          <div className="edge edge-left">
-            <i className="tray" />
-          </div>
-          <div className="edge edge-right">
-            <i className="key power" />
-            <i className="key volume" />
+
+          {/* 4 Seamless 3D Corner Cylinders (Completely Seals All Gaps) */}
+          <CornerCylinder corner="top-left" />
+          <CornerCylinder corner="top-right" />
+          <CornerCylinder corner="bottom-right" />
+          <CornerCylinder corner="bottom-left" />
+
+          {/* Ejected 3D S-Pen Object */}
+          <div className={`spen-3d-body${spenEjected ? "" : " hidden"}`} aria-hidden="true">
+            <div className="spen-clicker" />
+            <div className="spen-nib" />
           </div>
         </div>
       </div>
-      <p className={`hint${hint ? "" : " hidden"}`}>Drag to rotate &middot; double-click to reset</p>
+
+      {/* Interactive Helper Hint */}
+      <p className={`hint${hint ? "" : " hidden"}`}>
+        Drag to rotate in 3D &bull; Click presets below to inspect
+      </p>
+
+      {/* Floating 3D Inspection Studio Toolbar */}
+      <div className="studio-bar">
+        {/* Preset angles */}
+        <div className="studio-btn-group">
+          <button
+            className={`studio-btn${activePreset === "front" ? " active" : ""}`}
+            onClick={() => setPreset("front")}
+            title="Front Display View"
+          >
+            <Icon name="eye" />
+            <span>Front</span>
+          </button>
+          <button
+            className={`studio-btn${activePreset === "angle" ? " active" : ""}`}
+            onClick={() => setPreset("angle")}
+            title="3D Tilt View"
+          >
+            <Icon name="rotate" />
+            <span>3D Tilt</span>
+          </button>
+          <button
+            className={`studio-btn${activePreset === "back" ? " active" : ""}`}
+            onClick={() => setPreset("back")}
+            title="Rear Camera View"
+          >
+            <Icon name="camera" />
+            <span>Cameras</span>
+          </button>
+          <button
+            className={`studio-btn${activePreset === "right-side" ? " active" : ""}`}
+            onClick={() => setPreset("right-side")}
+            title="Right Side Profile (Buttons & Protruding Cameras)"
+          >
+            <Icon name="rotate" />
+            <span>Right Side</span>
+          </button>
+          <button
+            className={`studio-btn${activePreset === "left-side" ? " active" : ""}`}
+            onClick={() => setPreset("left-side")}
+            title="Left Side Profile"
+          >
+            <Icon name="rotate" />
+            <span>Left Side</span>
+          </button>
+          <button
+            className={`studio-btn${activePreset === "spen" ? " active" : ""}`}
+            onClick={() => setPreset("spen")}
+            title="Bottom Edge & S-Pen"
+          >
+            <Icon name="spen" />
+            <span>S-Pen</span>
+          </button>
+        </div>
+
+        <div className="studio-divider" />
+
+        {/* S-Pen Eject Action */}
+        <button
+          className={`studio-btn${spenEjected ? " active" : ""}`}
+          onClick={toggleSpen}
+          title={spenEjected ? "Retract S-Pen" : "Eject S-Pen"}
+        >
+          <Icon name="spen" />
+          <span>{spenEjected ? "Dock Pen" : "Eject Pen"}</span>
+        </button>
+
+        {/* Auto Rotate Presentation Mode */}
+        <button
+          className={`studio-btn${isAutoRotate ? " active" : ""}`}
+          onClick={toggleAutoRotate}
+          title={isAutoRotate ? "Pause 3D Spin" : "Auto-Rotate 3D"}
+        >
+          <Icon name={isAutoRotate ? "pause" : "play"} />
+        </button>
+
+        <div className="studio-divider" />
+
+        {/* Titanium Color Finishes */}
+        <div className="studio-btn-group" title="Titanium Color Finish">
+          <button
+            className={`color-dot dot-gray${colorTheme === "gray" ? " active" : ""}`}
+            onClick={() => setColorTheme("gray")}
+            aria-label="Titanium Gray"
+          />
+          <button
+            className={`color-dot dot-black${colorTheme === "black" ? " active" : ""}`}
+            onClick={() => setColorTheme("black")}
+            aria-label="Titanium Black"
+          />
+          <button
+            className={`color-dot dot-silverblue${colorTheme === "silverblue" ? " active" : ""}`}
+            onClick={() => setColorTheme("silverblue")}
+            aria-label="Titanium Silverblue"
+          />
+        </div>
+      </div>
     </>
   );
 }
 
-/* ---------- page ---------- */
+/* ---------- Main Portfolio Page Component ---------- */
 
 export default function Page() {
   const now = useNow();
@@ -399,6 +998,15 @@ export default function Page() {
     if (openId && !closing) setClosing(true);
   };
 
+  const handleOpenSpenNotes = () => {
+    const spenApp = apps.find((a) => a.id === "spen-notes");
+    if (spenApp) {
+      setOrigin({ x: "12%", y: "85%" });
+      setClosing(false);
+      setOpenId(spenApp.id);
+    }
+  };
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") goHome();
@@ -409,43 +1017,42 @@ export default function Page() {
 
   return (
     <main className="stage">
-      <PhoneStage>
-        {(screenRef) => (
-          <>
-            <i className="hole-front" aria-hidden="true" />
-            <div
-              className="screen"
-              ref={(node) => {
-                screenRef.current = node;
-                screenElRef.current = node;
+      <PhoneStage onOpenSpen={handleOpenSpenNotes}>
+        <div
+          className="ui"
+          ref={(node) => {
+            screenElRef.current = node;
+          }}
+        >
+          {/* Dynamic Galaxy AMOLED Wallpaper */}
+          <div className="wallpaper" />
+          <div className="wallpaper-shapes" />
+
+          {/* Samsung One UI Status Bar */}
+          <StatusBar now={now} />
+
+          {/* Samsung One UI Home Screen */}
+          <Home now={now} onOpen={handleOpen} />
+
+          {/* Native One UI App Windows */}
+          {openApp && (
+            <AppWindow
+              app={openApp}
+              origin={origin}
+              closing={closing}
+              onBack={goHome}
+              onClosed={() => {
+                setOpenId(null);
+                setClosing(false);
               }}
-            >
-              <div className="ui">
-                <div className="wallpaper" />
-                <StatusBar now={now} />
+            />
+          )}
 
-                <Home now={now} onOpen={handleOpen} />
-
-                {openApp && (
-                  <AppWindow
-                    app={openApp}
-                    origin={origin}
-                    closing={closing}
-                    onBack={goHome}
-                    onClosed={() => {
-                      setOpenId(null);
-                      setClosing(false);
-                    }}
-                  />
-                )}
-
-                <button className="navbar" onClick={goHome} aria-label="Home">
-                  <span className="pill" />
-                </button>
-              </div>
-            </div>
-          </>
-        )}
+          {/* One UI Bottom Navigation Bar */}
+          <button className="navbar" onClick={goHome} aria-label="Go to Home Screen">
+            <span className="pill" />
+          </button>
+        </div>
       </PhoneStage>
     </main>
   );

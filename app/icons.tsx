@@ -11,7 +11,17 @@ export type IconName =
   | "message"
   | "branch"
   | "link"
-  | "chevron";
+  | "chevron"
+  | "spen"
+  | "rotate"
+  | "camera"
+  | "sparkles"
+  | "sun"
+  | "eye"
+  | "palette"
+  | "play"
+  | "pause"
+  | "refresh";
 
 const paths: Record<IconName, ReactNode> = {
   user: (
@@ -63,6 +73,65 @@ const paths: Record<IconName, ReactNode> = {
     <path d="M10 14a4 4 0 005.7 0l3-3a4 4 0 00-5.7-5.7l-1 1M14 10a4 4 0 00-5.7 0l-3 3a4 4 0 005.7 5.7l1-1" />
   ),
   chevron: <path d="M15 5l-7 7 7 7" />,
+  spen: (
+    <>
+      <path d="M18.3 5.7L12 12M17 4l3 3-13.5 13.5H3.5v-3L17 4z" />
+      <path d="M14.5 6.5l3 3" />
+      <circle cx="5" cy="19" r="0.5" fill="currentColor" />
+    </>
+  ),
+  rotate: (
+    <>
+      <path d="M21 12a9 9 0 11-9-9c2.5 0 4.8 1 6.5 2.7L21 8" />
+      <path d="M21 3v5h-5" />
+    </>
+  ),
+  camera: (
+    <>
+      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+      <circle cx="12" cy="13" r="4" />
+    </>
+  ),
+  sparkles: (
+    <>
+      <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+    </>
+  ),
+  sun: (
+    <>
+      <circle cx="12" cy="12" r="5" />
+      <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+    </>
+  ),
+  eye: (
+    <>
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+      <circle cx="12" cy="12" r="3" />
+    </>
+  ),
+  palette: (
+    <>
+      <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
+      <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
+      <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
+      <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
+      <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.6-.7 1.6-1.6 0-.4-.2-.8-.4-1.1-.3-.4-.4-.8-.4-1.3 0-1.1.9-2 2-2h2.4c3.3 0 6-2.7 6-6 0-5.5-5.1-10-11.2-10z" />
+    </>
+  ),
+  play: <polygon points="5 3 19 12 5 21 5 3" fill="currentColor" />,
+  pause: (
+    <>
+      <rect x="6" y="4" width="4" height="16" fill="currentColor" />
+      <rect x="14" y="4" width="4" height="16" fill="currentColor" />
+    </>
+  ),
+  refresh: (
+    <>
+      <polyline points="23 4 23 10 17 10" />
+      <polyline points="1 20 1 14 7 14" />
+      <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+    </>
+  ),
 };
 
 export function Icon({ name }: { name: IconName }) {
