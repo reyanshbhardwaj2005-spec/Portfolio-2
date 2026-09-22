@@ -235,8 +235,10 @@ a {
 .scene {
   --dh: min(84dvh, 860px);
   --dw: calc(var(--dh) * 9 / 19.4);
-  --depth: calc(var(--dw) * 0.108); /* 8.6mm depth */
-  --corner: calc(var(--dh) * 0.026); /* Sleek Galaxy S-Ultra corner radius */
+  --depth: calc(var(--dw) * 0.108);
+  /* 8.6mm depth */
+  --corner: calc(var(--dh) * 0.026);
+  /* Sleek Galaxy S-Ultra corner radius */
   position: relative;
   min-height: 100dvh;
   width: 100%;
@@ -272,9 +274,12 @@ a {
 }
 
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     translate: 0 0;
   }
+
   50% {
     translate: 0 calc(var(--dh) * -0.014);
   }
@@ -297,10 +302,13 @@ a {
 }
 
 @keyframes shadow {
-  0%, 100% {
+
+  0%,
+  100% {
     scale: 1;
     opacity: 0.92;
   }
+
   50% {
     scale: 0.86;
     opacity: 0.65;
@@ -315,13 +323,11 @@ a {
   translate: -50% 0;
   width: min(130vw, 1250px);
   height: min(95vh, 900px);
-  background: radial-gradient(
-    ellipse 48% 68% at 50% 0%,
-    rgba(215, 230, 255, 0.18) 0%,
-    rgba(147, 197, 253, 0.09) 35%,
-    rgba(59, 130, 246, 0.03) 65%,
-    transparent 82%
-  );
+  background: radial-gradient(ellipse 48% 68% at 50% 0%,
+      rgba(215, 230, 255, 0.18) 0%,
+      rgba(147, 197, 253, 0.09) 35%,
+      rgba(59, 130, 246, 0.03) 65%,
+      transparent 82%);
   pointer-events: none;
   z-index: 1;
   mix-blend-mode: screen;
@@ -336,12 +342,10 @@ a {
   bottom: calc(var(--dh) * -0.05);
   translate: -50% 0;
   border-radius: 50%;
-  background: radial-gradient(
-    ellipse closest-side,
-    rgba(147, 197, 253, 0.2) 0%,
-    rgba(59, 130, 246, 0.06) 45%,
-    transparent 78%
-  );
+  background: radial-gradient(ellipse closest-side,
+      rgba(147, 197, 253, 0.2) 0%,
+      rgba(59, 130, 246, 0.06) 45%,
+      transparent 78%);
   filter: blur(24px);
   pointer-events: none;
   z-index: 0;
@@ -380,14 +384,14 @@ a {
   left: var(--corner);
 }
 
-/* 16 seamless micro-facets forming a silky smooth 90° circular curve */
+/* Continuous ultra-smooth micro-facets forming a silky seamless 90° circular curve */
 .corner-facet {
   position: absolute;
   left: 0;
   top: 0;
-  width: calc(var(--corner) * 0.104);
+  width: var(--facet-w, calc(var(--corner) * 0.036));
   height: var(--depth);
-  margin-left: calc(var(--corner) * -0.052);
+  margin-left: var(--facet-ml, calc(var(--corner) * -0.018));
   margin-top: calc(var(--depth) * -0.5);
   background: linear-gradient(
     180deg,
@@ -401,9 +405,9 @@ a {
   );
   transform: rotateZ(var(--facet-deg)) translateY(calc(-1 * var(--corner))) rotateX(90deg);
   transform-origin: center center;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  outline: 1px solid transparent;
+  backface-visibility: visible !important;
+  -webkit-backface-visibility: visible !important;
+  outline: none;
 }
 
 /* =========================================================
@@ -415,14 +419,14 @@ a {
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   transform-style: preserve-3d;
-  outline: 1px solid transparent;
+  outline: none;
 }
 
 .edge-top {
   position: absolute;
   top: calc(var(--depth) * -0.5);
-  left: var(--corner);
-  width: calc(var(--dw) - var(--corner) * 2);
+  left: calc(var(--corner) - 0.5px);
+  width: calc(var(--dw) - var(--corner) * 2 + 1px);
   height: var(--depth);
   background: linear-gradient(
     180deg,
@@ -441,8 +445,8 @@ a {
 .edge-bottom {
   position: absolute;
   bottom: calc(var(--depth) * -0.5);
-  left: var(--corner);
-  width: calc(var(--dw) - var(--corner) * 2);
+  left: calc(var(--corner) - 0.5px);
+  width: calc(var(--dw) - var(--corner) * 2 + 1px);
   height: var(--depth);
   background: linear-gradient(
     180deg,
@@ -462,9 +466,9 @@ a {
 .edge-left {
   position: absolute;
   left: calc(var(--depth) * -0.5);
-  top: var(--corner);
+  top: calc(var(--corner) - 0.5px);
   width: var(--depth);
-  height: calc(var(--dh) - var(--corner) * 2);
+  height: calc(var(--dh) - var(--corner) * 2 + 1px);
   background: linear-gradient(
     90deg,
     rgba(255, 255, 255, 0.45) 0%,
@@ -483,9 +487,9 @@ a {
 .edge-right {
   position: absolute;
   right: calc(var(--depth) * -0.5);
-  top: var(--corner);
+  top: calc(var(--corner) - 0.5px);
   width: var(--depth);
-  height: calc(var(--dh) - var(--corner) * 2);
+  height: calc(var(--dh) - var(--corner) * 2 + 1px);
   background: linear-gradient(
     90deg,
     rgba(255, 255, 255, 0.45) 0%,
@@ -512,6 +516,8 @@ a {
     rgba(216, 230, 255, 0.35) 35%,
     transparent 70%
   );
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, black 4%, black 96%, transparent 100%);
+  mask-image: linear-gradient(180deg, transparent 0%, black 4%, black 96%, transparent 100%);
   pointer-events: none;
   transition: opacity 0.12s ease-out;
 }
@@ -534,6 +540,8 @@ a {
     rgba(216, 230, 255, 0.35) 35%,
     transparent 70%
   );
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 4%, black 96%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0%, black 4%, black 96%, transparent 100%);
   pointer-events: none;
   opacity: calc(var(--light-top, 0.5) * 0.75 + var(--light-rim, 0.5) * 0.45);
   transition: opacity 0.12s ease-out;
@@ -543,12 +551,10 @@ a {
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(
-    ellipse 35% 80% at var(--spot-front-x, 30%) 50%,
-    rgba(255, 255, 255, 0.75) 0%,
-    rgba(216, 230, 255, 0.35) 35%,
-    transparent 70%
-  );
+  background: radial-gradient(ellipse 35% 80% at var(--spot-front-x, 30%) 50%,
+      rgba(255, 255, 255, 0.75) 0%,
+      rgba(216, 230, 255, 0.35) 35%,
+      transparent 70%);
   pointer-events: none;
   opacity: calc(var(--light-bottom, 0.5) * 0.75 + var(--light-rim, 0.5) * 0.45);
   transition: opacity 0.12s ease-out;
@@ -564,16 +570,28 @@ a {
   box-shadow: 0 0.5px 0.5px rgba(255, 255, 255, 0.4);
 }
 
-.edge-left .antenna-1 { top: 8%; }
-.edge-left .antenna-2 { bottom: 10%; }
-.edge-right .antenna-1 { top: 8%; }
-.edge-right .antenna-2 { bottom: 10%; }
+.edge-left .antenna-1 {
+  top: 8%;
+}
 
-/* 3D Physical Buttons with Recess Trenches */
-.edge-right .button-recess {
+.edge-left .antenna-2 {
+  bottom: 10%;
+}
+
+.edge-right .antenna-1 {
+  top: 8%;
+}
+
+.edge-right .antenna-2 {
+  bottom: 10%;
+}
+
+/* 3D Physical Buttons with Recess Trenches (Original Length, Reduced Slender Width) */
+.edge-right .button-recess,
+.edge-left .button-recess {
   position: absolute;
-  left: 10%;
-  right: 10%;
+  left: 34%;
+  right: 34%;
   border-radius: 999px;
   background: rgba(10, 14, 20, 0.85);
   box-shadow:
@@ -582,17 +600,20 @@ a {
   transform-style: preserve-3d;
 }
 
-.edge-right .button-recess.volume-recess {
+.edge-right .button-recess.volume-recess,
+.edge-left .button-recess.volume-recess {
   top: 17%;
   height: 11.5%;
 }
 
-.edge-right .button-recess.power-recess {
+.edge-right .button-recess.power-recess,
+.edge-left .button-recess.power-recess {
   top: 32%;
   height: 6%;
 }
 
-.edge-right .button-key {
+.edge-right .button-key,
+.edge-left .button-key {
   position: absolute;
   inset: 1px;
   border-radius: 999px;
@@ -604,10 +625,10 @@ a {
     var(--titanium-4) 100%
   );
   box-shadow:
-    0 2px 4px rgba(0, 0, 0, 0.6),
+    0 1.5px 3px rgba(0, 0, 0, 0.6),
     inset 0 1px 0 rgba(255, 255, 255, 0.75),
     inset 0 -1px 0 rgba(0, 0, 0, 0.6);
-  transform: translateZ(2.5px);
+  transform: translateZ(1.6px);
 }
 
 /* Top Edge & Bottom Edge controls */
@@ -620,8 +641,13 @@ a {
   background: #000;
 }
 
-.edge-top .mic-hole:nth-of-type(1) { left: 28%; }
-.edge-top .mic-hole:nth-of-type(2) { right: 28%; }
+.edge-top .mic-hole:nth-of-type(1) {
+  left: 28%;
+}
+
+.edge-top .mic-hole:nth-of-type(2) {
+  right: 28%;
+}
 
 .spen-silo {
   position: absolute;
@@ -761,11 +787,11 @@ a {
   border-radius: var(--corner);
 }
 
-/* FRONT FACE */
+/* FRONT FACE: Ultra-thin Flagship Bezel */
 .face.front {
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  padding: calc(var(--dh) * 0.0075);
+  padding: calc(var(--dh) * 0.0055);
   background: linear-gradient(
     145deg,
     var(--titanium-1) 0%,
@@ -776,7 +802,7 @@ a {
   );
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.85);
   transform: translateZ(calc(var(--depth) / 2));
-  outline: 1px solid transparent;
+  outline: none;
 }
 
 .front-earpiece {
@@ -820,6 +846,7 @@ a {
   filter: blur(0.4px);
 }
 
+/* 2.5D CURVED AMOLED DISPLAY WITH CHROME WATERFALL GLASS */
 .screen {
   position: relative;
   width: 100%;
@@ -827,8 +854,12 @@ a {
   overflow: hidden;
   container-type: inline-size;
   background: #000;
-  border-radius: calc(var(--corner) - calc(var(--dh) * 0.0055));
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+  border-radius: calc(var(--corner) - calc(var(--dh) * 0.0035));
+  box-shadow:
+    /* 2.5D curved glass bezel chamfer & perimeter reflection (No outer glow) */
+    inset 0 0 0 1px rgba(255, 255, 255, 0.28),
+    inset 0 0 2px 1px rgba(0, 0, 0, 0.8),
+    inset 0 0 16px rgba(245, 210, 180, 0.15);
 }
 
 .screen-glare {
@@ -842,26 +873,294 @@ a {
   inset: 0;
   font-size: calc(var(--u) * 4);
   overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  image-rendering: -webkit-optimize-contrast;
 }
 
 .wallpaper {
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(90% 70% at 20% 12%, rgba(56, 189, 248, 0.45) 0%, transparent 60%),
-    radial-gradient(85% 65% at 85% 35%, rgba(139, 92, 246, 0.45) 0%, transparent 65%),
-    radial-gradient(110% 80% at 50% 90%, rgba(30, 58, 138, 0.75) 0%, transparent 70%),
-    linear-gradient(175deg, #090e17 0%, #05080e 45%, #030408 100%);
+  background-image: url("/wallpaper.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: brightness(1.06) contrast(1.06) saturate(1.1);
+}
+
+.wallpaper::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.22) 0%,
+    rgba(0, 0, 0, 0.04) 15%,
+    transparent 35%,
+    rgba(0, 0, 0, 0.12) 85%,
+    rgba(0, 0, 0, 0.3) 100%
+  );
+  pointer-events: none;
 }
 
 .wallpaper-shapes {
+  display: none;
+}
+
+/* =========================================================
+   AUTHENTIC ANDROID CURVED EDGE SCREEN FEATURES
+   ========================================================= */
+
+/* 2.5D Curved Waterfall Glass Shading (Left & Right 3D Cylindrical Curves) */
+.screen-edge-curvature {
   position: absolute;
   inset: 0;
-  opacity: 0.6;
-  background-image:
-    radial-gradient(circle at 75% 25%, rgba(255, 255, 255, 0.15) 1px, transparent 1px),
-    linear-gradient(135deg, transparent 40%, rgba(255, 255, 255, 0.04) 45%, transparent 50%);
-  background-size: 32px 32px, 100% 100%;
+  pointer-events: none;
+  z-index: 41;
+  border-radius: inherit;
+  background:
+    /* Left curved glass dropoff shadow */
+    linear-gradient(90deg, rgba(0, 0, 0, 0.42) 0%, rgba(0, 0, 0, 0.16) 2.4%, rgba(0, 0, 0, 0.03) 5%, transparent 8%),
+    /* Right curved glass dropoff shadow */
+    linear-gradient(-90deg, rgba(0, 0, 0, 0.42) 0%, rgba(0, 0, 0, 0.16) 2.4%, rgba(0, 0, 0, 0.03) 5%, transparent 8%),
+    /* Left specular edge highlight (glass rim refraction) */
+    linear-gradient(90deg, rgba(255, 255, 255, 0.38) 0%, rgba(255, 255, 255, 0.12) 1.2%, transparent 2.4%),
+    /* Right specular edge highlight (glass rim refraction) */
+    linear-gradient(-90deg, rgba(255, 255, 255, 0.38) 0%, rgba(255, 255, 255, 0.12) 1.2%, transparent 2.4%),
+    /* Top and bottom subtle bezel depth */
+    linear-gradient(180deg, rgba(0, 0, 0, 0.28) 0%, transparent 2%),
+    linear-gradient(0deg, rgba(0, 0, 0, 0.35) 0%, transparent 2.2%);
+}
+
+/* Galaxy Curved Edge Lighting (Luminous ambient glow along the display curve) */
+.edge-lighting {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 42;
+  box-shadow:
+    inset 2px 0 10px rgba(56, 189, 248, 0.4),
+    inset -2px 0 10px rgba(168, 85, 247, 0.4);
+  opacity: 0.65;
+  animation: edge-breathe 4s ease-in-out infinite;
+}
+
+@keyframes edge-breathe {
+  0%, 100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+/* Samsung One UI Edge Panel Handle (Iconic Curved Edge Feature) */
+.edge-panel-handle {
+  position: absolute;
+  right: 0;
+  top: 36%;
+  width: calc(var(--u) * 1.4);
+  height: calc(var(--u) * 14);
+  border-radius: calc(var(--u) * 2) 0 0 calc(var(--u) * 2);
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-right: none;
+  box-shadow:
+    -1px 0 6px rgba(0, 0, 0, 0.45),
+    inset 1px 0 1px rgba(255, 255, 255, 0.9),
+    0 0 12px rgba(56, 189, 248, 0.3);
+  z-index: 46;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.edge-panel-handle:hover {
+  width: calc(var(--u) * 2.4);
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow:
+    -2px 0 10px rgba(0, 0, 0, 0.5),
+    0 0 16px rgba(168, 85, 247, 0.5);
+}
+
+/* Slide-out Samsung Edge Panel Drawer */
+.edge-panel-drawer {
+  position: absolute;
+  right: 0;
+  top: 15%;
+  bottom: 15%;
+  width: calc(var(--u) * 28);
+  border-radius: calc(var(--u) * 6) 0 0 calc(var(--u) * 6);
+  background: rgba(15, 20, 32, 0.84);
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-right: none;
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.65), 0 0 24px rgba(56, 189, 248, 0.2);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  padding: calc(var(--u) * 4) calc(var(--u) * 3);
+  gap: calc(var(--u) * 3);
+  animation: edge-panel-slide 0.26s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes edge-panel-slide {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.edge-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: calc(var(--u) * 1.5);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.edge-panel-title {
+  font-size: calc(var(--u) * 2.9);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #38bdf8;
+}
+
+.edge-panel-close {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: calc(var(--u) * 5);
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+}
+
+.edge-panel-close:hover {
+  color: #fff;
+}
+
+.edge-panel-tools {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--u) * 2.2);
+}
+
+.edge-tool-btn {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--u) * 2);
+  padding: calc(var(--u) * 2) calc(var(--u) * 2.5);
+  border-radius: calc(var(--u) * 3.5);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: calc(var(--u) * 2.9);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.edge-tool-btn:hover {
+  background: rgba(255, 255, 255, 0.18);
+  transform: translateX(-2px);
+}
+
+.edge-tool-btn.active {
+  background: rgba(56, 189, 248, 0.25);
+  border-color: rgba(56, 189, 248, 0.5);
+  color: #38bdf8;
+}
+
+.edge-tool-btn svg {
+  width: calc(var(--u) * 4);
+  height: calc(var(--u) * 4);
+}
+
+.edge-panel-battery {
+  margin-top: auto;
+  padding-top: calc(var(--u) * 2.5);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--u) * 0.8);
+}
+
+.edge-battery-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: calc(var(--u) * 2.8);
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.edge-battery-val {
+  color: #4ade80;
+  font-weight: 700;
+}
+
+.edge-battery-sub {
+  font-size: calc(var(--u) * 2.3);
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Flashlight / Torch Screen Overlay */
+.screen-torch-overlay {
+  position: absolute;
+  inset: 0;
+  background: #ffffff;
+  z-index: 48;
+  box-shadow: 0 0 100px rgba(255, 255, 255, 0.95);
+  pointer-events: none;
+  animation: torch-glow 0.3s ease;
+}
+
+@keyframes torch-glow {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* One UI Navigation Bar & Gesture Pill */
+.navbar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: calc(var(--u) * 5.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 45;
+  padding: 0;
+}
+
+.navbar .pill {
+  width: calc(var(--u) * 36);
+  height: calc(var(--u) * 1.15);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.65), 0 0 6px rgba(255, 255, 255, 0.35);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.navbar:hover .pill {
+  width: calc(var(--u) * 42);
+  height: calc(var(--u) * 1.4);
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.8), 0 0 10px rgba(255, 255, 255, 0.6);
 }
 
 /* =========================================================
@@ -888,30 +1187,24 @@ a {
   border-radius: inherit;
   background:
     /* Brilliant specular spotlight core hotspot */
-    radial-gradient(
-      circle 160px at var(--spot-back-x, 32%) var(--spot-back-y, 22%),
+    radial-gradient(circle 160px at var(--spot-back-x, 32%) var(--spot-back-y, 22%),
       rgba(255, 255, 255, 0.95) 0%,
       rgba(255, 255, 255, 0.55) 24%,
       rgba(224, 235, 255, 0.22) 50%,
-      transparent 76%
-    ),
+      transparent 76%),
     /* Wide specular light bloom across backplate */
-    radial-gradient(
-      circle 440px at var(--spot-back-x, 32%) var(--spot-back-y, 22%),
+    radial-gradient(circle 440px at var(--spot-back-x, 32%) var(--spot-back-y, 22%),
       rgba(255, 255, 255, 0.38) 0%,
       rgba(216, 226, 255, 0.2) 32%,
       rgba(165, 180, 252, 0.08) 55%,
-      transparent 80%
-    ),
+      transparent 80%),
     /* Sweeping anisotropic gloss reflection slash */
-    linear-gradient(
-      calc(135deg + var(--sheen-angle, 0deg)),
+    linear-gradient(calc(135deg + var(--sheen-angle, 0deg)),
       transparent 8%,
       rgba(255, 255, 255, 0.06) 26%,
       rgba(255, 255, 255, 0.45) 46%,
       rgba(255, 255, 255, 0.16) 56%,
-      transparent 76%
-    );
+      transparent 76%);
   opacity: calc(0.18 + var(--light-back, 0.7) * 0.35 + var(--spec-back, 0.5) * 0.45);
   transition: opacity 0.12s ease-out;
   pointer-events: none;
@@ -928,6 +1221,7 @@ a {
   pointer-events: none;
   transform: translateZ(1px);
 }
+
 /* =========================================================
    CONTINUOUS RAISED 3D PILL ISLAND (EXACT TO REFERENCE PHOTO)
    ========================================================= */
@@ -973,18 +1267,14 @@ a {
   inset: 0;
   border-radius: inherit;
   background:
-    radial-gradient(
-      circle 110px at var(--spot-back-x, 30%) var(--spot-back-y, 20%),
+    radial-gradient(circle 110px at var(--spot-back-x, 30%) var(--spot-back-y, 20%),
       rgba(255, 255, 255, 0.85) 0%,
       rgba(255, 255, 255, 0.38) 32%,
-      transparent 72%
-    ),
-    radial-gradient(
-      circle 240px at var(--spot-back-x, 30%) var(--spot-back-y, 20%),
+      transparent 72%),
+    radial-gradient(circle 240px at var(--spot-back-x, 30%) var(--spot-back-y, 20%),
       rgba(255, 255, 255, 0.32) 0%,
       rgba(196, 200, 226, 0.15) 50%,
-      transparent 78%
-    );
+      transparent 78%);
   opacity: calc(0.2 + var(--light-back, 0.7) * 0.35 + var(--spec-back, 0.5) * 0.45);
   pointer-events: none;
   transition: opacity 0.12s ease-out;
@@ -1031,13 +1321,11 @@ a {
   height: var(--cam-h);
   margin-left: calc(var(--cam-diam) * 3.14159 / 36 * -0.54);
   margin-top: calc(var(--cam-h) * -0.5);
-  background: linear-gradient(
-    to bottom,
-    hsl(228, 14%, calc(16% + var(--facet-light, 0.6) * 30%)) 0%,
-    hsl(228, 12%, calc(22% + var(--facet-light, 0.6) * 38%)) 50%,
-    hsl(228, 15%, calc(30% + var(--facet-light, 0.6) * 45%)) 90%,
-    rgba(255, 255, 255, calc(0.4 + var(--facet-light, 0.6) * 0.4)) 100%
-  );
+  background: linear-gradient(to bottom,
+      hsl(228, 14%, calc(16% + var(--facet-light, 0.6) * 30%)) 0%,
+      hsl(228, 12%, calc(22% + var(--facet-light, 0.6) * 38%)) 50%,
+      hsl(228, 15%, calc(30% + var(--facet-light, 0.6) * 45%)) 90%,
+      rgba(255, 255, 255, calc(0.4 + var(--facet-light, 0.6) * 0.4)) 100%);
   border-top: 0.5px solid rgba(0, 0, 0, 0.5);
   border-bottom: 1.5px solid rgba(255, 255, 255, calc(0.5 + var(--facet-light, 0.6) * 0.5));
   box-shadow: inset 0 -1px 1px rgba(255, 255, 255, calc(var(--facet-light, 0.6) * 0.35));
@@ -1091,13 +1379,11 @@ a {
   position: absolute;
   inset: 15%;
   border-radius: 50%;
-  background: radial-gradient(
-    circle at calc(44% + var(--sheen-x, 0) * 0.12%) calc(42% + var(--sheen-y, 0) * 0.12%),
-    #141720 0%,
-    #0c0f16 40%,
-    #05070a 75%,
-    #010204 100%
-  );
+  background: radial-gradient(circle at calc(44% + var(--sheen-x, 0) * 0.12%) calc(42% + var(--sheen-y, 0) * 0.12%),
+      #141720 0%,
+      #0c0f16 40%,
+      #05070a 75%,
+      #010204 100%);
   box-shadow:
     inset 0 0 10px rgba(0, 0, 0, 0.96),
     inset 0 0 1px rgba(255, 255, 255, 0.1);
@@ -1109,12 +1395,10 @@ a {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: radial-gradient(
-    circle at calc(38% + var(--sheen-x, 0) * 0.25%) calc(35% + var(--sheen-y, 0) * 0.25%),
-    rgba(148, 163, 184, 0.14) 0%,
-    rgba(51, 65, 85, 0.06) 45%,
-    transparent 75%
-  );
+  background: radial-gradient(circle at calc(38% + var(--sheen-x, 0) * 0.25%) calc(35% + var(--sheen-y, 0) * 0.25%),
+      rgba(148, 163, 184, 0.14) 0%,
+      rgba(51, 65, 85, 0.06) 45%,
+      transparent 75%);
   opacity: calc(0.3 + var(--spec-lens, 0.7) * 0.35);
   transition: opacity 0.12s ease-out;
   pointer-events: none;
@@ -1141,13 +1425,11 @@ a {
   position: absolute;
   inset: 18%;
   border-radius: 50%;
-  background: radial-gradient(
-    circle at 50% 36%,
-    #171b24 0%,
-    #0d1017 38%,
-    #05070b 72%,
-    #010204 100%
-  );
+  background: radial-gradient(circle at 50% 36%,
+      #171b24 0%,
+      #0d1017 38%,
+      #05070b 72%,
+      #010204 100%);
   box-shadow:
     inset 0 0 6px rgba(0, 0, 0, 0.95),
     0 0 0 1px rgba(255, 255, 255, 0.04);
@@ -1162,13 +1444,11 @@ a {
   width: 44%;
   height: 44%;
   border-radius: 50%;
-  background: radial-gradient(
-    circle at 45% 45%,
-    #181c26 0%,
-    #0e1118 40%,
-    #05070a 75%,
-    #010203 100%
-  );
+  background: radial-gradient(circle at 45% 45%,
+      #181c26 0%,
+      #0e1118 40%,
+      #05070a 75%,
+      #010203 100%);
   box-shadow:
     inset 0 0 4px rgba(0, 0, 0, 0.9),
     0 0 1px rgba(255, 255, 255, 0.06);
@@ -1260,14 +1540,12 @@ a {
   position: absolute;
   inset: 12%;
   border-radius: 50%;
-  background: radial-gradient(
-    circle at 45% 45%,
-    #ffffff 0%,
-    #fef08a 35%,
-    #fde047 65%,
-    #ca8a04 88%,
-    #713f12 100%
-  );
+  background: radial-gradient(circle at 45% 45%,
+      #ffffff 0%,
+      #fef08a 35%,
+      #fde047 65%,
+      #ca8a04 88%,
+      #713f12 100%);
   box-shadow:
     0 0 4px rgba(254, 240, 138, 0.85),
     inset 0 0 2px rgba(0, 0, 0, 0.5);
@@ -1632,6 +1910,7 @@ a {
     opacity: 0;
     border-radius: calc(var(--u) * 12);
   }
+
   to {
     transform: none;
     opacity: 1;
@@ -1644,6 +1923,7 @@ a {
     transform: none;
     opacity: 1;
   }
+
   to {
     transform: scale(0.18);
     opacity: 0;
@@ -1742,7 +2022,7 @@ a {
   padding: calc(var(--u) * 3.2) 0;
 }
 
-.row + .row {
+.row+.row {
   border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
@@ -1925,6 +2205,7 @@ a {
   .phone3d {
     animation: none;
   }
+
   .app-window,
   .app-window.closing {
     animation-duration: 0.01s;

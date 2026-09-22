@@ -363,17 +363,17 @@ const MAX_RX = 65;
 type ViewPreset = "front" | "angle" | "back" | "right-side" | "left-side" | "spen";
 type TitaniumColor = "gray" | "black" | "silverblue";
 
-/* ---------- Seamless 3D Corner Cylinders (No Gaps) ---------- */
+/* ---------- Seamless 3D Corner Cylinders (Ultra Smooth Continuous Arc) ---------- */
 
 function CornerCylinder({
   corner,
-  numFacets = 16,
+  numFacets = 60,
 }: {
   corner: "top-left" | "top-right" | "bottom-right" | "bottom-left";
   numFacets?: number;
 }) {
   const facets = Array.from({ length: numFacets }, (_, i) => {
-    const fraction = (i + 0.5) / numFacets;
+    const fraction = i / (numFacets - 1);
     let baseDeg = 0;
     if (corner === "top-left") {
       baseDeg = -90 + fraction * 90;
@@ -391,8 +391,21 @@ function CornerCylinder({
     };
   });
 
+  const stepRad = (Math.PI / 2) / (numFacets - 1);
+  const widthFactor = (stepRad * 1.35).toFixed(5);
+  const marginFactor = (-stepRad * 1.35 * 0.5).toFixed(5);
+
   return (
-    <div className={`corner-cylinder ${corner}`} aria-hidden="true">
+    <div
+      className={`corner-cylinder ${corner}`}
+      style={
+        {
+          "--facet-w": `calc(var(--corner) * ${widthFactor})`,
+          "--facet-ml": `calc(var(--corner) * ${marginFactor})`,
+        } as CSSProperties
+      }
+      aria-hidden="true"
+    >
       {facets.map((f) => (
         <div
           key={f.id}
@@ -1016,6 +1029,9 @@ export default function Page() {
   const [openId, setOpenId] = useState<string | null>(null);
   const [closing, setClosing] = useState(false);
   const [origin, setOrigin] = useState({ x: "50%", y: "50%" });
+  const [showEdgePanel, setShowEdgePanel] = useState(false);
+  const [flashlight, setFlashlight] = useState(false);
+  const [soundMode, setSoundMode] = useState<"sound" | "vibrate" | "mute">("sound");
   const screenElRef = useRef<HTMLDivElement | null>(null);
 
   const openApp = apps.find((a) => a.id === openId) ?? null;
@@ -1070,6 +1086,97 @@ export default function Page() {
           {/* Dynamic Galaxy AMOLED Wallpaper */}
           <div className="wallpaper" />
           <div className="wallpaper-shapes" />
+
+          {/* 2.5D Curved Waterfall Display Glass Highlights */}
+          <div className="screen-edge-curvature" aria-hidden="true" />
+          <div className="edge-lighting" aria-hidden="true" />
+
+          {/* Samsung Edge Panel Curved Handle */}
+          <button
+            className="edge-panel-handle"
+            onClick={() => setShowEdgePanel(!showEdgePanel)}
+            aria-label="Samsung Edge Panel"
+            title="Samsung Edge Panel"
+          />
+
+          {/* Interactive Samsung Edge Panel Quick Drawer */}
+          {showEdgePanel && (
+            <div className="edge-panel-drawer" role="dialog" aria-label="Edge Panel">
+              <div className="edge-panel-header">
+                <span className="edge-panel-title">Edge Tools</span>
+                <button
+                  className="edge-panel-close"
+                  onClick={() => setShowEdgePanel(false)}
+                  aria-label="Close Edge Panel"
+                >
+                  &times;
+                </button>
+              </div>
+
+              <div className="edge-panel-tools">
+                <button
+                  className={`edge-tool-btn${flashlight ? " active" : ""}`}
+                  onClick={() => setFlashlight(!flashlight)}
+                  title="Toggle Torch"
+                >
+                  <Icon name="sun" />
+                  <span>{flashlight ? "Torch ON" : "Torch"}</span>
+                </button>
+
+                <button
+                  className={`edge-tool-btn${soundMode !== "sound" ? " active" : ""}`}
+                  onClick={() =>
+                    setSoundMode(
+                      soundMode === "sound" ? "vibrate" : soundMode === "vibrate" ? "mute" : "sound"
+                    )
+                  }
+                  title="Toggle Sound Profile"
+                >
+                  <Icon name="phone" />
+                  <span>{soundMode.toUpperCase()}</span>
+                </button>
+
+                <button
+                  className="edge-tool-btn"
+                  onClick={() => {
+                    handleOpenSpenNotes();
+                    setShowEdgePanel(false);
+                  }}
+                  title="S-Pen Note"
+                >
+                  <Icon name="spen" />
+                  <span>S-Pen</span>
+                </button>
+
+                <button
+                  className="edge-tool-btn"
+                  onClick={() => {
+                    const cameraApp = apps.find((a) => a.id === "camera");
+                    if (cameraApp) {
+                      setOrigin({ x: "85%", y: "85%" });
+                      setClosing(false);
+                      setOpenId(cameraApp.id);
+                      setShowEdgePanel(false);
+                    }
+                  }}
+                  title="Camera"
+                >
+                  <Icon name="camera" />
+                  <span>Camera</span>
+                </button>
+              </div>
+
+              <div className="edge-panel-battery">
+                <div className="edge-battery-row">
+                  <span>Battery</span>
+                  <span className="edge-battery-val">88%</span>
+                </div>
+                <div className="edge-battery-sub">Super Fast Charging 2.0</div>
+              </div>
+            </div>
+          )}
+
+          {flashlight && <div className="screen-torch-overlay" aria-hidden="true" />}
 
           {/* Samsung One UI Status Bar */}
           <StatusBar now={now} />
