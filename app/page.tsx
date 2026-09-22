@@ -423,11 +423,21 @@ function CamRing3D({
   isPeriscope?: boolean;
   isMain?: boolean;
 }) {
-  const numFacets = 32;
-  const facets = Array.from({ length: numFacets }, (_, i) => ({
-    id: i,
-    deg: (i * 360) / numFacets,
-  }));
+  const numFacets = 36;
+  const facets = Array.from({ length: numFacets }, (_, i) => {
+    const deg = (i * 360) / numFacets;
+    const rad = (deg * Math.PI) / 180;
+    // Directional studio lighting vector in local backplate space (-45deg top-left keylight)
+    const normalX = Math.sin(rad);
+    const normalY = -Math.cos(rad);
+    const dot = normalX * -0.707 + normalY * -0.707;
+    const facetLight = Math.max(0.18, Math.min(1.0, 0.55 + dot * 0.45));
+    return {
+      id: i,
+      deg,
+      light: facetLight.toFixed(2),
+    };
+  });
 
   return (
     <div
@@ -441,27 +451,13 @@ function CamRing3D({
         } as CSSProperties
       }
     >
-      {/* Stepped Silver Base Tier Facets */}
-      <div className="cam-tier base-tier" aria-hidden="true">
+      {/* Continuous Sleek Titanium Cylinder Facets (Authentic Metallic Barrel) */}
+      <div className="cam-tier" aria-hidden="true">
         {facets.map((f) => (
           <div
             key={f.id}
-            className="barrel-facet base-facet"
-            style={{ "--facet-deg": `${f.deg}deg` } as CSSProperties}
-          />
-        ))}
-      </div>
-
-      {/* Solid Polished Silver Chamfer Shelf Connecting Base Pedestal to Main Barrel */}
-      <div className="cam-step-shelf" aria-hidden="true" />
-
-      {/* Main Titanium Cylinder Facets (Solid Wall Visible In Side Profile) */}
-      <div className="cam-tier main-tier" aria-hidden="true">
-        {facets.map((f) => (
-          <div
-            key={f.id}
-            className="barrel-facet main-facet"
-            style={{ "--facet-deg": `${f.deg}deg` } as CSSProperties}
+            className="barrel-facet"
+            style={{ "--facet-deg": `${f.deg}deg`, "--facet-light": f.light } as CSSProperties}
           />
         ))}
       </div>
@@ -546,14 +542,15 @@ function PhoneStage({
     const topIntensity = Math.max(0, -ly);
     const bottomIntensity = Math.max(0, ly);
 
-    // Specular highlights (exponential falloff for crisp shine)
-    const frontSpec = Math.pow(frontIntensity, 2.8);
-    const backSpec = Math.pow(backIntensity, 2.8);
-    const lensSpec = Math.pow(backIntensity, 1.8);
+    // Specular highlights with intense bloom & glossy falloff
+    const frontSpec = Math.min(1.2, Math.pow(frontIntensity, 1.8) * 1.45);
+    const backSpec = Math.min(1.2, Math.pow(backIntensity, 1.8) * 1.55);
+    const lensSpec = Math.min(1.3, Math.pow(backIntensity, 1.35) * 1.6);
+    const rimLight = Math.min(1, Math.pow(1 - Math.abs(lz), 1.5) * 1.25);
 
     // Lens coating sheen offsets
-    const sheenX = -lx * 40;
-    const sheenY = -ly * 40;
+    const sheenX = -lx * 55;
+    const sheenY = -ly * 55;
     const sheenAngle = Math.atan2(ly, lx) * (180 / Math.PI);
 
     // Set dynamic custom properties for realistic spotlight interaction
@@ -568,6 +565,7 @@ function PhoneStage({
     el.style.setProperty("--light-left", leftIntensity.toFixed(3));
     el.style.setProperty("--light-top", topIntensity.toFixed(3));
     el.style.setProperty("--light-bottom", bottomIntensity.toFixed(3));
+    el.style.setProperty("--light-rim", rimLight.toFixed(3));
 
     el.style.setProperty("--spec-front", frontSpec.toFixed(3));
     el.style.setProperty("--spec-back", backSpec.toFixed(3));
@@ -576,7 +574,7 @@ function PhoneStage({
     el.style.setProperty("--sheen-x", sheenX.toFixed(1));
     el.style.setProperty("--sheen-y", sheenY.toFixed(1));
     el.style.setProperty("--sheen-angle", `${sheenAngle.toFixed(1)}deg`);
-    el.style.setProperty("--glare-opacity", (0.15 + frontIntensity * 0.85).toFixed(2));
+    el.style.setProperty("--glare-opacity", (0.15 + frontIntensity * 0.95 + frontSpec * 0.35).toFixed(2));
 
     el.classList.toggle("snap", snap);
   }, []);
@@ -698,13 +696,13 @@ function PhoneStage({
         rot.current = { rx: 12, ry: -24 };
         break;
       case "back":
-        rot.current = { rx: 10, ry: 162 };
+        rot.current = { rx: 18, ry: 152 };
         break;
       case "right-side":
-        rot.current = { rx: 2, ry: -86 };
+        rot.current = { rx: 0, ry: -88.5 };
         break;
       case "left-side":
-        rot.current = { rx: 2, ry: 86 };
+        rot.current = { rx: 0, ry: 88.5 };
         break;
       case "spen":
         rot.current = { rx: -48, ry: 14 };
@@ -780,7 +778,6 @@ function PhoneStage({
             <div className="camera-system" aria-hidden="true">
               {/* Continuous Raised 3D Pill Island Plateau Enclosing Primary 3 Lenses */}
               <div className="cam-island-shadow" aria-hidden="true" />
-              <div className="cam-island-wall" aria-hidden="true" />
               <div className="cam-island-pill" aria-hidden="true">
                 <div className="cam-island-surface" />
               </div>
@@ -791,7 +788,7 @@ function PhoneStage({
                 diameterPercent={17.4}
                 topPercent={4.8}
                 leftPercent={11.1}
-                protrusionPx={6}
+                protrusionPx={7.0}
               />
 
               {/* 2. 200MP Main Wide Camera (Middle Left - Raised Bezel) */}
@@ -800,7 +797,7 @@ function PhoneStage({
                 diameterPercent={17.4}
                 topPercent={13.7}
                 leftPercent={11.1}
-                protrusionPx={6.5}
+                protrusionPx={8.6}
                 isMain
               />
 
@@ -810,7 +807,7 @@ function PhoneStage({
                 diameterPercent={17.4}
                 topPercent={22.6}
                 leftPercent={11.1}
-                protrusionPx={6}
+                protrusionPx={7.0}
               />
 
               {/* 4. Laser Auto-Focus Sensor (Top Right - Vertical Dual Sensor Diodes) */}
@@ -832,7 +829,7 @@ function PhoneStage({
                 diameterPercent={12.0}
                 topPercent={16.4}
                 leftPercent={35.5}
-                protrusionPx={5}
+                protrusionPx={5.2}
               />
             </div>
 

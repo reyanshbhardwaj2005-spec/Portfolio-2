@@ -508,8 +508,8 @@ a {
   inset: 0;
   background: radial-gradient(
     ellipse 80% 35% at 50% var(--spot-front-y, 30%),
-    rgba(255, 255, 255, 0.35) 0%,
-    rgba(216, 230, 255, 0.15) 35%,
+    rgba(255, 255, 255, 0.75) 0%,
+    rgba(216, 230, 255, 0.35) 35%,
     transparent 70%
   );
   pointer-events: none;
@@ -517,11 +517,11 @@ a {
 }
 
 .edge-right::after {
-  opacity: var(--light-right, 0.5);
+  opacity: calc(var(--light-right, 0.5) * 0.75 + var(--light-rim, 0.5) * 0.45);
 }
 
 .edge-left::after {
-  opacity: var(--light-left, 0.5);
+  opacity: calc(var(--light-left, 0.5) * 0.75 + var(--light-rim, 0.5) * 0.45);
 }
 
 .edge-top::after {
@@ -530,12 +530,12 @@ a {
   inset: 0;
   background: radial-gradient(
     ellipse 35% 80% at var(--spot-front-x, 30%) 50%,
-    rgba(255, 255, 255, 0.35) 0%,
-    rgba(216, 230, 255, 0.15) 35%,
+    rgba(255, 255, 255, 0.75) 0%,
+    rgba(216, 230, 255, 0.35) 35%,
     transparent 70%
   );
   pointer-events: none;
-  opacity: var(--light-top, 0.5);
+  opacity: calc(var(--light-top, 0.5) * 0.75 + var(--light-rim, 0.5) * 0.45);
   transition: opacity 0.12s ease-out;
 }
 
@@ -545,12 +545,12 @@ a {
   inset: 0;
   background: radial-gradient(
     ellipse 35% 80% at var(--spot-front-x, 30%) 50%,
-    rgba(255, 255, 255, 0.35) 0%,
-    rgba(216, 230, 255, 0.15) 35%,
+    rgba(255, 255, 255, 0.75) 0%,
+    rgba(216, 230, 255, 0.35) 35%,
     transparent 70%
   );
   pointer-events: none;
-  opacity: var(--light-bottom, 0.5);
+  opacity: calc(var(--light-bottom, 0.5) * 0.75 + var(--light-rim, 0.5) * 0.45);
   transition: opacity 0.12s ease-out;
 }
 
@@ -759,12 +759,12 @@ a {
   inset: 0;
   margin: auto;
   border-radius: var(--corner);
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
 }
 
 /* FRONT FACE */
 .face.front {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
   padding: calc(var(--dh) * 0.0075);
   background: linear-gradient(
     145deg,
@@ -832,26 +832,7 @@ a {
 }
 
 .screen-glare {
-  position: absolute;
-  inset: 0;
-  z-index: 50;
-  pointer-events: none;
-  background:
-    radial-gradient(
-      circle 320px at var(--spot-front-x, 32%) var(--spot-front-y, 22%),
-      rgba(255, 255, 255, 0.45) 0%,
-      rgba(191, 219, 254, 0.22) 28%,
-      transparent 65%
-    ),
-    linear-gradient(
-      calc(130deg + var(--sheen-angle, 0deg)),
-      rgba(255, 255, 255, 0.18) 0%,
-      rgba(255, 255, 255, 0.04) 30%,
-      transparent 60%
-    );
-  opacity: calc(0.08 + var(--light-front, 0.7) * 0.92);
-  transition: opacity 0.12s ease-out;
-  mix-blend-mode: screen;
+  display: none;
 }
 
 .ui {
@@ -890,7 +871,9 @@ a {
 .face.back {
   background: var(--titanium-back-grad);
   border-radius: var(--corner);
-  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.35);
+  box-shadow:
+    inset 0 0 25px rgba(0, 0, 0, 0.45),
+    inset 0 0 2px rgba(255, 255, 255, calc(0.12 + var(--spec-back, 0.5) * 0.4));
   transform: rotateY(180deg) translateZ(calc(var(--depth) / 2));
   overflow: visible;
   transform-style: preserve-3d;
@@ -904,20 +887,32 @@ a {
   inset: 0;
   border-radius: inherit;
   background:
+    /* Brilliant specular spotlight core hotspot */
     radial-gradient(
-      circle 360px at var(--spot-back-x, 32%) var(--spot-back-y, 22%),
-      rgba(255, 255, 255, 0.45) 0%,
-      rgba(216, 226, 255, 0.22) 32%,
-      rgba(165, 180, 252, 0.08) 55%,
-      transparent 75%
+      circle 160px at var(--spot-back-x, 32%) var(--spot-back-y, 22%),
+      rgba(255, 255, 255, 0.95) 0%,
+      rgba(255, 255, 255, 0.55) 24%,
+      rgba(224, 235, 255, 0.22) 50%,
+      transparent 76%
     ),
+    /* Wide specular light bloom across backplate */
+    radial-gradient(
+      circle 440px at var(--spot-back-x, 32%) var(--spot-back-y, 22%),
+      rgba(255, 255, 255, 0.38) 0%,
+      rgba(216, 226, 255, 0.2) 32%,
+      rgba(165, 180, 252, 0.08) 55%,
+      transparent 80%
+    ),
+    /* Sweeping anisotropic gloss reflection slash */
     linear-gradient(
-      calc(140deg + var(--sheen-angle, 0deg)),
-      rgba(255, 255, 255, 0.22) 0%,
-      rgba(255, 255, 255, 0.06) 40%,
-      transparent 70%
+      calc(135deg + var(--sheen-angle, 0deg)),
+      transparent 8%,
+      rgba(255, 255, 255, 0.06) 26%,
+      rgba(255, 255, 255, 0.45) 46%,
+      rgba(255, 255, 255, 0.16) 56%,
+      transparent 76%
     );
-  opacity: calc(0.12 + var(--light-back, 0.7) * 0.88);
+  opacity: calc(0.18 + var(--light-back, 0.7) * 0.35 + var(--spec-back, 0.5) * 0.45);
   transition: opacity 0.12s ease-out;
   pointer-events: none;
   transform: translateZ(0.5px);
@@ -945,30 +940,9 @@ a {
   height: 26.9%;
   border-radius: 999px;
   box-shadow:
-    0 5px 15px rgba(0, 0, 0, 0.4),
-    -2px 2px 6px rgba(0, 0, 0, 0.22);
+    0 4px 12px rgba(0, 0, 0, 0.4),
+    -1px 2px 6px rgba(0, 0, 0, 0.25);
   transform: translateZ(0.5px);
-  pointer-events: none;
-}
-
-.cam-island-wall {
-  position: absolute;
-  top: 3.7%;
-  left: 9.0%;
-  width: 21.6%;
-  height: 27.1%;
-  border-radius: 999px;
-  background: linear-gradient(
-    155deg,
-    rgba(255, 255, 255, 0.35) 0%,
-    rgba(100, 105, 135, 0.8) 45%,
-    rgba(35, 38, 55, 0.95) 100%
-  );
-  transform: translateZ(1.5px);
-  transform-style: preserve-3d;
-  -webkit-transform-style: preserve-3d;
-  backface-visibility: visible;
-  -webkit-backface-visibility: visible;
   pointer-events: none;
 }
 
@@ -980,15 +954,16 @@ a {
   height: 26.9%;
   border-radius: 999px;
   background: var(--titanium-back-grad);
-  border: 1px solid rgba(255, 255, 255, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.38);
   box-shadow:
-    inset 0 1.5px 2px rgba(255, 255, 255, 0.4),
-    inset 0 -1.5px 2.5px rgba(0, 0, 0, 0.3);
-  transform: translateZ(2.5px);
+    0 2px 6px rgba(0, 0, 0, 0.35),
+    inset 0 1px 1.5px rgba(255, 255, 255, 0.55),
+    inset 0 -1px 1.5px rgba(0, 0, 0, 0.35);
+  transform: translateZ(1.8px);
   transform-style: preserve-3d;
   -webkit-transform-style: preserve-3d;
-  backface-visibility: visible;
-  -webkit-backface-visibility: visible;
+  backface-visibility: visible !important;
+  -webkit-backface-visibility: visible !important;
   pointer-events: none;
 }
 
@@ -997,18 +972,25 @@ a {
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: radial-gradient(
-    circle 220px at var(--spot-back-x, 30%) var(--spot-back-y, 20%),
-    rgba(255, 255, 255, 0.32) 0%,
-    rgba(196, 200, 226, 0.12) 50%,
-    transparent 75%
-  );
-  opacity: calc(var(--light-back, 0.7) * 1.1);
+  background:
+    radial-gradient(
+      circle 110px at var(--spot-back-x, 30%) var(--spot-back-y, 20%),
+      rgba(255, 255, 255, 0.85) 0%,
+      rgba(255, 255, 255, 0.38) 32%,
+      transparent 72%
+    ),
+    radial-gradient(
+      circle 240px at var(--spot-back-x, 30%) var(--spot-back-y, 20%),
+      rgba(255, 255, 255, 0.32) 0%,
+      rgba(196, 200, 226, 0.15) 50%,
+      transparent 78%
+    );
+  opacity: calc(0.2 + var(--light-back, 0.7) * 0.35 + var(--spec-back, 0.5) * 0.45);
   pointer-events: none;
   transition: opacity 0.12s ease-out;
 }
 
-/* 3D Stepped Camera Cylinder Container (Perfect Round Circular Geometry) */
+/* 3D Sleek Camera Cylinder Container (Matching Reference Profile) */
 .cam-barrel-3d {
   position: absolute;
   top: var(--cam-top);
@@ -1017,17 +999,17 @@ a {
   height: var(--cam-diam);
   aspect-ratio: 1;
   border-radius: 50%;
-  transform: translateZ(2.5px);
+  transform: translateZ(1.8px);
   transform-style: preserve-3d;
   -webkit-transform-style: preserve-3d;
-  backface-visibility: visible;
-  -webkit-backface-visibility: visible;
+  backface-visibility: visible !important;
+  -webkit-backface-visibility: visible !important;
   pointer-events: none;
 }
 
 /* The 3x Telephoto floats directly on the backplate */
 .cam-barrel-3d.cam-telephoto {
-  transform: translateZ(1px);
+  transform: translateZ(0.8px);
 }
 
 .cam-tier {
@@ -1036,75 +1018,33 @@ a {
   border-radius: 50%;
   transform-style: preserve-3d;
   -webkit-transform-style: preserve-3d;
-  backface-visibility: visible;
-  -webkit-backface-visibility: visible;
+  backface-visibility: visible !important;
+  -webkit-backface-visibility: visible !important;
 }
 
-/* Stepped Matte Dark Charcoal Base Tier Facets (32 Micro-Facets for Perfect Round Cylinders) */
-.barrel-facet.base-facet {
+/* Continuous Sleek Titanium Cylinder Facets (36 Seamless Micro-Facets Matching Official Render) */
+.barrel-facet {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: calc(var(--cam-diam) * 3.14159 / 32 * 1.08);
-  height: calc(var(--cam-h) * 0.28);
-  margin-left: calc(var(--cam-diam) * 3.14159 / 32 * -0.54);
-  margin-top: calc(var(--cam-h) * -0.14);
+  width: calc(var(--cam-diam) * 3.14159 / 36 * 1.08);
+  height: var(--cam-h);
+  margin-left: calc(var(--cam-diam) * 3.14159 / 36 * -0.54);
+  margin-top: calc(var(--cam-h) * -0.5);
   background: linear-gradient(
-    90deg,
-    #101217 0%,
-    #1a1c22 30%,
-    #262932 50%,
-    #1a1c22 70%,
-    #101217 100%
+    to bottom,
+    hsl(228, 14%, calc(16% + var(--facet-light, 0.6) * 30%)) 0%,
+    hsl(228, 12%, calc(22% + var(--facet-light, 0.6) * 38%)) 50%,
+    hsl(228, 15%, calc(30% + var(--facet-light, 0.6) * 45%)) 90%,
+    rgba(255, 255, 255, calc(0.4 + var(--facet-light, 0.6) * 0.4)) 100%
   );
-  box-shadow: none;
-  transform: rotateZ(var(--facet-deg)) translateY(calc(-0.535 * var(--cam-diam))) translateZ(calc(var(--cam-h) * 0.14)) rotateX(90deg);
+  border-top: 0.5px solid rgba(0, 0, 0, 0.5);
+  border-bottom: 1.5px solid rgba(255, 255, 255, calc(0.5 + var(--facet-light, 0.6) * 0.5));
+  box-shadow: inset 0 -1px 1px rgba(255, 255, 255, calc(var(--facet-light, 0.6) * 0.35));
+  transform: rotateZ(var(--facet-deg)) translateY(calc(-0.5 * var(--cam-diam))) translateZ(calc(var(--cam-h) * 0.5)) rotateX(90deg);
   transform-origin: center center;
-  backface-visibility: visible;
-  -webkit-backface-visibility: visible;
-}
-
-/* Stepped Dark Base Shelf (Matching Stealth Matte Pedestal) */
-.cam-step-shelf {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: calc(var(--cam-diam) * 1.07);
-  height: calc(var(--cam-diam) * 1.07);
-  margin-left: calc(var(--cam-diam) * -0.535);
-  margin-top: calc(var(--cam-diam) * -0.535);
-  border-radius: 50%;
-  background: radial-gradient(circle, transparent 86%, #121419 87%, #1e212a 93%, #15171d 97%, #0b0c10 100%);
-  box-shadow: none;
-  transform: translateZ(calc(var(--cam-h) * 0.28));
-  transform-style: preserve-3d;
-  -webkit-transform-style: preserve-3d;
-  backface-visibility: visible;
-  -webkit-backface-visibility: visible;
-}
-
-/* Main Cylinder Barrel Facets (Deep Matte Titanium Charcoal Solid Wall) */
-.barrel-facet.main-facet {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: calc(var(--cam-diam) * 3.14159 / 32 * 1.06);
-  height: calc(var(--cam-h) * 0.72);
-  margin-left: calc(var(--cam-diam) * 3.14159 / 32 * -0.53);
-  margin-top: calc(var(--cam-h) * -0.36);
-  background: linear-gradient(
-    90deg,
-    #0e1014 0%,
-    #181a20 28%,
-    #252832 50%,
-    #181a20 76%,
-    #0e1014 100%
-  );
-  box-shadow: none;
-  transform: rotateZ(var(--facet-deg)) translateY(calc(-0.5 * var(--cam-diam))) translateZ(calc(var(--cam-h) * 0.64)) rotateX(90deg);
-  transform-origin: center center;
-  backface-visibility: visible;
-  -webkit-backface-visibility: visible;
+  backface-visibility: visible !important;
+  -webkit-backface-visibility: visible !important;
 }
 
 /* Top Beveled Cap in Deep Matte Obsidian (Matching Close-Up Photo) */
@@ -1112,11 +1052,12 @@ a {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: linear-gradient(145deg, #1c1f26 0%, #101217 60%, #06070a 100%);
+  background: linear-gradient(145deg, #252b38 0%, #151821 55%, #080a0f 100%);
   box-shadow:
-    0 4px 12px rgba(0, 0, 0, 0.8),
-    inset 0 1px 1px rgba(255, 255, 255, 0.08),
-    inset 0 -1.5px 2px rgba(0, 0, 0, 0.9);
+    0 8px 24px rgba(0, 0, 0, 0.85),
+    0 2px 6px rgba(0, 0, 0, 0.6),
+    inset 0 1px 1px rgba(255, 255, 255, 0.6),
+    inset 0 -1.5px 2px rgba(0, 0, 0, 0.85);
   transform: translateZ(var(--cam-h));
   transform-style: preserve-3d;
   -webkit-transform-style: preserve-3d;
@@ -1125,7 +1066,12 @@ a {
 }
 
 .cam-rim-chamfer {
-  display: none;
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.55);
+  box-shadow: inset 0 0 1.5px rgba(255, 255, 255, 0.4), 0 0 1px rgba(255, 255, 255, 0.35);
+  pointer-events: none;
 }
 
 /* Wide Concentric Sunken Matte Black Bezel Washer */
@@ -1133,8 +1079,11 @@ a {
   position: absolute;
   inset: 6.5%;
   border-radius: 50%;
-  background: radial-gradient(circle, #090b0e 45%, #121419 70%, #1a1d24 92%, #22262f 100%);
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.95);
+  background: radial-gradient(circle, #08090d 40%, #10131a 70%, #1e222d 92%, #282f3d 100%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.95),
+    inset 0 0 2px rgba(0, 0, 0, 0.9);
 }
 
 /* Deep Velvety Smoky Obsidian Optical Glass (Matching Reference Photo) */
@@ -1323,6 +1272,7 @@ a {
     0 0 4px rgba(254, 240, 138, 0.85),
     inset 0 0 2px rgba(0, 0, 0, 0.5);
 }
+
 
 /* =========================================================
    SAMSUNG WORDMARK (MATCHING REFERENCE PHOTO)
