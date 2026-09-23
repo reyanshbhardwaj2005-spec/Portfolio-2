@@ -361,7 +361,7 @@ const REST_RY = -24;
 const MAX_RX = 65;
 
 type ViewPreset = "front" | "angle" | "back" | "right-side" | "left-side" | "spen";
-type TitaniumColor = "gray" | "black" | "silverblue";
+type TitaniumColor = "sand" | "gray" | "black" | "silverblue";
 
 /* ---------- Seamless 3D Corner Cylinders (Ultra Smooth Continuous Arc) ---------- */
 
@@ -507,7 +507,7 @@ function PhoneStage({
 
   const [hint, setHint] = useState(true);
   const [activePreset, setActivePreset] = useState<ViewPreset>("angle");
-  const [colorTheme, setColorTheme] = useState<TitaniumColor>("silverblue");
+  const [colorTheme, setColorTheme] = useState<TitaniumColor>("sand");
   const [spenEjected, setSpenEjected] = useState(false);
   const [isAutoRotate, setIsAutoRotate] = useState(false);
 
@@ -771,7 +771,7 @@ function PhoneStage({
         <div className="spotlight-floor" aria-hidden="true" />
         <div className="ground-shadow" aria-hidden="true" />
 
-        <div className={`phone3d snap${isAutoRotate ? " no-float" : ""}`} ref={phoneRef}>
+        <div className="phone3d snap" ref={phoneRef}>
           {/* FRONT FACE: Razor-thin Bezel, AMOLED Screen & Infinity-O Camera */}
           <div className="face front">
             <div className="front-earpiece" aria-hidden="true" />
@@ -786,6 +786,7 @@ function PhoneStage({
           {/* BACK FACE: Frosted Gorilla Armor + Signature S26 Ultra Floating Camera System */}
           <div className="face back">
             <div className="back-satin-sheen" aria-hidden="true" />
+            <div className="back-edge-lining" aria-hidden="true" />
 
             {/* Signature 3D Floating Camera Array (Stepped Cylinders Matching Reference Photo) */}
             <div className="camera-system" aria-hidden="true">
@@ -919,10 +920,10 @@ function PhoneStage({
 
       {/* Interactive Helper Hint */}
       <p className={`hint${hint ? "" : " hidden"}`}>
-        Drag to rotate in 3D &bull; Click presets below to inspect
+        Drag to rotate in 3D &bull; Click presets on left to inspect
       </p>
 
-      {/* Floating 3D Inspection Studio Toolbar */}
+      {/* Floating 3D Inspection Studio Toolbar (Vertical on Left Side) */}
       <div className="studio-bar">
         {/* Preset angles */}
         <div className="studio-btn-group">
@@ -995,26 +996,36 @@ function PhoneStage({
           title={isAutoRotate ? "Pause 3D Spin" : "Auto-Rotate 3D"}
         >
           <Icon name={isAutoRotate ? "pause" : "play"} />
+          <span>{isAutoRotate ? "Pause Spin" : "Auto Spin"}</span>
         </button>
 
         <div className="studio-divider" />
 
         {/* Titanium Color Finishes */}
-        <div className="studio-btn-group" title="Titanium Color Finish">
+        <div className="studio-color-group" title="Titanium Color Finish">
+          <button
+            className={`color-dot dot-sand${colorTheme === "sand" ? " active" : ""}`}
+            onClick={() => setColorTheme("sand")}
+            aria-label="Titanium Sand"
+            title="Titanium Sand (Pasted Color)"
+          />
           <button
             className={`color-dot dot-gray${colorTheme === "gray" ? " active" : ""}`}
             onClick={() => setColorTheme("gray")}
             aria-label="Titanium Gray"
+            title="Titanium Gray"
           />
           <button
             className={`color-dot dot-black${colorTheme === "black" ? " active" : ""}`}
             onClick={() => setColorTheme("black")}
             aria-label="Titanium Black"
+            title="Titanium Black"
           />
           <button
             className={`color-dot dot-silverblue${colorTheme === "silverblue" ? " active" : ""}`}
             onClick={() => setColorTheme("silverblue")}
             aria-label="Titanium Silverblue"
+            title="Titanium Silverblue"
           />
         </div>
       </div>
