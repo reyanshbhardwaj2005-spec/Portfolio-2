@@ -28,8 +28,8 @@
   \*************************************************************************************************************************************************************************************************************************************************************/
 :root {
   --stage: #ffffff;
-  --card: #f8fafc;
-  --card-2: #f1f5f9;
+  --card: rgba(255, 255, 255, 0.06);
+  --card-2: rgba(255, 255, 255, 0.1);
   --text: #0f172a;
   --muted: #64748b;
   --accent: #b08968;
@@ -331,6 +331,7 @@ a {
 
 .phone3d {
   position: relative;
+  z-index: 10;
   width: var(--dw);
   height: var(--dh);
   transform-style: preserve-3d;
@@ -385,21 +386,9 @@ a {
   }
 }
 
-/* Atmospheric Overhead Studio Spotlight Beam */
+/* Atmospheric Overhead Studio Spotlight Beam - disabled to eliminate top white glare */
 .stage-spotlight {
-  position: absolute;
-  top: -15%;
-  left: 50%;
-  translate: -50% 0;
-  width: min(130vw, 1250px);
-  height: min(95vh, 900px);
-  background: radial-gradient(ellipse 50% 68% at 50% 0%,
-      rgba(255, 255, 255, 0.95) 0%,
-      rgba(247, 240, 235, 0.5) 35%,
-      rgba(235, 218, 208, 0.18) 65%,
-      transparent 82%);
-  pointer-events: none;
-  z-index: 1;
+  display: none;
 }
 
 /* Specular Floor Reflection Under Spotlight */
@@ -896,10 +885,7 @@ a {
   container-type: inline-size;
   background: #000;
   border-radius: calc(var(--corner) - calc(var(--dh) * 0.0035));
-  box-shadow:
-    /* 2.5D curved glass bezel chamfer & perimeter reflection (No outer glow) */
-    inset 0 0 0 1px rgba(255, 255, 255, 0.35),
-    inset 0 0 16px rgba(147, 197, 253, 0.15);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
 }
 
 .screen-glare {
@@ -1651,6 +1637,7 @@ a {
   justify-content: space-between;
   font-size: calc(var(--u) * 3.5);
   font-weight: 600;
+  color: #ffffff;
   pointer-events: none;
 }
 
@@ -1718,185 +1705,224 @@ a {
   z-index: 1;
   display: flex;
   flex-direction: column;
-  padding: calc(var(--top) + var(--u) * 3) calc(var(--u) * 5.5) calc(var(--u) * 8);
+  padding: calc(var(--top) + var(--u) * 2) calc(var(--u) * 4.6) calc(var(--u) * 4);
 }
 
-.oneui-widget {
-  padding: calc(var(--u) * 3.5) calc(var(--u) * 4);
-  border-radius: calc(var(--u) * 5.5);
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(28px) saturate(160%);
-  -webkit-backdrop-filter: blur(28px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 calc(var(--u) * 2) calc(var(--u) * 5) rgba(0, 0, 0, 0.35);
-  margin-bottom: calc(var(--u) * 3);
+/* TOP WIDGETS ROW: GITHUB CONTRIBUTION GRID & BENGALURU WEATHER */
+.widgets-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: calc(var(--u) * 4.5);
+  gap: calc(var(--u) * 4.5);
+  margin-bottom: calc(var(--u) * 4.2);
 }
 
-.widget-top-row {
+.widget-col {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.widget-time {
-  font-size: calc(var(--u) * 12);
-  font-weight: 300;
-  letter-spacing: -0.04em;
-  line-height: 1;
+.widget-col:hover {
+  transform: translateY(-2px) scale(1.02);
 }
 
-.widget-weather-icon {
+.widget-col:active {
+  transform: scale(0.96);
+}
+
+.home-widget {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: calc(var(--u) * 5.8);
+  overflow: hidden;
+  box-shadow:
+    0 calc(var(--u) * 2) calc(var(--u) * 4.5) rgba(0, 0, 0, 0.35),
+    inset 0 1px 1px rgba(255, 255, 255, 0.4);
+}
+
+/* 1. GitHub Contribution Heatmap Widget */
+.widget-github {
+  background: #ffffff;
+  padding: calc(var(--u) * 3.5);
   display: flex;
   align-items: center;
-  gap: calc(var(--u) * 1.5);
-  color: #fbbf24;
+  justify-content: center;
 }
 
-.widget-weather-icon svg {
-  width: calc(var(--u) * 6.5);
-  height: calc(var(--u) * 6.5);
+.github-grid {
+  display: grid;
+  grid-template-rows: repeat(7, 1fr);
+  grid-gap: calc(var(--u) * 1.15);
+  gap: calc(var(--u) * 1.15);
+  width: 100%;
+  height: 100%;
 }
 
-.widget-temp {
-  font-size: calc(var(--u) * 5.5);
-  font-weight: 500;
-  color: #fff;
+.github-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-gap: calc(var(--u) * 1.15);
+  gap: calc(var(--u) * 1.15);
 }
 
-.widget-date {
-  margin-top: calc(var(--u) * 1);
-  font-size: calc(var(--u) * 3.4);
-  font-weight: 500;
-  opacity: 0.85;
+.github-cell {
+  aspect-ratio: 1;
+  border-radius: calc(var(--u) * 1);
+  transition: transform 0.15s ease;
 }
 
-.widget-profile {
-  margin-top: calc(var(--u) * 2.8);
-  padding-top: calc(var(--u) * 2.4);
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+.github-cell:hover {
+  transform: scale(1.3);
 }
 
-.widget-name {
-  font-size: calc(var(--u) * 4.6);
-  font-weight: 700;
+.github-cell.lvl-0 {
+  background: #ebedf0;
+}
+
+.github-cell.lvl-1 {
+  background: #9be9a8;
+}
+
+.github-cell.lvl-2 {
+  background: #40c463;
+}
+
+.github-cell.lvl-3 {
+  background: #30a14e;
+}
+
+.github-cell.lvl-4 {
+  background: #216e39;
+}
+
+/* 2. Bengaluru Weather Widget */
+.widget-weather {
+  background: rgba(110, 130, 155, 0.44);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  padding: calc(var(--u) * 3.2) calc(var(--u) * 3.6);
+  display: flex;
+  flex-direction: column;
+  color: #ffffff;
+}
+
+.weather-header {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--u) * 1);
+}
+
+.weather-city {
+  font-size: calc(var(--u) * 3.3);
+  font-weight: 600;
   letter-spacing: -0.01em;
 }
 
-.widget-role {
-  margin-top: calc(var(--u) * 0.5);
-  font-size: calc(var(--u) * 3.3);
-  color: var(--muted);
+.weather-arrow {
+  width: calc(var(--u) * 2.8);
+  height: calc(var(--u) * 2.8);
+  transform: rotate(45deg);
+  opacity: 0.9;
 }
 
-.widget-status-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: calc(var(--u) * 1.6);
-  margin-top: calc(var(--u) * 2.2);
-  padding: calc(var(--u) * 1.2) calc(var(--u) * 3);
-  border-radius: 999px;
-  background: rgba(34, 197, 94, 0.15);
-  border: 1px solid rgba(34, 197, 94, 0.35);
-  font-size: calc(var(--u) * 3);
-  font-weight: 600;
-  color: #4ade80;
+.weather-temp {
+  font-size: calc(var(--u) * 9.5);
+  font-weight: 200;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  margin-top: calc(var(--u) * 0.8);
 }
 
-.widget-status-badge i {
-  width: calc(var(--u) * 1.6);
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: #22c55e;
-  box-shadow: 0 0 8px #22c55e;
+.weather-cloud {
+  margin-top: auto;
+  margin-bottom: calc(var(--u) * 0.6);
 }
 
-.galaxy-ai-pill {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: calc(var(--u) * 2.6) calc(var(--u) * 4);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  margin-bottom: calc(var(--u) * 4.5);
-  cursor: pointer;
-  transition: all 0.2s ease;
+.weather-cloud svg {
+  width: calc(var(--u) * 5.2);
+  height: calc(var(--u) * 4);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
-.galaxy-ai-pill:hover {
-  background: rgba(255, 255, 255, 0.16);
-  border-color: rgba(255, 255, 255, 0.25);
-  transform: translateY(-1px);
-}
-
-.galaxy-ai-left {
-  display: flex;
-  align-items: center;
-  gap: calc(var(--u) * 2);
-}
-
-.galaxy-ai-sparkle {
-  color: #a855f7;
-}
-
-.galaxy-ai-sparkle svg {
-  width: calc(var(--u) * 4.5);
-  height: calc(var(--u) * 4.5);
-}
-
-.galaxy-ai-text {
-  font-size: calc(var(--u) * 3.3);
-  font-weight: 500;
-  color: #e2e8f0;
-}
-
-.galaxy-ai-badge {
+.weather-desc {
   font-size: calc(var(--u) * 2.8);
-  font-weight: 700;
-  background: linear-gradient(90deg, #38bdf8, #a855f7);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.95);
+  line-height: 1.2;
 }
 
+.weather-hl {
+  font-size: calc(var(--u) * 2.5);
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.78);
+  margin-top: calc(var(--u) * 0.3);
+}
+
+/* Widget Text Labels */
+.widget-label {
+  font-size: calc(var(--u) * 2.85);
+  font-weight: 500;
+  color: #ffffff;
+  margin-top: calc(var(--u) * 1.3);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.75);
+  letter-spacing: 0.01em;
+  text-align: center;
+}
+
+/* APP GRID: 2 ROWS x 4 COLUMNS */
 .grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  grid-row-gap: calc(var(--u) * 4.8);
-  row-gap: calc(var(--u) * 4.8);
+  grid-row-gap: calc(var(--u) * 4.6);
+  row-gap: calc(var(--u) * 4.6);
+  grid-column-gap: calc(var(--u) * 2.8);
+  column-gap: calc(var(--u) * 2.8);
+  margin-bottom: auto;
 }
 
 .app {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: calc(var(--u) * 1.5);
+  gap: calc(var(--u) * 1.3);
+  cursor: pointer;
 }
 
 .icon {
   display: grid;
   place-items: center;
-  width: calc(var(--u) * 14.5);
+  width: calc(var(--u) * 14.8);
   aspect-ratio: 1;
-  border-radius: 26%;
+  border-radius: calc(var(--u) * 3.5);
+  overflow: hidden;
   color: #fff;
   background: linear-gradient(145deg, var(--c1), var(--c2));
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.35),
-    0 calc(var(--u) * 1.2) calc(var(--u) * 2.8) rgba(0, 0, 0, 0.38);
+    0 calc(var(--u) * 1.2) calc(var(--u) * 3.2) rgba(0, 0, 0, 0.38),
+    inset 0 1px 1px rgba(255, 255, 255, 0.3);
   transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.18s ease;
 }
 
 .app:hover .icon {
   transform: translateY(-2px) scale(1.05);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.45),
-    0 calc(var(--u) * 1.8) calc(var(--u) * 3.5) rgba(0, 0, 0, 0.45);
+    0 calc(var(--u) * 2) calc(var(--u) * 4.2) rgba(0, 0, 0, 0.45),
+    inset 0 1px 1px rgba(255, 255, 255, 0.45);
 }
 
 .app:active .icon {
   transform: scale(0.92);
+}
+
+.app-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: inherit;
 }
 
 .icon svg {
@@ -1905,45 +1931,66 @@ a {
 }
 
 .label {
-  font-size: calc(var(--u) * 3);
+  font-size: calc(var(--u) * 2.85);
   font-weight: 500;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
   color: #fff;
+  letter-spacing: 0.01em;
+  text-align: center;
+}
+
+/* CENTERED FLOATING SEARCH PILL */
+.search-pill-row {
+  display: flex;
+  justify-content: center;
+  margin-top: calc(var(--u) * 2);
+  margin-bottom: calc(var(--u) * 4);
+}
+
+.search-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--u) * 1.4);
+  padding: calc(var(--u) * 1.3) calc(var(--u) * 4.2);
+  border-radius: 999px;
+  background: rgba(120, 120, 135, 0.38);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 calc(var(--u) * 1) calc(var(--u) * 2.5) rgba(0, 0, 0, 0.28);
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: calc(var(--u) * 2.85);
+  font-weight: 500;
   letter-spacing: 0.01em;
 }
 
-.dots {
-  margin-top: auto;
-  display: flex;
-  justify-content: center;
-  gap: calc(var(--u) * 1.5);
-  padding-bottom: calc(var(--u) * 3.5);
+.search-pill:hover {
+  background: rgba(140, 140, 160, 0.48);
+  transform: scale(1.04);
 }
 
-.dots i {
-  width: calc(var(--u) * 1.4);
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.35);
-  transition: all 0.2s ease;
+.search-icon {
+  width: calc(var(--u) * 3);
+  height: calc(var(--u) * 3);
+  color: rgba(255, 255, 255, 0.85);
 }
 
-.dots i.on {
-  width: calc(var(--u) * 3.6);
-  border-radius: 999px;
-  background: #fff;
-}
-
+/* BOTTOM FLOATING FROSTED GLASS DOCK (APP STORE, PHOTOS, MAIL, FILES) */
 .dock {
   display: flex;
   justify-content: space-around;
-  padding: calc(var(--u) * 2.8) calc(var(--u) * 2);
-  border-radius: calc(var(--u) * 7.5);
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 calc(var(--u) * 2) calc(var(--u) * 5) rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  align-items: center;
+  padding: calc(var(--u) * 2.8) calc(var(--u) * 2.5);
+  border-radius: calc(var(--u) * 7.8);
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(35px) saturate(190%);
+  -webkit-backdrop-filter: blur(35px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  box-shadow:
+    0 calc(var(--u) * 2.5) calc(var(--u) * 6) rgba(0, 0, 0, 0.38),
+    inset 0 1px 1.5px rgba(255, 255, 255, 0.45);
 }
 
 /* =========================================================
@@ -1956,7 +2003,8 @@ a {
   z-index: 30;
   display: flex;
   flex-direction: column;
-  background: #0d1017;
+  background: #090c13;
+  color: #ffffff;
   padding-top: var(--top);
   transform-origin: var(--ox) var(--oy);
   animation: app-open 0.34s cubic-bezier(0.2, 0.85, 0.25, 1) both;
@@ -1994,12 +2042,12 @@ a {
 }
 
 .app-head {
-  padding: calc(var(--u) * 2.5) calc(var(--u) * 6.5) calc(var(--u) * 5);
-  min-height: calc(var(--u) * 32);
+  padding: calc(var(--u) * 2) calc(var(--u) * 6.5) calc(var(--u) * 4);
+  min-height: calc(var(--u) * 28);
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .back-btn {
@@ -2010,12 +2058,14 @@ a {
   display: grid;
   place-items: center;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.08);
-  transition: background 0.2s ease;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  transition: all 0.2s ease;
 }
 
 .back-btn:hover {
-  background: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.06);
 }
 
 .back-btn svg {
@@ -2024,17 +2074,19 @@ a {
 }
 
 .app-head h1 {
-  margin-top: calc(var(--u) * 4);
+  margin-top: calc(var(--u) * 3);
   font-size: calc(var(--u) * 7.5);
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.15;
+  color: #ffffff;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
 }
 
 .app-head p {
-  margin-top: calc(var(--u) * 1.2);
+  margin-top: calc(var(--u) * 1);
   font-size: calc(var(--u) * 3.4);
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.65);
 }
 
 .app-body {
@@ -2049,31 +2101,34 @@ a {
 }
 
 .card {
-  margin-bottom: calc(var(--u) * 2.6);
+  margin-bottom: calc(var(--u) * 2.8);
   padding: calc(var(--u) * 4.5);
   border-radius: calc(var(--u) * 5.5);
-  background: var(--card);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
 }
 
 .card.list {
   padding-top: calc(var(--u) * 3.5);
-  padding-bottom: calc(var(--u) * 1.2);
+  padding-bottom: calc(var(--u) * 1.5);
 }
 
 .card h2 {
   margin-bottom: calc(var(--u) * 2.2);
-  font-size: calc(var(--u) * 3.4);
-  font-weight: 600;
-  color: var(--accent);
+  font-size: calc(var(--u) * 3.3);
+  font-weight: 700;
+  color: #dfba98;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
 }
 
 .card .body {
   font-size: calc(var(--u) * 3.8);
-  line-height: 1.55;
-  color: #e2e8f0;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.88);
 }
 
 .row {
@@ -2085,26 +2140,26 @@ a {
 }
 
 .row+.row {
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
 }
 
 .row .t {
   font-size: calc(var(--u) * 3.9);
   font-weight: 600;
-  color: #fff;
+  color: #ffffff;
 }
 
 .row .s {
   margin-top: calc(var(--u) * 0.7);
   font-size: calc(var(--u) * 3.3);
   line-height: 1.45;
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.62);
 }
 
 .row .m {
   font-size: calc(var(--u) * 3);
-  color: var(--accent);
-  font-weight: 500;
+  color: #dfba98;
+  font-weight: 600;
   text-align: right;
   white-space: nowrap;
 }
@@ -2127,10 +2182,10 @@ a {
 .chip {
   padding: calc(var(--u) * 1.6) calc(var(--u) * 3.2);
   border-radius: 999px;
-  background: var(--card-2);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   font-size: calc(var(--u) * 3.2);
-  color: #e2e8f0;
+  color: #f1f5f9;
 }
 
 .spen-canvas-box {

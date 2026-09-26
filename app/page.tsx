@@ -154,7 +154,190 @@ function SpenCanvas() {
   );
 }
 
-/* ---------- One UI App Icon & Home Screen ---------- */
+/* ---------- App Icon Graphics & Home Screen Layout (Matching Reference Image) ---------- */
+
+const GITHUB_GRID = [
+  [1, 1, 2, 3, 2, 2, 1],
+  [3, 3, 3, 1, 1, 3, 3],
+  [4, 3, 3, 1, 1, 1, 3],
+  [3, 4, 3, 1, 1, 1, 4],
+  [3, 3, 3, 1, 1, 1, 3],
+  [3, 3, 3, 2, 1, 1, 1],
+  [2, 3, 3, 3, 1, 0, 0],
+];
+
+function AppGraphic({ id, icon }: { id: string; icon: IconName }) {
+  switch (id) {
+    case "spotify":
+      return (
+        <svg viewBox="0 0 60 60" className="app-svg" aria-hidden="true">
+          <rect width="60" height="60" rx="14" fill="#000000" />
+          <circle cx="30" cy="30" r="23" fill="#1ed760" />
+          <path d="M20 23.5c7-1.8 14-0.8 19.5 2.2" stroke="#000000" strokeWidth="3.6" strokeLinecap="round" fill="none" />
+          <path d="M21.5 29.5c5.8-1.4 12-0.5 16.5 2" stroke="#000000" strokeWidth="3.1" strokeLinecap="round" fill="none" />
+          <path d="M23 35.2c4.6-1.1 9.4-0.4 13.2 1.6" stroke="#000000" strokeWidth="2.6" strokeLinecap="round" fill="none" />
+        </svg>
+      );
+    case "tv":
+      return (
+        <svg viewBox="0 0 60 60" className="app-svg" aria-hidden="true">
+          <rect width="60" height="60" rx="14" fill="#000000" />
+          <path d="M23.5 20.2c1.2-1.5 2-3.5 1.8-5.4-1.8.1-3.9 1.2-5.1 2.7-1.1 1.3-2 3.3-1.8 5.2 2 .2 3.9-1 5.1-2.5z" fill="#ffffff" />
+          <path d="M25.8 28.2c-1-.6-2.4-1-4-1-2.8 0-4.6 1.6-6.2 1.6-1.6 0-3.4-1.6-5.6-1.6-3 0-6 2.2-7.4 5.6-1.6 3.8-.4 9.4 2 13.2 1.2 1.8 2.6 3.8 4.6 3.8 1.8 0 2.6-1.2 5-1.2 2.4 0 3.2 1.2 5 1.2 2 0 3.2-1.8 4.4-3.6 1.4-2 2-4 2-4.2-.2 0-4-1.6-4-6 0-3.6 3-5.4 3.2-5.6-1.8-2.6-4.2-2.8-5-3z" fill="#ffffff" transform="translate(10, -5)" />
+          <text x="33" y="38" fill="#ffffff" fontFamily="-apple-system, sans-serif" fontWeight="700" fontSize="18.5" letterSpacing="-0.5">tv</text>
+        </svg>
+      );
+    case "about":
+      return (
+        <svg viewBox="0 0 60 60" className="app-svg" aria-hidden="true">
+          <rect width="60" height="60" rx="14" fill="#e5e7eb" />
+          <rect x="54" y="10" width="4.5" height="11" rx="2" fill="#007aff" />
+          <rect x="54" y="24" width="4.5" height="11" rx="2" fill="#ff9500" />
+          <rect x="54" y="38" width="4.5" height="11" rx="2" fill="#34c759" />
+          <circle cx="28" cy="30" r="17" fill="#6b7280" />
+          <circle cx="28" cy="24" r="6.2" fill="#ffffff" />
+          <path d="M17 40.5c1.6-5.5 5.8-8.5 11-8.5s9.4 3 11 8.5" fill="#ffffff" />
+        </svg>
+      );
+    case "blog":
+      return (
+        <svg viewBox="0 0 60 60" className="app-svg" aria-hidden="true">
+          <defs>
+            <linearGradient id="blg-g" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#ff5722" />
+              <stop offset="100%" stopColor="#d50000" />
+            </linearGradient>
+          </defs>
+          <rect width="60" height="60" rx="14" fill="url(#blg-g)" />
+          <path d="M43 15c1.2 1.2 1.2 3.2 0 4.4L25 37.4c-.6.6-1.4 1-2.2 1.2l-6 1.4 1.4-6c.2-.8.6-1.6 1.2-2.2L37.4 13.8c1.2-1.2 3.2-1.2 4.4 0l1.2 1.2z" fill="#ffd166" />
+          <path d="M18 43c4.5-1.5 11.5-1 25 1" stroke="#ffd166" strokeWidth="2.8" strokeLinecap="round" fill="none" />
+        </svg>
+      );
+    case "settings":
+      return (
+        <svg viewBox="0 0 60 60" className="app-svg" aria-hidden="true">
+          <defs>
+            <linearGradient id="set-g" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#9ca3af" />
+              <stop offset="100%" stopColor="#6b7280" />
+            </linearGradient>
+          </defs>
+          <rect width="60" height="60" rx="14" fill="url(#set-g)" />
+          <g transform="translate(30, 30)">
+            {[0, 45, 90, 135, 180, 225, 270, 315].map((deg) => (
+              <rect key={deg} x="-3" y="-19" width="6" height="6.5" rx="1.5" fill="#f3f4f6" transform={`rotate(${deg})`} />
+            ))}
+            <circle cx="0" cy="0" r="16" fill="#f3f4f6" />
+            <circle cx="0" cy="0" r="12" fill="#6b7280" />
+            <circle cx="0" cy="0" r="7.5" fill="#f3f4f6" />
+            <circle cx="0" cy="0" r="4.2" fill="#4b5563" />
+          </g>
+        </svg>
+      );
+    case "steam":
+      return (
+        <svg viewBox="0 0 60 60" className="app-svg" aria-hidden="true">
+          <defs>
+            <linearGradient id="stm-g" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#171a21" />
+              <stop offset="50%" stopColor="#1b2838" />
+              <stop offset="100%" stopColor="#2a475e" />
+            </linearGradient>
+          </defs>
+          <rect width="60" height="60" rx="14" fill="url(#stm-g)" />
+          <circle cx="36" cy="24" r="8.5" fill="none" stroke="#ffffff" strokeWidth="3.2" />
+          <circle cx="36" cy="24" r="3.8" fill="#ffffff" />
+          <circle cx="21" cy="38" r="6" fill="none" stroke="#ffffff" strokeWidth="2.8" />
+          <circle cx="21" cy="38" r="2.6" fill="#ffffff" />
+          <polygon points="34,26 19,37 23,41 38,28" fill="#ffffff" />
+        </svg>
+      );
+    case "whoop":
+      return (
+        <svg viewBox="0 0 60 60" className="app-svg" aria-hidden="true">
+          <rect width="60" height="60" rx="14" fill="#000000" />
+          <circle cx="30" cy="30" r="18.5" fill="none" stroke="#ffffff" strokeWidth="2" opacity="0.9" />
+          <g stroke="#ffffff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" fill="none">
+            <polyline points="22 25 25.5 35 29 25" />
+            <polyline points="31 25 34.5 35 38 25" />
+          </g>
+        </svg>
+      );
+    case "flighty":
+      return (
+        <svg viewBox="0 0 60 60" className="app-svg" aria-hidden="true">
+          <rect width="60" height="60" rx="14" fill="#1e232a" />
+          <g transform="translate(30,30) rotate(-45) translate(-30,-30)">
+            <path d="M30 11c-1 0-1.8 1.2-1.8 2.6v12.2l-14 7.2v3.6l14-4.5v9.5l-3.8 2.8v2.4l5.6-1.6 5.6 1.6v-2.4l-3.8-2.8v-9.5l14 4.5v-3.6l-14-7.2V13.6c0-1.4-.8-2.6-1.8-2.6z" fill="#ffffff" />
+          </g>
+        </svg>
+      );
+    case "appstore":
+      return (
+        <svg viewBox="0 0 60 60" className="app-svg" aria-hidden="true">
+          <defs>
+            <linearGradient id="as-g" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#1a9bff" />
+              <stop offset="100%" stopColor="#005fd9" />
+            </linearGradient>
+          </defs>
+          <rect width="60" height="60" rx="14" fill="url(#as-g)" />
+          <g stroke="#ffffff" strokeWidth="4.2" strokeLinecap="round" strokeLinejoin="round" fill="none">
+            <line x1="20" y1="44" x2="30" y2="16" />
+            <line x1="40" y1="44" x2="30" y2="16" />
+            <line x1="16" y1="36" x2="44" y2="36" />
+          </g>
+        </svg>
+      );
+    case "photos":
+      return (
+        <svg viewBox="0 0 60 60" className="app-svg" aria-hidden="true">
+          <rect width="60" height="60" rx="14" fill="#ffffff" />
+          <g transform="translate(30, 30)">
+            <path d="M-4 -18 C-4 -22, 4 -22, 4 -18 L3 -5 C2 -2, -2 -2, -3 -5 Z" fill="#ff2d55" opacity="0.88" />
+            <path d="M-4 -18 C-4 -22, 4 -22, 4 -18 L3 -5 C2 -2, -2 -2, -3 -5 Z" fill="#ff9500" opacity="0.88" transform="rotate(45)" />
+            <path d="M-4 -18 C-4 -22, 4 -22, 4 -18 L3 -5 C2 -2, -2 -2, -3 -5 Z" fill="#ffcc00" opacity="0.88" transform="rotate(90)" />
+            <path d="M-4 -18 C-4 -22, 4 -22, 4 -18 L3 -5 C2 -2, -2 -2, -3 -5 Z" fill="#34c759" opacity="0.88" transform="rotate(135)" />
+            <path d="M-4 -18 C-4 -22, 4 -22, 4 -18 L3 -5 C2 -2, -2 -2, -3 -5 Z" fill="#00c7be" opacity="0.88" transform="rotate(180)" />
+            <path d="M-4 -18 C-4 -22, 4 -22, 4 -18 L3 -5 C2 -2, -2 -2, -3 -5 Z" fill="#007aff" opacity="0.88" transform="rotate(225)" />
+            <path d="M-4 -18 C-4 -22, 4 -22, 4 -18 L3 -5 C2 -2, -2 -2, -3 -5 Z" fill="#5856d6" opacity="0.88" transform="rotate(270)" />
+            <path d="M-4 -18 C-4 -22, 4 -22, 4 -18 L3 -5 C2 -2, -2 -2, -3 -5 Z" fill="#af52de" opacity="0.88" transform="rotate(315)" />
+            <circle cx="0" cy="0" r="3.8" fill="#ffffff" />
+          </g>
+        </svg>
+      );
+    case "mail":
+      return (
+        <svg viewBox="0 0 60 60" className="app-svg" aria-hidden="true">
+          <defs>
+            <linearGradient id="ml-g" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#40a4ff" />
+              <stop offset="100%" stopColor="#0071e3" />
+            </linearGradient>
+          </defs>
+          <rect width="60" height="60" rx="14" fill="url(#ml-g)" />
+          <rect x="10" y="18" width="40" height="25" rx="3.5" fill="#ffffff" />
+          <path d="M11 20.5L30 33L49 20.5" fill="none" stroke="#0071e3" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      );
+    case "files":
+      return (
+        <svg viewBox="0 0 60 60" className="app-svg" aria-hidden="true">
+          <rect width="60" height="60" rx="14" fill="#ffffff" />
+          <defs>
+            <linearGradient id="fld-g" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#25a0ff" />
+              <stop offset="100%" stopColor="#007aff" />
+            </linearGradient>
+          </defs>
+          <path d="M13 19a3 3 0 0 1 3-3h10a3 3 0 0 1 2.2 1l2.6 3H44a3 3 0 0 1 3 3v20a3 3 0 0 1-3 3H16a3 3 0 0 1-3-3V19z" fill="#99d1ff" />
+          <rect x="13" y="24" width="34" height="20" rx="3" fill="url(#fld-g)" />
+        </svg>
+      );
+    default:
+      return <Icon name={icon} />;
+  }
+}
 
 function AppIcon({
   app,
@@ -172,7 +355,7 @@ function AppIcon({
       aria-label={app.label}
     >
       <span className="icon" style={{ "--c1": app.c1, "--c2": app.c2 } as CSSProperties}>
-        <Icon name={app.icon} />
+        <AppGraphic id={app.id} icon={app.icon} />
       </span>
       {showLabel && <span className="label">{app.label}</span>}
     </button>
@@ -186,63 +369,103 @@ function Home({
   now: Date | null;
   onOpen: (app: AppDef, el: HTMLElement) => void;
 }) {
-  const grid = apps.filter((a) => !a.dock);
+  // 8 Grid apps in the exact order from reference image:
+  // Row 1: Spotify, TV, About, Blog
+  // Row 2: Settings, Steam, Whoop, Flighty
+  const grid = apps.filter((a) => !a.dock && a.id !== "weather" && a.id !== "github" && a.id !== "spen-notes");
+  // 4 Dock apps in exact order: App Store, Photos, Mail, Files
   const dock = apps.filter((a) => a.dock);
 
+  const githubApp = apps.find((a) => a.id === "github") || apps[0];
+  const weatherApp = apps.find((a) => a.id === "weather") || apps[0];
   const aboutApp = apps.find((a) => a.id === "about") || apps[0];
 
   return (
     <div className="home">
-      {/* Samsung One UI Weather & Clock Widget */}
-      <div className="oneui-widget">
-        <div className="widget-top-row">
-          <div className="widget-time">{fmtTime(now)}</div>
-          <div className="widget-weather-icon">
-            <Icon name="sun" />
-            <span className="widget-temp">26°</span>
+      {/* Top 2x2 Widgets: GitHub Heatmap (Left) & Weather (Right) */}
+      <div className="widgets-row">
+        {/* Left: GitHub Contribution Heatmap Widget */}
+        <div
+          className="widget-col"
+          onClick={(e) => onOpen(githubApp, e.currentTarget)}
+          role="button"
+          tabIndex={0}
+        >
+          <div className="home-widget widget-github">
+            <div className="github-grid" aria-label="GitHub Contributions">
+              {GITHUB_GRID.map((row, r) => (
+                <div key={r} className="github-row">
+                  {row.map((lvl, c) => (
+                    <div
+                      key={c}
+                      className={`github-cell lvl-${lvl}`}
+                      title={`${lvl > 0 ? lvl * 3 : 0} contributions`}
+                    />
+                  ))}
+                </div>
+              ))}
+            </div>
           </div>
+          <span className="widget-label">GitHub</span>
         </div>
-        <div className="widget-date">{fmtDate(now)} &bull; New Delhi</div>
 
-        <div className="widget-profile">
-          <div className="widget-name">{profile.name}</div>
-          <div className="widget-role">{profile.role}</div>
-          <div className="widget-status-badge">
-            <i /> {profile.status}
+        {/* Right: Bengaluru Weather Widget */}
+        <div
+          className="widget-col"
+          onClick={(e) => onOpen(weatherApp, e.currentTarget)}
+          role="button"
+          tabIndex={0}
+        >
+          <div className="home-widget widget-weather">
+            <div className="weather-header">
+              <span className="weather-city">Bengaluru</span>
+              <svg className="weather-arrow" viewBox="0 0 24 24" fill="currentColor">
+                <polygon points="3 11 22 2 13 21 11 13 3 11" />
+              </svg>
+            </div>
+            <div className="weather-temp">27°</div>
+            <div className="weather-cloud">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
+              </svg>
+            </div>
+            <div className="weather-desc">Cloudy</div>
+            <div className="weather-hl">H:29° L:20°</div>
           </div>
+          <span className="widget-label">Weather</span>
         </div>
       </div>
 
-      {/* Galaxy AI Quick Pill */}
-      <div
-        className="galaxy-ai-pill"
-        onClick={(e) => onOpen(aboutApp, e.currentTarget)}
-        role="button"
-        tabIndex={0}
-      >
-        <div className="galaxy-ai-left">
-          <span className="galaxy-ai-sparkle">
-            <Icon name="sparkles" />
-          </span>
-          <span className="galaxy-ai-text">Explore Reyansh's portfolio...</span>
-        </div>
-        <span className="galaxy-ai-badge">Galaxy AI</span>
-      </div>
-
-      {/* App Grid */}
+      {/* App Grid: 8 Apps in 2 Rows x 4 Columns in exact reference order */}
       <div className="grid">
         {grid.map((a) => (
           <AppIcon key={a.id} app={a} onOpen={onOpen} />
         ))}
       </div>
 
-      {/* Screen pagination indicator */}
-      <div className="dots" aria-hidden="true">
-        <i className="on" />
-        <i />
+      {/* Centered Floating Search Pill */}
+      <div className="search-pill-row">
+        <button
+          className="search-pill"
+          onClick={(e) => onOpen(aboutApp, e.currentTarget)}
+          title="Search Reyansh's portfolio"
+        >
+          <svg
+            className="search-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+          >
+            <circle cx="11" cy="11" r="7" />
+            <line x1="21" y1="21" x2="16" y2="16" />
+          </svg>
+          <span>Search</span>
+        </button>
       </div>
 
-      {/* Dock */}
+      {/* Dock: 4 Apps (App Store, Photos, Mail, Files) */}
       <div className="dock">
         {dock.map((a) => (
           <AppIcon key={a.id} app={a} onOpen={onOpen} showLabel={false} />
