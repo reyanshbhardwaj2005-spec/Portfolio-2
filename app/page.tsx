@@ -535,6 +535,94 @@ function BlockView({ block }: { block: Block }) {
   }
 }
 
+function ScrollableAppBody({ children }: { children: ReactNode }) {
+  const bodyRef = useRef<HTMLDivElement | null>(null);
+  const dragRef = useRef({
+    active: false,
+    startY: 0,
+    scrollTop: 0,
+    moved: false,
+  });
+
+  // Enable guaranteed, instant mouse scroll wheel response in all view modes (including front mode)
+  useEffect(() => {
+    const el = bodyRef.current;
+    if (!el) return;
+
+    const onWheel = (e: WheelEvent) => {
+      e.stopPropagation();
+      el.scrollTop += e.deltaY;
+    };
+
+    el.addEventListener("wheel", onWheel, { passive: true });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, []);
+
+  const onPointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
+    const el = bodyRef.current;
+    if (!el) return;
+    const target = e.target as HTMLElement;
+    // Don't hijack clicks on buttons, links, or S-Pen drawing canvas
+    if (target.closest("button, a, input, canvas, .spen-canvas-box, .spen-draw-area, .spen-ink-dot")) return;
+
+    dragRef.current = {
+      active: true,
+      startY: e.clientY,
+      scrollTop: el.scrollTop,
+      moved: false,
+    };
+    el.classList.add("is-scrolling");
+    try {
+      el.setPointerCapture(e.pointerId);
+    } catch {}
+  };
+
+  const onPointerMove = (e: ReactPointerEvent<HTMLDivElement>) => {
+    if (!dragRef.current.active) return;
+    const el = bodyRef.current;
+    if (!el) return;
+    const dy = e.clientY - dragRef.current.startY;
+    if (Math.abs(dy) > 3) {
+      dragRef.current.moved = true;
+    }
+    el.scrollTop = dragRef.current.scrollTop - dy;
+  };
+
+  const onPointerUp = (e: ReactPointerEvent<HTMLDivElement>) => {
+    if (!dragRef.current.active) return;
+    dragRef.current.active = false;
+    const el = bodyRef.current;
+    if (el) {
+      el.classList.remove("is-scrolling");
+      try {
+        el.releasePointerCapture(e.pointerId);
+      } catch {}
+    }
+  };
+
+  const onClickCapture = (e: React.MouseEvent) => {
+    if (dragRef.current.moved) {
+      e.stopPropagation();
+      e.preventDefault();
+      dragRef.current.moved = false;
+    }
+  };
+
+  return (
+    <div
+      className="app-body"
+      ref={bodyRef}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerCancel={onPointerUp}
+      onClickCapture={onClickCapture}
+    >
+      {children}
+    </div>
+  );
+}
+
 function AppWindow({
   app,
   origin,
@@ -548,6 +636,24 @@ function AppWindow({
   onBack: () => void;
   onClosed: () => void;
 }) {
+  const windowRef = useRef<HTMLElement | null>(null);
+
+  // Wheel listener on the window wrapper so spinning wheel over header/margins also scrolls the app
+  useEffect(() => {
+    const win = windowRef.current;
+    if (!win) return;
+
+    const onWheel = (e: WheelEvent) => {
+      const scrollEl = win.querySelector(".app-body") as HTMLElement | null;
+      if (!scrollEl) return;
+      scrollEl.scrollTop += e.deltaY;
+      e.stopPropagation();
+    };
+
+    win.addEventListener("wheel", onWheel, { passive: true });
+    return () => win.removeEventListener("wheel", onWheel);
+  }, []);
+
   const handleEnd = (e: AnimationEvent<HTMLElement>) => {
     if (e.target !== e.currentTarget) return;
     if (closing) onClosed();
@@ -555,6 +661,7 @@ function AppWindow({
 
   return (
     <section
+      ref={windowRef}
       className={`app-window${closing ? " closing" : ""}`}
       style={{ "--ox": origin.x, "--oy": origin.y } as CSSProperties}
       onAnimationEnd={handleEnd}
@@ -568,11 +675,11 @@ function AppWindow({
         <h1>{app.title ?? app.label}</h1>
         {app.subtitle && <p>{app.subtitle}</p>}
       </header>
-      <div className="app-body">
+      <ScrollableAppBody>
         {app.blocks?.map((b, i) => (
           <BlockView block={b} key={i} />
         ))}
-      </div>
+      </ScrollableAppBody>
     </section>
   );
 }
@@ -712,6 +819,11 @@ function CamRing3D({
   );
 }
 
+function getClosestTargetRy(currentRy: number, desiredOffsetFrom360: number): number {
+  const k = Math.round((currentRy - desiredOffsetFrom360) / 360);
+  return k * 360 + desiredOffsetFrom360;
+}
+
 function PhoneStage({
   children,
   onOpenSpen,
@@ -723,10 +835,31 @@ function PhoneStage({
   const phoneRef = useRef<HTMLDivElement>(null);
   const screenRef = useRef<HTMLDivElement>(null);
 
+  // Exact angles in degrees
   const rot = useRef({ rx: REST_RX, ry: REST_RY });
-  const drag = useRef({ active: false, x: 0, y: 0, vx: 0, vy: 0, moved: false });
-  const raf = useRef<number | null>(null);
-  const autoRotateRaf = useRef<number | null>(null);
+  const targetRot = useRef({ rx: REST_RX, ry: REST_RY });
+  const velocity = useRef({ vx: 0, vy: 0 });
+
+  // Physics animation modes: "idle" | "dragging" | "inertia" | "tweening" | "autorotate"
+  const mode = useRef<"idle" | "dragging" | "inertia" | "tweening" | "autorotate">("idle");
+
+  // Pointer drag tracking
+  const dragStart = useRef({ x: 0, y: 0, time: 0, moved: false });
+  const lastPointer = useRef({ x: 0, y: 0, time: 0 });
+
+  // High-precision tween for presets & magnetic docking
+  const tween = useRef({
+    startRx: 0,
+    startRy: 0,
+    targetRx: 0,
+    targetRy: 0,
+    startTime: 0,
+    duration: 650,
+    onComplete: undefined as (() => void) | undefined,
+  });
+
+  const rafId = useRef<number | null>(null);
+  const lastTimeRef = useRef<number>(0);
 
   const [hint, setHint] = useState(true);
   const [activePreset, setActivePreset] = useState<ViewPreset>("angle");
@@ -734,21 +867,25 @@ function PhoneStage({
   const [spenEjected, setSpenEjected] = useState(false);
   const [isAutoRotate, setIsAutoRotate] = useState(false);
 
-  // Apply rotation and dynamic studio lighting custom properties to DOM
-  const applyTransform = useCallback((snap: boolean) => {
+  // Synchronously compute and update 3D rotation, dynamic reflections, and ground shadow
+  const applyTransform = useCallback(() => {
     const el = phoneRef.current;
     if (!el) return;
 
-    el.style.setProperty("--rx", `${rot.current.rx.toFixed(2)}deg`);
-    el.style.setProperty("--ry", `${rot.current.ry.toFixed(2)}deg`);
+    const currentRx = rot.current.rx;
+    const currentRy = rot.current.ry;
+
+    el.style.setProperty("--rx", `${currentRx.toFixed(2)}deg`);
+    el.style.setProperty("--ry", `${currentRy.toFixed(2)}deg`);
+    el.style.transform = `rotateX(${currentRx.toFixed(2)}deg) rotateY(${currentRy.toFixed(2)}deg)`;
 
     // Fixed Studio Key Spotlight in World Coordinates (elevated top-left-front)
     const lx_world = -0.32;
     const ly_world = -0.65;
     const lz_world = 0.69;
 
-    const radX = (rot.current.rx * Math.PI) / 180;
-    const radY = (rot.current.ry * Math.PI) / 180;
+    const radX = (currentRx * Math.PI) / 180;
+    const radY = (currentRy * Math.PI) / 180;
 
     const cosX = Math.cos(radX);
     const sinX = Math.sin(radX);
@@ -778,7 +915,7 @@ function PhoneStage({
     const topIntensity = Math.max(0, -ly);
     const bottomIntensity = Math.max(0, ly);
 
-    // Specular highlights with intense bloom & glossy falloff
+    // Specular highlights with bloom & glossy falloff
     const frontSpec = Math.min(1.2, Math.pow(frontIntensity, 1.8) * 1.45);
     const backSpec = Math.min(1.2, Math.pow(backIntensity, 1.8) * 1.55);
     const lensSpec = Math.min(1.3, Math.pow(backIntensity, 1.35) * 1.6);
@@ -789,7 +926,11 @@ function PhoneStage({
     const sheenY = -ly * 55;
     const sheenAngle = Math.atan2(ly, lx) * (180 / Math.PI);
 
-    // Set dynamic custom properties for realistic spotlight interaction
+    // Ground shadow reacts dynamically to 3D orientation
+    const shadowScaleX = Math.abs(cosY) * 0.72 + Math.abs(sinY) * 0.30 + 0.22;
+    const shadowShiftX = lx * 18;
+    const shadowOpacity = 0.76 + Math.abs(cosX) * 0.18;
+
     el.style.setProperty("--spot-front-x", `${spotFrontX.toFixed(1)}%`);
     el.style.setProperty("--spot-front-y", `${spotFrontY.toFixed(1)}%`);
     el.style.setProperty("--spot-back-x", `${spotBackX.toFixed(1)}%`);
@@ -810,66 +951,179 @@ function PhoneStage({
     el.style.setProperty("--sheen-x", sheenX.toFixed(1));
     el.style.setProperty("--sheen-y", sheenY.toFixed(1));
     el.style.setProperty("--sheen-angle", `${sheenAngle.toFixed(1)}deg`);
-    el.style.setProperty("--glare-opacity", (0.15 + frontIntensity * 0.95 + frontSpec * 0.35).toFixed(2));
 
-    el.classList.toggle("snap", snap);
+    if (sceneRef.current) {
+      sceneRef.current.style.setProperty("--shadow-scale-x", shadowScaleX.toFixed(3));
+      sceneRef.current.style.setProperty("--shadow-shift-x", `${shadowShiftX.toFixed(1)}px`);
+      sceneRef.current.style.setProperty("--shadow-opacity", shadowOpacity.toFixed(3));
+    }
+
+    const targetFrontRy = Math.round(currentRy / 360) * 360;
+    const isFront = Math.abs(currentRx) < 0.25 && Math.abs(currentRy - targetFrontRy) < 0.25;
+    el.classList.toggle("is-front", isFront);
   }, []);
 
-  useEffect(() => {
-    applyTransform(true);
-    document.documentElement.setAttribute("data-theme", colorTheme);
-  }, [applyTransform, colorTheme]);
+  // Main unified physics and animation frame step
+  const loop = useCallback(
+    (time: number) => {
+      if (!lastTimeRef.current) lastTimeRef.current = time;
+      const deltaMs = time - lastTimeRef.current;
+      lastTimeRef.current = time;
 
-  const stopInertia = () => {
-    if (raf.current !== null) {
-      cancelAnimationFrame(raf.current);
-      raf.current = null;
-    }
-  };
+      // Normalize delta-time (1.0 = standard 60Hz 16.67ms frame)
+      const dt = Math.min(2.5, Math.max(0.1, deltaMs / 16.67));
 
-  const stopAutoRotate = () => {
-    if (autoRotateRaf.current !== null) {
-      cancelAnimationFrame(autoRotateRaf.current);
-      autoRotateRaf.current = null;
-    }
-    setIsAutoRotate(false);
-  };
+      let needNextFrame = false;
 
-  // Inertia momentum release
-  const runInertia = () => {
-    const step = () => {
-      drag.current.vx *= 0.93;
-      drag.current.vy *= 0.93;
+      if (mode.current === "dragging") {
+        // High-end critically damped low-pass filter: eliminates input noise without perceived lag
+        const followFactor = 1 - Math.pow(0.70, dt);
+        rot.current.rx += (targetRot.current.rx - rot.current.rx) * followFactor;
+        rot.current.ry += (targetRot.current.ry - rot.current.ry) * followFactor;
+        applyTransform();
+        needNextFrame = true;
+      } else if (mode.current === "inertia") {
+        // Silky weighted momentum glide
+        const friction = Math.pow(0.963, dt);
+        velocity.current.vx *= friction;
+        velocity.current.vy *= friction;
 
-      rot.current.ry += drag.current.vx;
-      rot.current.rx = Math.max(-MAX_RX, Math.min(MAX_RX, rot.current.rx - drag.current.vy));
+        rot.current.ry += velocity.current.vx * dt;
+        rot.current.rx = Math.max(-MAX_RX, Math.min(MAX_RX, rot.current.rx - velocity.current.vy * dt));
+        targetRot.current = { ...rot.current };
 
-      applyTransform(false);
+        const speed = Math.hypot(velocity.current.vx, velocity.current.vy);
+        const targetFrontRy = Math.round(rot.current.ry / 360) * 360;
+        const diffRy = Math.abs(rot.current.ry - targetFrontRy);
+        const diffRx = Math.abs(rot.current.rx);
 
-      if (Math.abs(drag.current.vx) > 0.03 || Math.abs(drag.current.vy) > 0.03) {
-        raf.current = requestAnimationFrame(step);
+        // Smooth magnetic front docking when slowing down near front screen
+        if (speed < 0.70 && diffRy <= 32 && diffRx <= 22) {
+          mode.current = "tweening";
+          velocity.current = { vx: 0, vy: 0 };
+          tween.current = {
+            startRx: rot.current.rx,
+            startRy: rot.current.ry,
+            targetRx: 0,
+            targetRy: targetFrontRy,
+            startTime: performance.now(),
+            duration: 450,
+            onComplete: () => setActivePreset("front"),
+          };
+          needNextFrame = true;
+        } else {
+          applyTransform();
+
+          if (speed > 0.02) {
+            needNextFrame = true;
+          } else {
+            if (diffRy <= 26 && diffRx <= 18) {
+              mode.current = "tweening";
+              velocity.current = { vx: 0, vy: 0 };
+              tween.current = {
+                startRx: rot.current.rx,
+                startRy: rot.current.ry,
+                targetRx: 0,
+                targetRy: targetFrontRy,
+                startTime: performance.now(),
+                duration: 380,
+                onComplete: () => setActivePreset("front"),
+              };
+              needNextFrame = true;
+            } else {
+              mode.current = "idle";
+            }
+          }
+        }
+      } else if (mode.current === "tweening") {
+        const elapsed = time - tween.current.startTime;
+        const progress = Math.min(1, elapsed / tween.current.duration);
+
+        // Apple-grade quintic ease-out curve (smooth organic landing)
+        const t1 = 1 - progress;
+        const ease = 1 - t1 * t1 * t1 * t1;
+
+        rot.current.rx = tween.current.startRx + (tween.current.targetRx - tween.current.startRx) * ease;
+        rot.current.ry = tween.current.startRy + (tween.current.targetRy - tween.current.startRy) * ease;
+        targetRot.current = { ...rot.current };
+
+        applyTransform();
+
+        if (progress < 1) {
+          needNextFrame = true;
+        } else {
+          rot.current.rx = tween.current.targetRx;
+          rot.current.ry = tween.current.targetRy;
+          applyTransform();
+          mode.current = "idle";
+          const cb = tween.current.onComplete;
+          if (cb) cb();
+        }
+      } else if (mode.current === "autorotate") {
+        rot.current.ry += 0.36 * dt;
+        targetRot.current = { ...rot.current };
+        applyTransform();
+        needNextFrame = true;
+      }
+
+      if (needNextFrame) {
+        rafId.current = requestAnimationFrame(loop);
       } else {
-        raf.current = null;
+        rafId.current = null;
+      }
+    },
+    [applyTransform]
+  );
+
+  const ensureLoopRunning = useCallback(() => {
+    if (rafId.current === null) {
+      lastTimeRef.current = performance.now();
+      rafId.current = requestAnimationFrame(loop);
+    }
+  }, [loop]);
+
+  const startTween = useCallback(
+    (targetRx: number, targetRy: number, duration: number = 650, onComplete?: () => void) => {
+      mode.current = "tweening";
+      velocity.current = { vx: 0, vy: 0 };
+      tween.current = {
+        startRx: rot.current.rx,
+        startRy: rot.current.ry,
+        targetRx,
+        targetRy,
+        startTime: performance.now(),
+        duration,
+        onComplete,
+      };
+      ensureLoopRunning();
+    },
+    [ensureLoopRunning]
+  );
+
+  useEffect(() => {
+    applyTransform();
+    document.documentElement.setAttribute("data-theme", colorTheme);
+    return () => {
+      if (rafId.current !== null) {
+        cancelAnimationFrame(rafId.current);
+        rafId.current = null;
       }
     };
-    raf.current = requestAnimationFrame(step);
-  };
+  }, [applyTransform, colorTheme]);
 
   // Auto-rotate presentation mode
   const toggleAutoRotate = () => {
     if (isAutoRotate) {
-      stopAutoRotate();
+      setIsAutoRotate(false);
+      mode.current = "idle";
+      if (rafId.current !== null) {
+        cancelAnimationFrame(rafId.current);
+        rafId.current = null;
+      }
     } else {
-      stopInertia();
       setIsAutoRotate(true);
-      phoneRef.current?.classList.remove("snap");
-
-      const spin = () => {
-        rot.current.ry = (rot.current.ry + 0.45) % 360;
-        applyTransform(false);
-        autoRotateRaf.current = requestAnimationFrame(spin);
-      };
-      autoRotateRaf.current = requestAnimationFrame(spin);
+      mode.current = "autorotate";
+      ensureLoopRunning();
     }
   };
 
@@ -877,74 +1131,146 @@ function PhoneStage({
     // Avoid hijacking taps on the interactive screen
     if (screenRef.current?.contains(e.target as Node)) return;
 
-    stopInertia();
-    stopAutoRotate();
+    if (isAutoRotate) {
+      setIsAutoRotate(false);
+    }
 
-    drag.current = {
-      active: true,
+    mode.current = "dragging";
+    dragStart.current = {
       x: e.clientX,
       y: e.clientY,
-      vx: 0,
-      vy: 0,
+      time: performance.now(),
       moved: false,
     };
+    lastPointer.current = {
+      x: e.clientX,
+      y: e.clientY,
+      time: performance.now(),
+    };
+    velocity.current = { vx: 0, vy: 0 };
+    targetRot.current = { ...rot.current };
+
     (e.target as HTMLElement).setPointerCapture(e.pointerId);
-    phoneRef.current?.classList.remove("snap");
     setHint(false);
+    ensureLoopRunning();
   };
 
   const onPointerMove = (e: ReactPointerEvent<HTMLDivElement>) => {
-    if (!drag.current.active) return;
-    const dx = e.clientX - drag.current.x;
-    const dy = e.clientY - drag.current.y;
-    drag.current.x = e.clientX;
-    drag.current.y = e.clientY;
+    if (mode.current !== "dragging") {
+      return;
+    }
 
-    if (Math.abs(dx) + Math.abs(dy) > 2) drag.current.moved = true;
+    const now = performance.now();
+    const dx = e.clientX - lastPointer.current.x;
+    const dy = e.clientY - lastPointer.current.y;
+    const deltaMs = Math.max(1, now - lastPointer.current.time);
 
-    rot.current.ry += dx * 0.38;
-    rot.current.rx = Math.max(-MAX_RX, Math.min(MAX_RX, rot.current.rx - dy * 0.32));
-    drag.current.vx = dx * 0.38;
-    drag.current.vy = dy * 0.32;
+    lastPointer.current = { x: e.clientX, y: e.clientY, time: now };
 
-    applyTransform(false);
+    if (Math.abs(e.clientX - dragStart.current.x) + Math.abs(e.clientY - dragStart.current.y) > 2) {
+      dragStart.current.moved = true;
+    }
+
+    // High precision sensitivity: 0.36deg/px horizontal, 0.30deg/px vertical
+    targetRot.current.ry += dx * 0.36;
+    targetRot.current.rx = Math.max(-MAX_RX, Math.min(MAX_RX, targetRot.current.rx - dy * 0.30));
+
+    // Instant velocity normalized to standard 60fps frame (16.67ms)
+    const instVx = (dx / deltaMs) * 16.67 * 0.36;
+    const instVy = (dy / deltaMs) * 16.67 * 0.30;
+
+    // Exponential moving average filter: filters out USB sensor jitter and micro-stutter
+    velocity.current.vx = velocity.current.vx * 0.35 + instVx * 0.65;
+    velocity.current.vy = velocity.current.vy * 0.35 + instVy * 0.65;
   };
 
-  const endDrag = () => {
-    if (!drag.current.active) return;
-    drag.current.active = false;
-    if (Math.abs(drag.current.vx) > 0.4 || Math.abs(drag.current.vy) > 0.4) {
-      runInertia();
+  const endDrag = (e: ReactPointerEvent<HTMLDivElement>) => {
+    if (mode.current !== "dragging") return;
+
+    try {
+      (e.target as HTMLElement).releasePointerCapture(e.pointerId);
+    } catch {
+      // Ignore if pointer capture already lost
+    }
+
+    const speed = Math.hypot(velocity.current.vx, velocity.current.vy);
+    const dir = velocity.current.vx > 0.05 ? 1 : velocity.current.vx < -0.05 ? -1 : 0;
+
+    // Target front screen in continuous direction of movement (never flips backwards)
+    let targetRy = Math.round(rot.current.ry / 360) * 360;
+    if (dir > 0 && rot.current.ry > targetRy) {
+      targetRy += 360;
+    } else if (dir < 0 && rot.current.ry < targetRy) {
+      targetRy -= 360;
+    }
+
+    const diffRy = Math.abs(rot.current.ry - targetRy);
+    const diffRx = Math.abs(rot.current.rx);
+
+    // Gentle release near front screen: magnetic docking
+    if (speed < 0.40 && diffRy <= 32 && diffRx <= 24) {
+      startTween(0, targetRy, 420, () => setActivePreset("front"));
+      return;
+    }
+
+    // Significant momentum: inertia glide
+    if (speed > 0.18) {
+      mode.current = "inertia";
+    } else {
+      if (diffRy <= 26 && diffRx <= 20) {
+        startTween(0, targetRy, 360, () => setActivePreset("front"));
+      } else {
+        mode.current = "idle";
+      }
     }
   };
 
-  // Quick View Preset Angles
+  // Quick View Preset Angles (continuous shortest-path relative to current revolution)
   const setPreset = (preset: ViewPreset) => {
-    stopInertia();
-    stopAutoRotate();
+    if (isAutoRotate) {
+      setIsAutoRotate(false);
+    }
     setActivePreset(preset);
+
+    let targetRx = 0;
+    let targetRy = 0;
 
     switch (preset) {
       case "front":
-        rot.current = { rx: 0, ry: 0 };
+        targetRx = 0;
+        targetRy = Math.round(rot.current.ry / 360) * 360;
         break;
       case "angle":
-        rot.current = { rx: 12, ry: -24 };
+        targetRx = 12;
+        targetRy = getClosestTargetRy(rot.current.ry, -24);
         break;
       case "back":
-        rot.current = { rx: 18, ry: 152 };
+        targetRx = 18;
+        targetRy = getClosestTargetRy(rot.current.ry, 180);
         break;
       case "right-side":
-        rot.current = { rx: 0, ry: -88.5 };
+        targetRx = 0;
+        targetRy = getClosestTargetRy(rot.current.ry, -90);
         break;
       case "left-side":
-        rot.current = { rx: 0, ry: 88.5 };
+        targetRx = 0;
+        targetRy = getClosestTargetRy(rot.current.ry, 90);
         break;
       case "spen":
-        rot.current = { rx: -48, ry: 14 };
+        targetRx = -48;
+        targetRy = getClosestTargetRy(rot.current.ry, 14);
         break;
     }
-    applyTransform(true);
+
+    // Dynamic duration based on angular distance for optimal pacing
+    const dist = Math.hypot(targetRx - rot.current.rx, targetRy - rot.current.ry);
+    const duration = Math.min(850, Math.max(520, Math.round(480 + dist * 1.5)));
+
+    startTween(targetRx, targetRy, duration, () => {
+      if (preset === "front") {
+        applyTransform();
+      }
+    });
   };
 
   // Interactive S-Pen toggle
@@ -959,16 +1285,10 @@ function PhoneStage({
   };
 
   // Reset to default angle on double click
-  const onDoubleClick = () => {
+  const onDoubleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (screenRef.current?.contains(e.target as Node)) return;
     setPreset("angle");
   };
-
-  useEffect(() => {
-    return () => {
-      stopInertia();
-      stopAutoRotate();
-    };
-  }, []);
 
   return (
     <>
@@ -1000,10 +1320,22 @@ function PhoneStage({
             <div className="front-earpiece" aria-hidden="true" />
             <div className="front-camera" aria-hidden="true" />
 
-            <div className="screen" ref={screenRef}>
+            <div
+              className="screen"
+              ref={screenRef}
+              onWheel={(e) => {
+                const scrollEl = screenRef.current?.querySelector(".app-body") as HTMLElement | null;
+                if (scrollEl) {
+                  scrollEl.scrollTop += e.deltaY;
+                }
+              }}
+            >
               <div className="screen-glare" aria-hidden="true" />
               {children}
             </div>
+
+            {/* Dynamic Light-Reflecting Shining Bezel Rim (Bezel Only) */}
+            <div className="screen-bezel-shine" aria-hidden="true" />
           </div>
 
           {/* BACK FACE: Frosted Gorilla Armor + Signature S26 Ultra Floating Camera System */}

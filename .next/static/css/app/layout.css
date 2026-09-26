@@ -306,19 +306,19 @@ a {
    ========================================================= */
 
 .scene {
-  --dh: min(84dvh, 860px);
-  --dw: calc(var(--dh) * 9 / 19.4);
-  --depth: calc(var(--dw) * 0.108);
+  --dh: min(86dvh, 880px);
+  --dw: calc(round(nearest, var(--dh) * 9 / 19.4, 2px));
+  --depth: calc(round(nearest, var(--dw) * 0.108, 1px));
   /* 8.6mm depth */
-  --corner: calc(var(--dh) * 0.026);
+  --corner: calc(round(nearest, var(--dh) * 0.026, 1px));
   /* Sleek Galaxy S-Ultra corner radius */
   position: relative;
   min-height: 100dvh;
   width: 100%;
   display: grid;
   place-items: center;
-  perspective: calc(var(--dh) * 1.8);
-  perspective-origin: 50% 45%;
+  perspective: calc(var(--dh) * 4.2);
+  perspective-origin: 50% 50%;
   touch-action: none;
   cursor: -webkit-grab;
   cursor: grab;
@@ -337,11 +337,22 @@ a {
   transform-style: preserve-3d;
   -webkit-transform-style: preserve-3d;
   transform: rotateX(var(--rx, 10deg)) rotateY(var(--ry, -22deg));
+  transform-origin: center center;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   will-change: transform;
 }
 
-.phone3d.snap {
-  transition: transform 0.65s cubic-bezier(0.18, 0.89, 0.32, 1.12);
+/* Razor-Sharp Pixel-Perfect Native Hardware Resolution in Front View */
+.phone3d.is-front {
+  filter: none;
+  will-change: auto;
+}
+
+/* Transitions are handled with 60/120/144fps delta-time RAF physics for buttery liquid animation */
+.phone3d.snap,
+.phone3d.is-dragging {
+  transition: none;
 }
 
 @keyframes float {
@@ -359,15 +370,15 @@ a {
 /* Ground shadow with realistic studio light dispersion on white floor */
 .ground-shadow {
   position: absolute;
-  width: calc(var(--dw) * 0.88);
+  width: calc(var(--dw) * var(--shadow-scale-x, 0.88));
   height: calc(var(--dh) * 0.08);
   left: 50%;
   bottom: calc(var(--dh) * 0.02);
-  translate: -50% 0;
+  translate: calc(-50% + var(--shadow-shift-x, 0px)) 0;
   border-radius: 50%;
   background: radial-gradient(closest-side, rgba(60, 48, 40, 0.25), rgba(60, 48, 40, 0.08) 45%, rgba(0, 0, 0, 0) 75%);
   filter: blur(14px);
-  opacity: 0.92;
+  opacity: var(--shadow-opacity, 0.92);
   pointer-events: none;
   z-index: 2;
 }
@@ -555,7 +566,6 @@ a {
   -webkit-mask-image: linear-gradient(180deg, transparent 0%, black 4%, black 96%, transparent 100%);
   mask-image: linear-gradient(180deg, transparent 0%, black 4%, black 96%, transparent 100%);
   pointer-events: none;
-  transition: opacity 0.12s ease-out;
 }
 
 .edge-right::after {
@@ -578,7 +588,6 @@ a {
   mask-image: linear-gradient(90deg, transparent 0%, black 4%, black 96%, transparent 100%);
   pointer-events: none;
   opacity: calc(var(--light-top, 0.5) * 0.45 + var(--light-rim, 0.5) * 0.25);
-  transition: opacity 0.12s ease-out;
 }
 
 .edge-bottom::after {
@@ -591,7 +600,6 @@ a {
       transparent 70%);
   pointer-events: none;
   opacity: calc(var(--light-bottom, 0.5) * 0.45 + var(--light-rim, 0.5) * 0.25);
-  transition: opacity 0.12s ease-out;
 }
 
 /* Antenna band lines matching side profile photos */
@@ -821,9 +829,11 @@ a {
 
 /* FRONT FACE: Ultra-thin Flagship Bezel */
 .face.front {
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  padding: calc(var(--dh) * 0.0055);
+  backface-visibility: visible;
+  -webkit-backface-visibility: visible;
+  transform-style: flat;
+  -webkit-transform-style: flat;
+  padding: calc(round(nearest, var(--dh) * 0.0055, 1px));
   background: linear-gradient(145deg,
       rgba(255, 255, 255, 0.6) 0%,
       var(--titanium-1) 25%,
@@ -832,6 +842,7 @@ a {
       rgba(255, 255, 255, 0.6) 100%);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
   transform: translateZ(calc(var(--depth) / 2));
+  -webkit-transform: translateZ(calc(var(--depth) / 2));
   outline: none;
 }
 
@@ -876,7 +887,7 @@ a {
   filter: blur(0.4px);
 }
 
-/* 2.5D CURVED AMOLED DISPLAY WITH CHROME WATERFALL GLASS */
+/* 2.5D CURVED AMOLED DISPLAY WITH ULTRA-THIN RAZOR BEZEL */
 .screen {
   position: relative;
   width: 100%;
@@ -884,8 +895,79 @@ a {
   overflow: hidden;
   container-type: inline-size;
   background: #000;
-  border-radius: calc(var(--corner) - calc(var(--dh) * 0.0035));
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+  border: calc(max(1.2px, round(nearest, var(--dh) * 0.0016, 1px))) solid #08090d;
+  border-radius: calc(var(--corner) - calc(round(nearest, var(--dh) * 0.0025, 1px)));
+  box-shadow:
+    0 0 0 0.75px rgba(0, 0, 0, 0.9),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.08);
+  transform: translateZ(0.2px);
+  -webkit-transform: translateZ(0.2px);
+  transform-style: flat;
+  -webkit-transform-style: flat;
+  backface-visibility: visible;
+  -webkit-backface-visibility: visible;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
+  contain: layout style paint;
+}
+
+/* Razor-Thin Precision Screen Bezel with Dynamic Light-Reflecting Shine (BEZEL ONLY) */
+.screen-bezel-shine {
+  position: absolute;
+  inset: calc(round(nearest, var(--dh) * 0.0055, 1px));
+  border-radius: calc(var(--corner) - calc(round(nearest, var(--dh) * 0.0025, 1px)));
+  pointer-events: none;
+  z-index: 58;
+  /* Ultra-thin matching bezel border width */
+  border: calc(max(1.2px, round(nearest, var(--dh) * 0.0016, 1px))) solid transparent;
+  /* Dynamic light reflection: moves in real time as phone rotates in 3D */
+  background:
+    /* Intense specular pinpoint reflection glinting along bezel when moved */
+    radial-gradient(
+      circle 240px at var(--spot-front-x, 35%) var(--spot-front-y, 25%),
+      rgba(255, 255, 255, 1) 0%,
+      rgba(255, 255, 255, 0.85) 12%,
+      rgba(205, 232, 255, 0.45) 30%,
+      transparent 65%
+    ),
+    /* Rotating specular glass sheen */
+    conic-gradient(
+      from var(--sheen-angle, 45deg) at var(--spot-front-x, 50%) var(--spot-front-y, 50%),
+      rgba(255, 255, 255, 0.25) 0deg,
+      rgba(255, 255, 255, 0.95) 55deg,
+      rgba(195, 228, 255, 1) 85deg,
+      rgba(255, 255, 255, 0.4) 130deg,
+      rgba(255, 255, 255, 0.1) 180deg,
+      rgba(255, 255, 255, 0.9) 240deg,
+      rgba(255, 255, 255, 0.25) 360deg
+    );
+  /* Modern CSS mask: isolates the shining effect strictly to the thin bezel border ONLY */
+  -webkit-mask:
+    linear-gradient(#fff 0 0) padding-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) padding-box,
+    linear-gradient(#fff 0 0);
+          mask:
+    linear-gradient(#fff 0 0) padding-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  /* Polished glass rim illumination that responds to front specular light */
+  opacity: calc(0.45 + var(--spec-front, 0.5) * 0.55);
+  filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.7));
+  animation: bezel-shimmer 5s ease-in-out infinite;
+}
+
+@keyframes bezel-shimmer {
+  0%, 100% {
+    filter: drop-shadow(0 0 0.6px rgba(255, 255, 255, 0.65));
+  }
+  50% {
+    filter: drop-shadow(0 0 1.5px rgba(255, 255, 255, 0.95)) brightness(1.2);
+  }
 }
 
 .screen-glare {
@@ -899,10 +981,29 @@ a {
   inset: 0;
   font-size: calc(var(--u) * 4);
   overflow: hidden;
+  transform-style: flat;
+  -webkit-transform-style: flat;
+  backface-visibility: visible;
+  -webkit-backface-visibility: visible;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
+  text-rendering: geometricPrecision;
+}
+
+/* Ultra-sharp SVG vector rendering and contrast across all 3D orientations */
+.screen svg,
+.ui svg,
+.app-svg {
+  shape-rendering: geometricPrecision;
   image-rendering: -webkit-optimize-contrast;
+  image-rendering: high-quality;
+}
+
+.screen img,
+.wallpaper {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: high-quality;
+  transform: translateZ(0);
 }
 
 .wallpaper {
@@ -912,7 +1013,6 @@ a {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  filter: brightness(1.06) contrast(1.06) saturate(1.1);
 }
 
 .wallpaper::after {
@@ -1628,7 +1728,7 @@ a {
 
 .status {
   position: absolute;
-  z-index: 40;
+  z-index: 55;
   inset: 0 0 auto 0;
   height: calc(var(--u) * 9.5);
   padding: 0 calc(var(--u) * 6.5);
@@ -2000,54 +2100,62 @@ a {
 .app-window {
   position: absolute;
   inset: 0;
-  z-index: 30;
+  z-index: 50;
   display: flex;
   flex-direction: column;
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
   background: #090c13;
   color: #ffffff;
   padding-top: var(--top);
   transform-origin: var(--ox) var(--oy);
-  animation: app-open 0.34s cubic-bezier(0.2, 0.85, 0.25, 1) both;
+  transform-style: flat;
+  -webkit-transform-style: flat;
+  backface-visibility: visible;
+  -webkit-backface-visibility: visible;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
+  animation: app-open 0.18s ease-out;
 }
 
 .app-window.closing {
-  animation: app-close 0.24s cubic-bezier(0.4, 0, 0.9, 0.4) both;
+  animation: app-close 0.16s ease-in forwards;
 }
 
 @keyframes app-open {
   from {
-    transform: scale(0.18);
     opacity: 0;
-    border-radius: calc(var(--u) * 12);
   }
 
   to {
-    transform: none;
     opacity: 1;
-    border-radius: 0;
   }
 }
 
 @keyframes app-close {
   from {
-    transform: none;
     opacity: 1;
   }
 
   to {
-    transform: scale(0.18);
     opacity: 0;
-    border-radius: calc(var(--u) * 12);
   }
 }
 
 .app-head {
-  padding: calc(var(--u) * 2) calc(var(--u) * 6.5) calc(var(--u) * 4);
-  min-height: calc(var(--u) * 28);
+  flex-shrink: 0;
+  padding: calc(var(--u) * 2) calc(var(--u) * 6.5) calc(var(--u) * 3);
+  min-height: calc(var(--u) * 24);
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  transform-style: flat;
+  -webkit-transform-style: flat;
+  backface-visibility: visible;
+  -webkit-backface-visibility: visible;
 }
 
 .back-btn {
@@ -2061,6 +2169,8 @@ a {
   background: rgba(255, 255, 255, 0.1);
   color: #ffffff;
   transition: all 0.2s ease;
+  transform-style: flat;
+  -webkit-transform-style: flat;
 }
 
 .back-btn:hover {
@@ -2071,6 +2181,7 @@ a {
 .back-btn svg {
   width: 52%;
   height: 52%;
+  shape-rendering: geometricPrecision;
 }
 
 .app-head h1 {
@@ -2080,35 +2191,89 @@ a {
   letter-spacing: -0.02em;
   line-height: 1.15;
   color: #ffffff;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+  text-shadow: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
 }
 
 .app-head p {
   margin-top: calc(var(--u) * 1);
   font-size: calc(var(--u) * 3.4);
-  color: rgba(255, 255, 255, 0.65);
+  color: rgba(255, 255, 255, 0.72);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
 }
 
 .app-body {
   flex: 1 1;
+  min-height: 0;
+  max-height: 100%;
+  height: 100%;
   overflow-y: auto;
-  padding: calc(var(--u) * 4) calc(var(--u) * 5) calc(var(--u) * 14);
-  scrollbar-width: none;
+  overflow-x: hidden;
+  overscroll-behavior-y: contain;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+  padding: calc(var(--u) * 4) calc(var(--u) * 5) calc(var(--u) * 18);
+  cursor: -webkit-grab;
+  cursor: grab;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  transform-style: flat;
+  -webkit-transform-style: flat;
+  backface-visibility: visible;
+  -webkit-backface-visibility: visible;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
 }
 
+.app-body.is-scrolling,
+.app-body:active {
+  cursor: -webkit-grabbing;
+  cursor: grabbing;
+}
+
+/* Elegant Samsung One UI Scroll Indicator */
 .app-body::-webkit-scrollbar {
-  display: none;
+  width: calc(var(--u) * 1.2);
+}
+
+.app-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.app-body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+}
+
+.app-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.app-body {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.28) transparent;
 }
 
 .card {
   margin-bottom: calc(var(--u) * 2.8);
   padding: calc(var(--u) * 4.5);
   border-radius: calc(var(--u) * 5.5);
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(24px) saturate(160%);
-  -webkit-backdrop-filter: blur(24px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  transform-style: flat;
+  -webkit-transform-style: flat;
+  backface-visibility: visible;
+  -webkit-backface-visibility: visible;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
 }
 
 .card.list {
@@ -2123,12 +2288,18 @@ a {
   color: #dfba98;
   text-transform: uppercase;
   letter-spacing: 0.06em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
 }
 
 .card .body {
   font-size: calc(var(--u) * 3.8);
   line-height: 1.6;
-  color: rgba(255, 255, 255, 0.88);
+  color: rgba(255, 255, 255, 0.94);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
 }
 
 .row {
@@ -2137,6 +2308,8 @@ a {
   justify-content: space-between;
   gap: calc(var(--u) * 3);
   padding: calc(var(--u) * 3.2) 0;
+  transform-style: flat;
+  -webkit-transform-style: flat;
 }
 
 .row+.row {
@@ -2147,13 +2320,19 @@ a {
   font-size: calc(var(--u) * 3.9);
   font-weight: 600;
   color: #ffffff;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
 }
 
 .row .s {
   margin-top: calc(var(--u) * 0.7);
   font-size: calc(var(--u) * 3.3);
   line-height: 1.45;
-  color: rgba(255, 255, 255, 0.62);
+  color: rgba(255, 255, 255, 0.72);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
 }
 
 .row .m {
@@ -2183,9 +2362,12 @@ a {
   padding: calc(var(--u) * 1.6) calc(var(--u) * 3.2);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   font-size: calc(var(--u) * 3.2);
-  color: #f1f5f9;
+  color: #ffffff;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
 }
 
 .spen-canvas-box {
@@ -2244,7 +2426,7 @@ a {
 
 .navbar {
   position: absolute;
-  z-index: 45;
+  z-index: 55;
   inset: auto 0 0 0;
   height: calc(var(--u) * 7);
   display: grid;

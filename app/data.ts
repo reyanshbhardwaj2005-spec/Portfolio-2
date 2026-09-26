@@ -57,20 +57,37 @@ export const apps: AppDef[] = [
     blocks: [
       {
         kind: "items",
-        heading: "Now Playing & Rotation",
+        heading: "Now Playing & Heavy Rotation",
         items: [
           { title: "Midnight City", sub: "M83 • Hurry Up, We're Dreaming", meta: "4:03" },
           { title: "Resonance", sub: "HOME • Odyssey", meta: "3:32" },
           { title: "Starboy", sub: "The Weeknd, Daft Punk", meta: "3:50" },
           { title: "Solaris (Spatial Mix)", sub: "Hans Zimmer • Interstellar", meta: "4:45" },
           { title: "After Dark", sub: "Mr.Kitty • Time", meta: "4:19" },
+          { title: "Nightcall", sub: "Kavinsky • OutRun", meta: "4:19" },
+          { title: "Veridis Quo", sub: "Daft Punk • Discovery", meta: "5:45" },
         ],
+      },
+      {
+        kind: "items",
+        heading: "Curated Coding Playlists",
+        items: [
+          { title: "Deep Focus Ambient", sub: "128 tracks • Zero-distraction binaural synths", meta: "8h 40m" },
+          { title: "Synthwave Night Drives", sub: "94 tracks • Retrofuturistic 80s arpeggios", meta: "6h 15m" },
+          { title: "Cinematic Orchestral Builds", sub: "62 tracks • Film score coding energy", meta: "4h 30m" },
+        ],
+      },
+      {
+        kind: "chips",
+        heading: "Audio Engine & Hi-Fi Fidelity",
+        chips: ["24-bit / 96kHz FLAC", "Dolby Atmos Spatial", "Equalizer: Studio V-Shape", "Offline Cache: 32 GB"],
       },
       {
         kind: "links",
         heading: "Spotify Connect",
         links: [
-          { label: "Follow Reyansh on Spotify", href: profile.spotify, hint: "Open app" },
+          { label: "Follow Reyansh on Spotify", href: profile.spotify, hint: "Open profile" },
+          { label: "Listen to Coding Playlist", href: profile.spotify, hint: "Launch player" },
         ],
       },
     ],
@@ -86,7 +103,7 @@ export const apps: AppDef[] = [
     blocks: [
       {
         kind: "items",
-        heading: "Featured Demos",
+        heading: "Featured Architecture Demos",
         items: [
           {
             title: "3D Spatial Web Architecture (2026)",
@@ -103,11 +120,30 @@ export const apps: AppDef[] = [
             sub: "Real-time streaming LLM vectors with contextual semantic memory and graph navigation.",
             meta: "Dev Talk",
           },
+          {
+            title: "Aura Design System Micro-Physics",
+            sub: "Building spring-damped gesture controllers and haptic response curves for touch screens.",
+            meta: "Workshop",
+          },
+        ],
+      },
+      {
+        kind: "items",
+        heading: "Conference Presentations",
+        items: [
+          { title: "React India Keynote", sub: "Next.js App Router performance at scale • Bengaluru", meta: "2025" },
+          { title: "GDG DevFest Speaker", sub: "Flutter & WebGL interoperability patterns • Delhi", meta: "2024" },
+          { title: "FOSS United Meetup", sub: "Building distributed local-first sync systems • Online", meta: "2024" },
         ],
       },
       {
         kind: "text",
-        body: "Watch complete recorded project walkthroughs and interactive video breakdowns of my system architectures.",
+        body: "Recorded project walkthroughs, architectural teardowns, and interactive video breakdowns of my system architectures.",
+      },
+      {
+        kind: "chips",
+        heading: "Media Specs & Streams",
+        chips: ["4K UHD 60fps", "HDR10+ Mastering", "AV1 Codec", "Spatial Audio 7.1"],
       },
     ],
   },
@@ -130,8 +166,8 @@ export const apps: AppDef[] = [
         items: [
           {
             title: "Specialization",
-            sub: "Next.js, React 19, TypeScript, React Native & Flutter, WebGL",
-            meta: "Web & Mobile",
+            sub: "Next.js 15, React 19, TypeScript, React Native & Flutter, WebGL",
+            meta: "Full Stack",
           },
           {
             title: "Design Philosophy",
@@ -151,6 +187,27 @@ export const apps: AppDef[] = [
         ],
       },
       {
+        kind: "items",
+        heading: "Professional Experience",
+        items: [
+          {
+            title: "Senior Full-Stack Engineer",
+            sub: "Leading architecture for high-concurrency cloud applications and real-time interactive interfaces.",
+            meta: "2023 - Present",
+          },
+          {
+            title: "Mobile Systems Architect",
+            sub: "Engineered zero-jank iOS and Android applications with offline-first local synchronization.",
+            meta: "2021 - 2023",
+          },
+          {
+            title: "Frontend & UI/UX Specialist",
+            sub: "Crafted design systems, micro-interactions, and accessible web platforms for high-growth tech startups.",
+            meta: "2019 - 2021",
+          },
+        ],
+      },
+      {
         kind: "chips",
         heading: "Core Competencies",
         chips: [
@@ -160,6 +217,19 @@ export const apps: AppDef[] = [
           "Micro-Interactions",
           "Distributed APIs",
           "Performance Optimization",
+          "Cloud Infrastructure",
+          "TypeScript Strict",
+        ],
+      },
+      {
+        kind: "items",
+        heading: "Education & Credentials",
+        items: [
+          {
+            title: "B.Tech in Computer Science & Engineering",
+            sub: "First Class with Distinction • Focus on Distributed Systems & Graphics",
+            meta: "Honors Graduate",
+          },
         ],
       },
     ],
@@ -197,7 +267,33 @@ export const apps: AppDef[] = [
             sub: "Why interfaces should feel like continuous physical material rather than static abrupt states.",
             meta: "3 min read",
           },
+          {
+            title: "Mastering Subpixel Font Antialiasing in Chromium",
+            sub: "Deep dive into Skia raster scales, ClearType subpixel rendering, and composited 3D planes.",
+            meta: "6 min read",
+          },
         ],
+      },
+      {
+        kind: "items",
+        heading: "Technical Case Studies",
+        items: [
+          {
+            title: "Optimizing Time-To-First-Byte (TTFB) on Edge",
+            sub: "Streaming SSR, edge caching, and incremental static revalidation strategies.",
+            meta: "Architecture",
+          },
+          {
+            title: "State Management Without Framework Bloat",
+            sub: "Using lightweight reactive stores and URL query params as single source of truth.",
+            meta: "Best Practices",
+          },
+        ],
+      },
+      {
+        kind: "chips",
+        heading: "Topics & Tags",
+        chips: ["3D Web", "Performance", "React 19", "System Architecture", "Typography", "Gesture Physics"],
       },
     ],
   },
@@ -221,7 +317,18 @@ export const apps: AppDef[] = [
           { title: "Processor", sub: "Snapdragon 8 Elite Mobile Platform (3nm)", meta: "Octa-Core" },
           { title: "Display", sub: "6.8-inch Dynamic AMOLED 2X (1-120Hz Adaptive)", meta: "QHD+" },
           { title: "Storage", sub: "512 GB UFS 4.0", meta: "84.2 GB used" },
+          { title: "RAM", sub: "16 GB LPDDR5X + 8 GB RAM Plus", meta: "High Speed" },
           { title: "Battery Health", sub: "5,000 mAh • Super Fast Charging 2.0", meta: "Optimal" },
+        ],
+      },
+      {
+        kind: "items",
+        heading: "Display & Visual Engine",
+        items: [
+          { title: "Resolution Mode", sub: "Native Quad HD+ (3120 x 1440) Ultra Sharp", meta: "Active" },
+          { title: "Motion Smoothness", sub: "Adaptive 1Hz - 120Hz LTPO Refresh Rate", meta: "120Hz" },
+          { title: "Eye Comfort Shield", sub: "Adaptive blue light filter with circadian adjustment", meta: "On" },
+          { title: "Peak Brightness", sub: "2,600 nits Outdoor Vision Booster", meta: "Auto" },
         ],
       },
       {
@@ -231,7 +338,13 @@ export const apps: AppDef[] = [
           { title: "Framework", sub: "Next.js 15 App Router", meta: "Production" },
           { title: "3D Pipeline", sub: "Vanilla CSS 3D Hardware Accelerated", meta: "60 FPS" },
           { title: "Language", sub: "TypeScript Strict Mode", meta: "100% Typed" },
+          { title: "Styling Engine", sub: "Tailored Vanilla CSS Tokens & Layouts", meta: "Custom" },
         ],
+      },
+      {
+        kind: "chips",
+        heading: "Connected Radios & Peripherals",
+        chips: ["Wi-Fi 7 Ready", "5G Sub-6 & mmWave", "Bluetooth 5.4 LE", "Ultra-Wideband (UWB)", "NFC"],
       },
     ],
   },
@@ -268,15 +381,31 @@ export const apps: AppDef[] = [
             sub: "Competitive Premier Rating: 18,500",
             meta: "540 hrs",
           },
+          {
+            title: "Hollow Knight: Silksong",
+            sub: "Anticipated indie masterpiece on wishlist",
+            meta: "Wishlist #1",
+          },
+        ],
+      },
+      {
+        kind: "items",
+        heading: "Battle Station & Rig Hardware",
+        items: [
+          { title: "Graphics Card", sub: "NVIDIA GeForce RTX 4090 24GB VRAM", meta: "4K 144Hz" },
+          { title: "Processor", sub: "AMD Ryzen 9 7950X3D 16-Core / 32-Thread", meta: "5.7 GHz" },
+          { title: "Memory", sub: "64 GB G.Skill Trident Z5 DDR5-6000", meta: "Dual Channel" },
+          { title: "Monitor", sub: "Samsung Odyssey OLED G9 49-inch Curved", meta: "240Hz 0.03ms" },
         ],
       },
       {
         kind: "chips",
         heading: "Badges & Stats",
-        chips: ["Level 48", "6+ Years of Service", "160+ Games Owned", "100% Achievements in 8 Games"],
+        chips: ["Level 48", "6+ Years of Service", "160+ Games Owned", "100% Achievements in 8 Games", "Community Contributor"],
       },
       {
         kind: "links",
+        heading: "Community & Steam Connect",
         links: [
           { label: "View Steam Community Profile", href: profile.steam, hint: "steamcommunity.com" },
         ],
@@ -301,6 +430,18 @@ export const apps: AppDef[] = [
           { title: "Sleep Performance", sub: "8h 24m sleep logged (100% of sleep need met)", meta: "100%" },
           { title: "Heart Rate Variability (HRV)", sub: "+12 ms above monthly baseline", meta: "84 ms" },
           { title: "Resting Heart Rate", sub: "Cardiovascular efficiency metric", meta: "52 bpm" },
+          { title: "Skin Temperature", sub: "0.2°F below baseline", meta: "Normal" },
+          { title: "Blood Oxygen (SpO2)", sub: "Optimal arterial saturation", meta: "98%" },
+        ],
+      },
+      {
+        kind: "items",
+        heading: "Sleep Architecture Breakdown",
+        items: [
+          { title: "Deep / SWS Sleep", sub: "Cellular repair and physical recovery", meta: "2h 15m (27%)" },
+          { title: "REM Sleep", sub: "Mental clarity, memory consolidation, cognitive focus", meta: "2h 45m (33%)" },
+          { title: "Light Sleep", sub: "Transitional restful state", meta: "3h 24m (40%)" },
+          { title: "Awake Time", sub: "Minimal sleep disruptions logged", meta: "18 mins" },
         ],
       },
       {
@@ -310,6 +451,11 @@ export const apps: AppDef[] = [
           { title: "Morning 5K Outdoor Run", sub: "Avg HR: 154 bpm • Cadence 172 spm", meta: "10.4 Strain" },
           { title: "Deep Focus Engineering Sprint", sub: "3D spatial calculations & render pipeline", meta: "4.2 Strain" },
         ],
+      },
+      {
+        kind: "chips",
+        heading: "Weekly Trends",
+        chips: ["Avg Recovery: 86%", "Weekly Strain: 98.4", "Consistency: 96%", "Sleep Debt: 0m"],
       },
     ],
   },
@@ -330,6 +476,16 @@ export const apps: AppDef[] = [
           { title: "Route", sub: "DEL (Indira Gandhi Int'l) ➔ BLR (Kempegowda Int'l)", meta: "1,080 mi" },
           { title: "Aircraft", sub: "Boeing 787-9 Dreamliner • VT-EXD", meta: "36,000 ft" },
           { title: "Departure / Arrival", sub: "DEP 10:15 AM (Gate 42B) • ARR 01:00 PM (Gate 18)", meta: "42m left" },
+          { title: "Ground Speed", sub: "Tailwind boost +38 kts", meta: "542 mph" },
+          { title: "Cabin Atmosphere", sub: "Cabin altitude 6,000 ft • Humidity 15%", meta: "Comfortable" },
+        ],
+      },
+      {
+        kind: "items",
+        heading: "Upcoming Flights",
+        items: [
+          { title: "Singapore Airlines SQ 503", sub: "BLR ➔ SIN • Airbus A350-900", meta: "Dec 14" },
+          { title: "Singapore Airlines SQ 32", sub: "SIN ➔ SFO • Airbus A350-900 ULR", meta: "Dec 15" },
         ],
       },
       {
@@ -340,6 +496,11 @@ export const apps: AppDef[] = [
           { title: "Total Flights Shipped", sub: "Domestic & International routes", meta: "26 Flights" },
           { title: "Countries Visited", sub: "India, UAE, Singapore, Japan, Germany, USA", meta: "8 Countries" },
         ],
+      },
+      {
+        kind: "chips",
+        heading: "Aircraft Types Flown",
+        chips: ["Boeing 787-9", "Airbus A350-900", "Boeing 777-300ER", "Airbus A321neo", "Boeing 737 MAX 8"],
       },
     ],
   },
@@ -357,7 +518,7 @@ export const apps: AppDef[] = [
     blocks: [
       {
         kind: "items",
-        heading: "Production Applications",
+        heading: "Featured Flagship Applications",
         items: [
           {
             title: "Galaxy S26 3D Spatial Experience",
@@ -382,6 +543,27 @@ export const apps: AppDef[] = [
         ],
       },
       {
+        kind: "items",
+        heading: "Developer Release Notes",
+        items: [
+          {
+            title: "S26 Spatial v2.4 Release",
+            sub: "Hardware-accelerated telephoto camera perspective, touch drag scrolling, zero blur.",
+            meta: "Latest Build",
+          },
+          {
+            title: "Pulse Engine v1.8 Performance Patch",
+            sub: "Reduced battery consumption during high-frequency Bluetooth sync by 45%.",
+            meta: "Patch",
+          },
+        ],
+      },
+      {
+        kind: "chips",
+        heading: "Developer Badges",
+        chips: ["Verified Developer", "150k+ Total Installs", "100% Crash-Free Rate", "Top Rated 2025"],
+      },
+      {
         kind: "links",
         heading: "Source Repositories",
         links: [
@@ -402,7 +584,7 @@ export const apps: AppDef[] = [
     blocks: [
       {
         kind: "items",
-        heading: "Curated Albums",
+        heading: "Curated Photography Albums",
         items: [
           {
             title: "Engineering Setup & Workspace",
@@ -427,8 +609,22 @@ export const apps: AppDef[] = [
         ],
       },
       {
+        kind: "items",
+        heading: "S26 Ultra Camera System EXIF",
+        items: [
+          { title: "200MP Main Wide Sensor", sub: "1/1.3-inch sensor • f/1.7 aperture • OIS multi-directional", meta: "24mm eq" },
+          { title: "50MP 5x Periscope Telephoto", sub: "Dual pixel PDAF • f/3.4 aperture • 100x Space Zoom", meta: "115mm eq" },
+          { title: "12MP Ultra-Wide Macro", sub: "120° FOV • Super Steady Video stabilization", meta: "13mm eq" },
+        ],
+      },
+      {
         kind: "text",
-        body: "Visual explorations documenting the intersection of modern engineering, mechanical design, and travel.",
+        body: "Visual explorations documenting the intersection of modern engineering, mechanical design, urban geometry, and travel.",
+      },
+      {
+        kind: "chips",
+        heading: "Color & Processing Profiles",
+        chips: ["ProRAW 16-bit DNG", "Natural Leica Look", "Cinematic Film Grain", "ACES Color Pipeline"],
       },
     ],
   },
@@ -444,7 +640,16 @@ export const apps: AppDef[] = [
     blocks: [
       {
         kind: "text",
-        body: "Feel free to reach out directly regarding engineering roles, contracts, architecture consulting, or creative collaborations.",
+        body: "Feel free to reach out directly regarding engineering roles, contracts, architecture consulting, or creative collaborations. I typically respond within 24 hours.",
+      },
+      {
+        kind: "items",
+        heading: "Consulting & Role Focus",
+        items: [
+          { title: "Full-Stack System Architecture", sub: "Next.js, Node.js, distributed caches, high-throughput microservices", meta: "Core" },
+          { title: "High-Fidelity 3D Web & Canvas", sub: "Interactive WebGL, Three.js, CSS 3D matrix math, GPU optimization", meta: "Specialty" },
+          { title: "Mobile Application Engineering", sub: "React Native & Flutter architecture, gesture animations, offline sync", meta: "Mobile" },
+        ],
       },
       {
         kind: "links",
@@ -454,6 +659,11 @@ export const apps: AppDef[] = [
           { label: "Connect on LinkedIn", href: profile.linkedin, hint: "linkedin.com" },
           { label: "GitHub Profile", href: profile.github, hint: "github.com" },
         ],
+      },
+      {
+        kind: "chips",
+        heading: "Availability & Working Hours",
+        chips: ["Open for Full-Time", "Open for Contracts", "Timezone: IST (UTC+5:30)", "Remote Global Friendly"],
       },
     ],
   },
@@ -486,6 +696,19 @@ export const apps: AppDef[] = [
             sub: "Technical research on hardware-accelerated 3D CSS and WebGL rendering passes.",
             meta: "PDF • 890 KB",
           },
+          {
+            title: "Biometrics_Engine_Spec.pdf",
+            sub: "Bluetooth Low Energy protocol specifications and offline sync schemas.",
+            meta: "PDF • 450 KB",
+          },
+        ],
+      },
+      {
+        kind: "items",
+        heading: "Certifications & Credentials",
+        items: [
+          { title: "AWS Certified Solutions Architect", sub: "Issued by Amazon Web Services • Associate level", meta: "Certified" },
+          { title: "Google Cloud Professional Architect", sub: "Cloud infrastructure, distributed databases, security", meta: "Certified" },
         ],
       },
       {
@@ -495,6 +718,11 @@ export const apps: AppDef[] = [
           { label: "Download Resume (PDF)", href: "/resume.pdf", hint: "Direct PDF" },
           { label: "GitHub Repositories", href: profile.github, hint: "Open source" },
         ],
+      },
+      {
+        kind: "chips",
+        heading: "Storage Metrics",
+        chips: ["Encrypted Vault AES-256", "Cloud Sync Enabled", "512 GB Total Capacity"],
       },
     ],
   },
@@ -516,7 +744,24 @@ export const apps: AppDef[] = [
           { title: "2026 Commit Activity", sub: "Consistent daily engineering cadence", meta: "1,248 commits" },
           { title: "Longest Daily Streak", sub: "Continuous active repository contributions", meta: "42 days" },
           { title: "Public Repositories", sub: "Open source libraries, tools and starter kits", meta: "28 repos" },
+          { title: "Pull Requests Merged", sub: "Cross-repository contributions and code reviews", meta: "114 PRs" },
+          { title: "Code Reviews Submitted", sub: "Rigorous typing, unit tests, and performance audits", meta: "86 reviews" },
         ],
+      },
+      {
+        kind: "items",
+        heading: "Pinned Open-Source Repositories",
+        items: [
+          { title: "s26-ultra-spatial-portfolio", sub: "Zero-dependency CSS 3D mobile simulator with realistic lighting", meta: "TypeScript • 180 ★" },
+          { title: "pulse-biometrics-engine", sub: "Real-time BLE telemetry visualization engine with reactive stores", meta: "Flutter/Go • 340 ★" },
+          { title: "omni-vector-search", sub: "Streaming multimodal vector embedding indexing and retrieval", meta: "Python/TS • 220 ★" },
+          { title: "aura-design-system", sub: "Accessible component primitives with tactile spring physics", meta: "React • 150 ★" },
+        ],
+      },
+      {
+        kind: "chips",
+        heading: "Languages & Distribution",
+        chips: ["TypeScript (62%)", "Go (18%)", "Rust (10%)", "Python (6%)", "CSS/GLSL (4%)"],
       },
       {
         kind: "links",
@@ -538,14 +783,38 @@ export const apps: AppDef[] = [
     blocks: [
       {
         kind: "items",
-        heading: "Atmospheric Metrics",
+        heading: "Current Atmospheric Metrics",
         items: [
           { title: "Current Temperature", sub: "Feels like 28° • Partly Cloudy", meta: "27°C" },
           { title: "Day's High / Low", sub: "Peak 2:30 PM • Low 5:00 AM", meta: "H:29° L:20°" },
           { title: "Air Quality Index", sub: "AQI 42 • Good clean air", meta: "Clean" },
           { title: "Humidity", sub: "Dew point 19°", meta: "68%" },
           { title: "Wind Speed", sub: "East-North-East gusts up to 18 km/h", meta: "12 km/h" },
+          { title: "Barometric Pressure", sub: "Stable atmospheric pressure", meta: "1012 hPa" },
           { title: "UV Index", sub: "Moderate solar radiation", meta: "5 Moderate" },
+          { title: "Visibility", sub: "Clear horizon line", meta: "10 km" },
+        ],
+      },
+      {
+        kind: "items",
+        heading: "7-Day Extended Forecast",
+        items: [
+          { title: "Today (Tuesday)", sub: "Partly cloudy with pleasant evening breeze", meta: "29° / 20°" },
+          { title: "Wednesday", sub: "Scattered clouds with sunshine intervals", meta: "28° / 19°" },
+          { title: "Thursday", sub: "Passing afternoon rain shower", meta: "26° / 19°" },
+          { title: "Friday", sub: "Clear skies with bright sunny morning", meta: "29° / 20°" },
+          { title: "Saturday", sub: "Pleasant weekend weather", meta: "28° / 18°" },
+          { title: "Sunday", sub: "Partly cloudy, mild breeze", meta: "27° / 19°" },
+          { title: "Monday", sub: "Sunny conditions throughout the day", meta: "29° / 20°" },
+        ],
+      },
+      {
+        kind: "items",
+        heading: "Sun & Astronomy Cycle",
+        items: [
+          { title: "Sunrise", sub: "First light at dawn", meta: "06:08 AM" },
+          { title: "Sunset", sub: "Golden hour twilight", meta: "06:19 PM" },
+          { title: "Moon Phase", sub: "Illumination 34%", meta: "Waxing Crescent" },
         ],
       },
     ],
@@ -561,11 +830,26 @@ export const apps: AppDef[] = [
     blocks: [
       {
         kind: "text",
-        body: "Draw or write notes directly on the S26 Ultra screen using your cursor or touch.",
+        body: "Draw or write notes directly on the S26 Ultra screen using your cursor or touch. Select colors below and tap Clear to wipe the canvas.",
       },
       {
         kind: "spen-canvas",
         heading: "Quick Note Canvas",
+      },
+      {
+        kind: "items",
+        heading: "Recent Notes & Sketches",
+        items: [
+          { title: "3D Lighting Vector Equations", sub: "World-to-local matrix transformation dot products", meta: "2h ago" },
+          { title: "Pulse App Navigation Architecture", sub: "Bottom tab bar flow with gesture dismiss modals", meta: "Yesterday" },
+          { title: "Coffee & Meeting Checklist", sub: "Coffee roasters meetup in Indiranagar, Bengaluru", meta: "3 days ago" },
+          { title: "S26 Ultra S-Pen Protrusion Geometry", sub: "Side profile bevel angles and titanium silo clearance", meta: "Sep 22" },
+        ],
+      },
+      {
+        kind: "chips",
+        heading: "S-Pen Air Actions & Features",
+        chips: ["4,096 Pressure Levels", "2.8ms Latency", "Air Command Menu", "Screen Off Memo", "Bluetooth Remote"],
       },
     ],
   },
