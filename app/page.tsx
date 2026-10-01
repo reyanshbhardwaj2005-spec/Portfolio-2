@@ -686,9 +686,9 @@ function AppWindow({
 
 /* ---------- 3D Phone Stage & Inspection Studio ---------- */
 
-const REST_RX = 12;
+const REST_RX = 0;
 const REST_RY = -24;
-const MAX_RX = 65;
+const MAX_RX = 35;
 
 type ViewPreset = "front" | "angle" | "back" | "right-side" | "left-side" | "spen";
 type TitaniumColor = "sand" | "gray" | "black" | "silverblue";
@@ -827,9 +827,11 @@ function getClosestTargetRy(currentRy: number, desiredOffsetFrom360: number): nu
 function PhoneStage({
   children,
   onOpenSpen,
+  isAppOpen,
 }: {
   children: ReactNode;
   onOpenSpen: () => void;
+  isAppOpen?: boolean;
 }) {
   const sceneRef = useRef<HTMLDivElement>(null);
   const phoneRef = useRef<HTMLDivElement>(null);
@@ -840,12 +842,27 @@ function PhoneStage({
   const targetRot = useRef({ rx: REST_RX, ry: REST_RY });
   const velocity = useRef({ vx: 0, vy: 0 });
 
-  // Physics animation modes: "idle" | "dragging" | "inertia" | "tweening" | "autorotate"
-  const mode = useRef<"idle" | "dragging" | "inertia" | "tweening" | "autorotate">("idle");
+  // Physics animation modes: "idle" | "dragging" | "inertia" | "tweening" | "autorotate" | "spring"
+  const mode = useRef<"idle" | "dragging" | "inertia" | "tweening" | "autorotate" | "spring">("idle");
 
   // Pointer drag tracking
   const dragStart = useRef({ x: 0, y: 0, time: 0, moved: false });
+  const dragStartRot = useRef({ rx: REST_RX, ry: REST_RY });
   const lastPointer = useRef({ x: 0, y: 0, time: 0 });
+
+  // High-precision critically damped spring for liquid-smooth natural return
+  const spring = useRef({
+    startRx: 0,
+    startRy: 0,
+    targetRx: 0,
+    targetRy: 0,
+    v0x: 0,
+    v0y: 0,
+    omega: 8.2,
+    startTime: 0,
+    duration: 750,
+    onComplete: undefined as (() => void) | undefined,
+  });
 
   // High-precision tween for presets & magnetic docking
   const tween = useRef({
@@ -959,8 +976,14 @@ function PhoneStage({
     }
 
     const targetFrontRy = Math.round(currentRy / 360) * 360;
-    const isFront = Math.abs(currentRx) < 0.25 && Math.abs(currentRy - targetFrontRy) < 0.25;
+    const isFront = Math.abs(currentRx) < 1.0 && Math.abs(currentRy - targetFrontRy) < 28;
     el.classList.toggle("is-front", isFront);
+
+    const isFlatFront =
+      Math.abs(currentRx) < 0.25 &&
+      Math.abs(currentRy - targetFrontRy) < 0.25 &&
+      mode.current !== "dragging";
+    el.classList.toggle("is-flat-front", isFlatFront);
   }, []);
 
   // Main unified physics and animation frame step
@@ -983,22 +1006,24 @@ function PhoneStage({
         applyTransform();
         needNextFrame = true;
       } else if (mode.current === "inertia") {
-        // Silky weighted momentum glide
+        // Silky weighted momentum glide for horizontal rotation
         const friction = Math.pow(0.963, dt);
         velocity.current.vx *= friction;
         velocity.current.vy *= friction;
 
         rot.current.ry += velocity.current.vx * dt;
-        rot.current.rx = Math.max(-MAX_RX, Math.min(MAX_RX, rot.current.rx - velocity.current.vy * dt));
+        // As soon as user releases, smoothly return vertical tilt to 0 (vertically straight)
+        const restoreFactor = 1 - Math.pow(0.85, dt);
+        rot.current.rx += (0 - rot.current.rx) * restoreFactor;
         targetRot.current = { ...rot.current };
 
-        const speed = Math.hypot(velocity.current.vx, velocity.current.vy);
+        const speed = Math.abs(velocity.current.vx);
         const targetFrontRy = Math.round(rot.current.ry / 360) * 360;
         const diffRy = Math.abs(rot.current.ry - targetFrontRy);
         const diffRx = Math.abs(rot.current.rx);
 
         // Smooth magnetic front docking when slowing down near front screen
-        if (speed < 0.70 && diffRy <= 32 && diffRx <= 22) {
+        if (speed < 0.70 && diffRy <= 32 && Math.abs(rot.current.rx) <= 22) {
           mode.current = "tweening";
           velocity.current = { vx: 0, vy: 0 };
           tween.current = {
@@ -1007,17 +1032,20 @@ function PhoneStage({
             targetRx: 0,
             targetRy: targetFrontRy,
             startTime: performance.now(),
-            duration: 450,
+            duration: 520,
             onComplete: () => setActivePreset("front"),
           };
           needNextFrame = true;
         } else {
           applyTransform();
 
-          if (speed > 0.02) {
+          if (speed > 0.02 || diffRx > 0.08) {
             needNextFrame = true;
           } else {
-            if (diffRy <= 26 && diffRx <= 18) {
+            rot.current.rx = 0;
+            applyTransform();
+
+            if (diffRy <= 26 && Math.abs(rot.current.rx) <= 18) {
               mode.current = "tweening";
               velocity.current = { vx: 0, vy: 0 };
               tween.current = {
@@ -1026,7 +1054,7 @@ function PhoneStage({
                 targetRx: 0,
                 targetRy: targetFrontRy,
                 startTime: performance.now(),
-                duration: 380,
+                duration: 500,
                 onComplete: () => setActivePreset("front"),
               };
               needNextFrame = true;
@@ -1035,13 +1063,47 @@ function PhoneStage({
             }
           }
         }
+      } else if (mode.current === "spring") {
+        const elapsedSec = (time - spring.current.startTime) / 1000;
+        const progress = Math.min(1, (time - spring.current.startTime) / spring.current.duration);
+
+        const omega = spring.current.omega;
+        const decay = Math.exp(-omega * elapsedSec);
+
+        // Analytical critically damped oscillator (C2 continuous: zero initial jerk, zero landing jerk)
+        // x(t) = target + (diff + (v0 + omega * diff) * t) * e^(-omega * t)
+        const diffX = spring.current.startRx - spring.current.targetRx;
+        let diffY = spring.current.startRy - spring.current.targetRy;
+        if (diffY > 180) diffY -= 360;
+        if (diffY < -180) diffY += 360;
+
+        const currentRx = spring.current.targetRx + (diffX + (spring.current.v0x + omega * diffX) * elapsedSec) * decay;
+        const currentRy = spring.current.targetRy + (diffY + (spring.current.v0y + omega * diffY) * elapsedSec) * decay;
+
+        rot.current.rx = currentRx;
+        rot.current.ry = currentRy;
+        targetRot.current = { ...rot.current };
+
+        applyTransform();
+
+        const remainingDist = Math.hypot(rot.current.rx - spring.current.targetRx, rot.current.ry - spring.current.targetRy);
+
+        if (progress < 1 && remainingDist > 0.05) {
+          needNextFrame = true;
+        } else {
+          rot.current.rx = spring.current.targetRx;
+          rot.current.ry = spring.current.targetRy;
+          applyTransform();
+          mode.current = "idle";
+          const cb = spring.current.onComplete;
+          if (cb) cb();
+        }
       } else if (mode.current === "tweening") {
         const elapsed = time - tween.current.startTime;
         const progress = Math.min(1, elapsed / tween.current.duration);
 
-        // Apple-grade quintic ease-out curve (smooth organic landing)
-        const t1 = 1 - progress;
-        const ease = 1 - t1 * t1 * t1 * t1;
+        // Perlin smootherstep (C2 continuous: smooth ease-in & cushion ease-out)
+        const ease = progress * progress * progress * (progress * (progress * 6 - 15) + 10);
 
         rot.current.rx = tween.current.startRx + (tween.current.targetRx - tween.current.startRx) * ease;
         rot.current.ry = tween.current.startRy + (tween.current.targetRy - tween.current.startRy) * ease;
@@ -1081,6 +1143,39 @@ function PhoneStage({
       rafId.current = requestAnimationFrame(loop);
     }
   }, [loop]);
+
+  const startSpringReturn = useCallback(
+    (targetRx: number, targetRy: number, onComplete?: () => void) => {
+      mode.current = "spring";
+      const now = performance.now();
+
+      // Soft velocity retention from drag release: preserves subtle flick without harshness
+      const maxSpeed = 35; // degrees/sec
+      const v0x = Math.max(-maxSpeed, Math.min(maxSpeed, -velocity.current.vy * 40));
+      const v0y = Math.max(-maxSpeed, Math.min(maxSpeed, velocity.current.vx * 40));
+
+      const dist = Math.hypot(targetRx - rot.current.rx, targetRy - rot.current.ry);
+      // Omega 7.8 - 8.4 gives a luxurious, fluid 700ms - 800ms float with zero jerk and zero overshoot
+      const omega = Math.min(8.6, Math.max(7.4, 8.2 - dist * 0.015));
+      const duration = Math.min(950, Math.max(720, Math.round((6.2 / omega) * 1000)));
+
+      spring.current = {
+        startRx: rot.current.rx,
+        startRy: rot.current.ry,
+        targetRx,
+        targetRy,
+        v0x,
+        v0y,
+        omega,
+        startTime: now,
+        duration,
+        onComplete,
+      };
+
+      ensureLoopRunning();
+    },
+    [ensureLoopRunning]
+  );
 
   const startTween = useCallback(
     (targetRx: number, targetRy: number, duration: number = 650, onComplete?: () => void) => {
@@ -1136,11 +1231,16 @@ function PhoneStage({
     }
 
     mode.current = "dragging";
+    phoneRef.current?.classList.add("is-dragging");
     dragStart.current = {
       x: e.clientX,
       y: e.clientY,
       time: performance.now(),
       moved: false,
+    };
+    dragStartRot.current = {
+      rx: rot.current.rx,
+      ry: rot.current.ry,
     };
     lastPointer.current = {
       x: e.clientX,
@@ -1150,7 +1250,15 @@ function PhoneStage({
     velocity.current = { vx: 0, vy: 0 };
     targetRot.current = { ...rot.current };
 
-    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    try {
+      sceneRef.current?.setPointerCapture(e.pointerId);
+    } catch {
+      try {
+        (e.target as HTMLElement).setPointerCapture(e.pointerId);
+      } catch {
+        // Ignore
+      }
+    }
     setHint(false);
     ensureLoopRunning();
   };
@@ -1167,13 +1275,24 @@ function PhoneStage({
 
     lastPointer.current = { x: e.clientX, y: e.clientY, time: now };
 
-    if (Math.abs(e.clientX - dragStart.current.x) + Math.abs(e.clientY - dragStart.current.y) > 2) {
+    const totalDx = Math.abs(e.clientX - dragStart.current.x);
+    const totalDy = Math.abs(e.clientY - dragStart.current.y);
+
+    if (totalDx + totalDy > 2) {
       dragStart.current.moved = true;
     }
 
-    // High precision sensitivity: 0.36deg/px horizontal, 0.30deg/px vertical
-    targetRot.current.ry += dx * 0.36;
-    targetRot.current.rx = Math.max(-MAX_RX, Math.min(MAX_RX, targetRot.current.rx - dy * 0.30));
+    // When user tries to turn vertically, keep horizontal rotation stable and clean
+    const isVerticalDrag = totalDy > totalDx * 1.25 && totalDy > 6;
+    if (!isVerticalDrag) {
+      targetRot.current.ry += dx * 0.36;
+    } else {
+      targetRot.current.ry += dx * 0.05;
+    }
+
+    // Limit vertical tilt strictly up to 35 degrees maximum while user is pressing the phone
+    const nextRx = targetRot.current.rx - dy * 0.30;
+    targetRot.current.rx = Math.max(-MAX_RX, Math.min(MAX_RX, nextRx));
 
     // Instant velocity normalized to standard 60fps frame (16.67ms)
     const instVx = (dx / deltaMs) * 16.67 * 0.36;
@@ -1186,13 +1305,29 @@ function PhoneStage({
 
   const endDrag = (e: ReactPointerEvent<HTMLDivElement>) => {
     if (mode.current !== "dragging") return;
+    phoneRef.current?.classList.remove("is-dragging");
 
     try {
-      (e.target as HTMLElement).releasePointerCapture(e.pointerId);
+      sceneRef.current?.releasePointerCapture(e.pointerId);
     } catch {
-      // Ignore if pointer capture already lost
+      try {
+        (e.target as HTMLElement).releasePointerCapture(e.pointerId);
+      } catch {
+        // Ignore if pointer capture already lost
+      }
     }
 
+    const totalDx = Math.abs(e.clientX - dragStart.current.x);
+    const totalDy = Math.abs(e.clientY - dragStart.current.y);
+
+    // When user turns vertically (or vertical gesture):
+    // As soon as he releases the phone, return with liquid-smooth physical spring to vertically straight (rx = 0)!
+    if (totalDy >= totalDx || totalDx < 14) {
+      startSpringReturn(0, dragStartRot.current.ry);
+      return;
+    }
+
+    // Otherwise (horizontal rotation):
     const speed = Math.hypot(velocity.current.vx, velocity.current.vy);
     const dir = velocity.current.vx > 0.05 ? 1 : velocity.current.vx < -0.05 ? -1 : 0;
 
@@ -1205,22 +1340,22 @@ function PhoneStage({
     }
 
     const diffRy = Math.abs(rot.current.ry - targetRy);
-    const diffRx = Math.abs(rot.current.rx);
 
-    // Gentle release near front screen: magnetic docking
-    if (speed < 0.40 && diffRy <= 32 && diffRx <= 24) {
-      startTween(0, targetRy, 420, () => setActivePreset("front"));
+    // Gentle release near front screen: magnetic docking to front screen (rx = 0)
+    if (speed < 0.40 && diffRy <= 32) {
+      startSpringReturn(0, targetRy, () => setActivePreset("front"));
       return;
     }
 
-    // Significant momentum: inertia glide
-    if (speed > 0.18) {
+    // Significant horizontal momentum: inertia glide (rx smoothly returns to 0 vertically straight)
+    if (Math.abs(velocity.current.vx) > 0.18) {
       mode.current = "inertia";
     } else {
-      if (diffRy <= 26 && diffRx <= 20) {
-        startTween(0, targetRy, 360, () => setActivePreset("front"));
+      if (diffRy <= 26) {
+        startSpringReturn(0, targetRy, () => setActivePreset("front"));
       } else {
-        mode.current = "idle";
+        // Return rx smoothly to vertically straight (rx = 0)
+        startSpringReturn(0, rot.current.ry);
       }
     }
   };
@@ -1241,11 +1376,11 @@ function PhoneStage({
         targetRy = Math.round(rot.current.ry / 360) * 360;
         break;
       case "angle":
-        targetRx = 12;
+        targetRx = 0;
         targetRy = getClosestTargetRy(rot.current.ry, -24);
         break;
       case "back":
-        targetRx = 18;
+        targetRx = 0;
         targetRy = getClosestTargetRy(rot.current.ry, 180);
         break;
       case "right-side":
@@ -1257,7 +1392,7 @@ function PhoneStage({
         targetRy = getClosestTargetRy(rot.current.ry, 90);
         break;
       case "spen":
-        targetRx = -48;
+        targetRx = -35;
         targetRy = getClosestTargetRy(rot.current.ry, 14);
         break;
     }
@@ -1272,6 +1407,13 @@ function PhoneStage({
       }
     });
   };
+
+  // Smoothly face front when an app opens so text is read parallel to screen pixels
+  useEffect(() => {
+    if (isAppOpen) {
+      setPreset("front");
+    }
+  }, [isAppOpen]);
 
   // Interactive S-Pen toggle
   const toggleSpen = () => {
@@ -1642,9 +1784,9 @@ export default function Page() {
 
   return (
     <main className="stage">
-      <PhoneStage onOpenSpen={handleOpenSpenNotes}>
+      <PhoneStage onOpenSpen={handleOpenSpenNotes} isAppOpen={Boolean(openId)}>
         <div
-          className="ui"
+          className={`ui${openId ? " has-open-app" : ""}${closing ? " app-closing" : ""}`}
           ref={(node) => {
             screenElRef.current = node;
           }}
