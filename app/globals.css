@@ -87,9 +87,9 @@ body {
   background:
     radial-gradient(75% 65% at 50% 38%, #ffffff 0%, #f7f8fa 55%, #edf0f5 100%),
     var(--stage);
-  -webkit-font-smoothing: subpixel-antialiased;
-  -moz-osx-font-smoothing: auto;
-  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
   overflow: hidden;
   user-select: none;
 }
@@ -308,9 +308,9 @@ a {
   -webkit-transform-style: preserve-3d;
   transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, -24deg));
   transform-origin: center center;
-  -webkit-font-smoothing: subpixel-antialiased;
-  -moz-osx-font-smoothing: auto;
-  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
   will-change: auto;
 }
 
@@ -318,21 +318,44 @@ a {
   will-change: transform;
 }
 
-/* Razor-Sharp Pixel-Perfect Native Hardware Resolution in Front View */
+/* Razor-Sharp Pixel-Perfect Native Hardware Resolution in Front View & Open App Mode */
 .phone3d.is-front {
   filter: none;
   will-change: auto;
 }
 
-.phone3d.is-flat-front {
-  filter: none;
-  will-change: auto;
+.phone3d.is-flat-front,
+.phone3d.is-app-open.is-flat-front {
+  transform: none !important;
+  transform-style: flat !important;
+  -webkit-transform-style: flat !important;
+  filter: none !important;
+  will-change: auto !important;
+}
+
+.scene.is-flat-front,
+.scene.is-app-open.is-flat-front {
+  perspective: none !important;
+}
+
+.phone3d.is-flat-front .face.front,
+.phone3d.is-app-open.is-flat-front .face.front {
+  transform: none !important;
+  transform-style: flat !important;
+  -webkit-transform-style: flat !important;
+  filter: none !important;
+  will-change: auto !important;
+  z-index: 20;
 }
 
 .phone3d.is-flat-front .screen,
-.phone3d.is-flat-front .ui {
+.phone3d.is-app-open.is-flat-front .screen,
+.phone3d.is-flat-front .ui,
+.phone3d.is-app-open.is-flat-front .ui {
   transform: none !important;
   -webkit-transform: none !important;
+  filter: none !important;
+  will-change: auto !important;
 }
 
 /* Transitions are handled with 60/120/144fps delta-time RAF physics for buttery liquid animation */
@@ -892,9 +915,9 @@ a {
   -webkit-transform-style: flat;
   backface-visibility: visible;
   -webkit-backface-visibility: visible;
-  -webkit-font-smoothing: subpixel-antialiased;
-  -moz-osx-font-smoothing: auto;
-  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
 }
 
 /* Razor-Thin Precision Screen Bezel with Dynamic Light-Reflecting Shine (BEZEL ONLY) */
@@ -966,9 +989,9 @@ a {
   -webkit-transform-style: flat;
   backface-visibility: visible;
   -webkit-backface-visibility: visible;
-  -webkit-font-smoothing: subpixel-antialiased;
-  -moz-osx-font-smoothing: auto;
-  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
 }
 
 /* Ultra-sharp SVG vector rendering and contrast across all 3D orientations */
@@ -1720,9 +1743,9 @@ a {
   font-weight: 600;
   color: #ffffff;
   pointer-events: none;
-  -webkit-font-smoothing: subpixel-antialiased;
-  -moz-osx-font-smoothing: auto;
-  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
 }
 
 .status-time {
@@ -1795,9 +1818,9 @@ a {
 }
 
 .ui.has-open-app .home {
-  transform: scale(0.94);
-  opacity: 0.4;
-  filter: blur(1.5px);
+  transform: scale(0.96);
+  opacity: 0;
+  filter: none;
   pointer-events: none;
 }
 
@@ -1904,9 +1927,9 @@ a {
   display: flex;
   flex-direction: column;
   color: #ffffff;
-  -webkit-font-smoothing: subpixel-antialiased;
-  -moz-osx-font-smoothing: auto;
-  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
 }
 
 .weather-header {
@@ -1970,9 +1993,9 @@ a {
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
   letter-spacing: 0.01em;
   text-align: center;
-  -webkit-font-smoothing: subpixel-antialiased;
-  -moz-osx-font-smoothing: auto;
-  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
 }
 
 /* APP GRID: 2 ROWS x 4 COLUMNS */
@@ -2037,9 +2060,9 @@ a {
   color: #fff;
   letter-spacing: 0.01em;
   text-align: center;
-  -webkit-font-smoothing: subpixel-antialiased;
-  -moz-osx-font-smoothing: auto;
-  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
 }
 
 /* CENTERED FLOATING SEARCH PILL */
@@ -2067,9 +2090,9 @@ a {
   font-size: calc(max(12.5px, var(--u) * 3.0));
   font-weight: 500;
   letter-spacing: 0.01em;
-  -webkit-font-smoothing: subpixel-antialiased;
-  -moz-osx-font-smoothing: auto;
-  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
 }
 
 .search-pill:hover {
@@ -2121,11 +2144,19 @@ a {
   -webkit-transform-style: flat;
   backface-visibility: visible;
   -webkit-backface-visibility: visible;
-  -webkit-font-smoothing: subpixel-antialiased;
-  -moz-osx-font-smoothing: auto;
-  text-rendering: optimizeLegibility;
-  will-change: transform, opacity, border-radius;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
+  will-change: transform, opacity;
   animation: app-open 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Once fully opened, transition to native 2D layout with zero transform or filter compositing for 100% sharp text */
+.app-window.opened {
+  animation: none !important;
+  transform: none !important;
+  will-change: auto !important;
+  filter: none !important;
 }
 
 .app-window.closing {
@@ -2138,7 +2169,6 @@ a {
     opacity: 0;
     transform: scale(0.24);
     border-radius: calc(var(--u) * 8);
-    filter: brightness(1.2);
   }
 
   30% {
@@ -2149,7 +2179,6 @@ a {
     opacity: 1;
     transform: scale(1);
     border-radius: inherit;
-    filter: brightness(1);
   }
 }
 
@@ -2158,7 +2187,6 @@ a {
     opacity: 1;
     transform: scale(1);
     border-radius: inherit;
-    filter: brightness(1);
   }
 
   40% {
@@ -2169,7 +2197,6 @@ a {
     opacity: 0;
     transform: scale(0.22);
     border-radius: calc(var(--u) * 8);
-    filter: brightness(0.9);
   }
 }
 
@@ -2180,10 +2207,10 @@ a {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  background: linear-gradient(180deg, rgba(8, 10, 16, 0.98) 0%, rgba(8, 10, 16, 0.92) 100%);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  background: #080a10;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   z-index: 2;
   transform-style: flat;
   -webkit-transform-style: flat;
@@ -2221,25 +2248,25 @@ a {
 .app-head h1 {
   margin-top: calc(var(--u) * 1.6);
   font-size: calc(max(22px, var(--u) * 6.2));
-  font-weight: 750;
-  letter-spacing: -0.025em;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   line-height: 1.15;
   color: #ffffff;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-  -webkit-font-smoothing: subpixel-antialiased;
-  -moz-osx-font-smoothing: auto;
-  text-rendering: optimizeLegibility;
+  text-shadow: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
 }
 
 .app-head p {
   margin-top: calc(var(--u) * 0.6);
   font-size: calc(max(13px, var(--u) * 3.35));
-  font-weight: 450;
-  color: rgba(255, 255, 255, 0.88);
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.92);
   line-height: 1.4;
-  -webkit-font-smoothing: subpixel-antialiased;
-  -moz-osx-font-smoothing: auto;
-  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
 }
 
 .app-body {
@@ -2259,9 +2286,9 @@ a {
   -webkit-transform-style: flat;
   backface-visibility: visible;
   -webkit-backface-visibility: visible;
-  -webkit-font-smoothing: subpixel-antialiased;
-  -moz-osx-font-smoothing: auto;
-  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
 }
 
 .app-body.is-scrolling,
@@ -2303,9 +2330,9 @@ a {
   -webkit-transform-style: flat;
   backface-visibility: visible;
   -webkit-backface-visibility: visible;
-  -webkit-font-smoothing: subpixel-antialiased;
-  -moz-osx-font-smoothing: auto;
-  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
 }
 
 .card.list {
@@ -2315,24 +2342,24 @@ a {
 
 .card h2 {
   margin-bottom: calc(var(--u) * 2);
-  font-size: calc(max(11.5px, var(--u) * 2.95));
-  font-weight: 750;
+  font-size: calc(max(12px, var(--u) * 2.95));
+  font-weight: 700;
   color: #fed7aa;
   text-transform: uppercase;
-  letter-spacing: 0.09em;
-  -webkit-font-smoothing: subpixel-antialiased;
-  -moz-osx-font-smoothing: auto;
-  text-rendering: optimizeLegibility;
+  letter-spacing: 0.08em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
 }
 
 .card .body {
   font-size: calc(max(13px, var(--u) * 3.4));
   line-height: 1.6;
   color: rgba(255, 255, 255, 0.95);
-  font-weight: 420;
-  -webkit-font-smoothing: subpixel-antialiased;
-  -moz-osx-font-smoothing: auto;
-  text-rendering: optimizeLegibility;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
 }
 
 .row {
@@ -2356,13 +2383,13 @@ a {
 
 .row .t {
   font-size: calc(max(14.5px, var(--u) * 3.9));
-  font-weight: 650;
+  font-weight: 600;
   color: #ffffff;
   letter-spacing: -0.01em;
   line-height: 1.35;
-  -webkit-font-smoothing: subpixel-antialiased;
-  -moz-osx-font-smoothing: auto;
-  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
 }
 
 .row .s {
@@ -2370,15 +2397,15 @@ a {
   font-size: calc(max(12.5px, var(--u) * 3.35));
   line-height: 1.48;
   color: rgba(255, 255, 255, 0.90);
-  font-weight: 420;
-  -webkit-font-smoothing: subpixel-antialiased;
-  -moz-osx-font-smoothing: auto;
-  text-rendering: optimizeLegibility;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
 }
 
 .row .m {
   font-size: calc(max(11px, var(--u) * 2.9));
-  font-weight: 650;
+  font-weight: 600;
   color: #fed7aa;
   background: rgba(254, 215, 170, 0.12);
   border: 1px solid rgba(254, 215, 170, 0.28);
@@ -2387,6 +2414,8 @@ a {
   text-align: right;
   white-space: nowrap;
   letter-spacing: 0.02em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .row.link {
@@ -2412,9 +2441,9 @@ a {
   font-size: calc(max(12px, var(--u) * 3.1));
   font-weight: 500;
   color: #ffffff;
-  -webkit-font-smoothing: subpixel-antialiased;
-  -moz-osx-font-smoothing: auto;
-  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
 }
 
 .spen-canvas-box {
@@ -2461,9 +2490,9 @@ a {
   background: rgba(255, 255, 255, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.22);
   color: #fff;
-  -webkit-font-smoothing: subpixel-antialiased;
-  -moz-osx-font-smoothing: auto;
-  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
 }
 
 .spen-draw-area {

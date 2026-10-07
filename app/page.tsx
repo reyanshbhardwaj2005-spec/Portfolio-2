@@ -40,23 +40,12 @@ function StatusBar({ now }: { now: Date | null }) {
     <div className="status" aria-hidden="true">
       <span className="status-time">{fmtTime(now)}</span>
       <span className="status-icons">
-        <span className="status-badge-5g">5G+</span>
         <svg viewBox="0 0 24 24" fill="currentColor">
           <rect x="3" y="15" width="3.2" height="6" rx="0.8" />
           <rect x="8" y="11" width="3.2" height="10" rx="0.8" />
           <rect x="13" y="7" width="3.2" height="14" rx="0.8" />
           <rect x="18" y="3" width="3.2" height="18" rx="0.8" />
         </svg>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
-          <path d="M2.5 9a14 14 0 0119 0" />
-          <path d="M5.8 12.6a9.4 9.4 0 0112.4 0" />
-          <path d="M9 16.1a4.8 4.8 0 016 0" />
-          <circle cx="12" cy="19.4" r="0.9" fill="currentColor" />
-        </svg>
-        <span className="battery">
-          <i style={{ width: "88%" }} />
-        </span>
-        <span className="battery-pct">88%</span>
       </span>
     </div>
   );
@@ -637,6 +626,7 @@ function AppWindow({
   onClosed: () => void;
 }) {
   const windowRef = useRef<HTMLElement | null>(null);
+  const [opened, setOpened] = useState(false);
 
   // Wheel listener on the window wrapper so spinning wheel over header/margins also scrolls the app
   useEffect(() => {
@@ -654,15 +644,31 @@ function AppWindow({
     return () => win.removeEventListener("wheel", onWheel);
   }, []);
 
+  // Guarantee transition to native 2D layout once the open animation finishes
+  useEffect(() => {
+    if (closing) {
+      setOpened(false);
+      return;
+    }
+    const timer = setTimeout(() => {
+      setOpened(true);
+    }, 390);
+    return () => clearTimeout(timer);
+  }, [closing]);
+
   const handleEnd = (e: AnimationEvent<HTMLElement>) => {
     if (e.target !== e.currentTarget) return;
-    if (closing) onClosed();
+    if (closing) {
+      onClosed();
+    } else {
+      setOpened(true);
+    }
   };
 
   return (
     <section
       ref={windowRef}
-      className={`app-window${closing ? " closing" : ""}`}
+      className={`app-window${closing ? " closing" : ""}${opened && !closing ? " opened" : ""}`}
       style={{ "--ox": origin.x, "--oy": origin.y } as CSSProperties}
       onAnimationEnd={handleEnd}
       role="dialog"
@@ -984,6 +990,7 @@ function PhoneStage({
       Math.abs(currentRy - targetFrontRy) < 0.25 &&
       mode.current !== "dragging";
     el.classList.toggle("is-flat-front", isFlatFront);
+    sceneRef.current?.classList.toggle("is-flat-front", isFlatFront);
   }, []);
 
   // Main unified physics and animation frame step
@@ -1399,10 +1406,15 @@ function PhoneStage({
 
     // Dynamic duration based on angular distance for optimal pacing
     const dist = Math.hypot(targetRx - rot.current.rx, targetRy - rot.current.ry);
-    const duration = Math.min(850, Math.max(520, Math.round(480 + dist * 1.5)));
+    const duration =
+      preset === "front"
+        ? Math.min(380, Math.max(220, Math.round(200 + dist * 1.1)))
+        : Math.min(850, Math.max(520, Math.round(480 + dist * 1.5)));
 
     startTween(targetRx, targetRy, duration, () => {
       if (preset === "front") {
+        rot.current.rx = 0;
+        rot.current.ry = targetRy;
         applyTransform();
       }
     });
@@ -1413,6 +1425,8 @@ function PhoneStage({
     if (isAppOpen) {
       setPreset("front");
     }
+    phoneRef.current?.classList.toggle("is-app-open", Boolean(isAppOpen));
+    sceneRef.current?.classList.toggle("is-app-open", Boolean(isAppOpen));
   }, [isAppOpen]);
 
   // Interactive S-Pen toggle
