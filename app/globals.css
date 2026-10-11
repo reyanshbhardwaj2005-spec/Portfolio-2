@@ -22,7 +22,8 @@
 }
 
 /* User's Pasted Champagne Sand Titanium Theme */
-[data-theme="sand"] {
+[data-theme="sand"],
+[data-theme="cream"] {
   --titanium-1: #FAF4EF;
   --titanium-2: #EBDAD0;
   --titanium-3: #DECAC0;
@@ -280,8 +281,8 @@ a {
 .scene {
   --dh: min(92dvh, 940px);
   --dw: calc(round(nearest, var(--dh) * 9 / 19.4, 2px));
-  --depth: calc(round(nearest, var(--dw) * 0.108, 1px));
-  /* 8.6mm depth */
+  --depth: calc(round(nearest, var(--dw) * 0.0864, 1px));
+  /* Ultra-sleek depth (reduced to 80% of previous value) */
   --corner: calc(round(nearest, var(--dh) * 0.026, 1px));
   /* Sleek Galaxy S-Ultra corner radius */
   position: relative;
@@ -385,7 +386,7 @@ a {
   bottom: calc(var(--dh) * 0.02);
   translate: calc(-50% + var(--shadow-shift-x, 0px)) 0;
   border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(60, 48, 40, 0.25), rgba(60, 48, 40, 0.08) 45%, rgba(0, 0, 0, 0) 75%);
+  background: radial-gradient(closest-side, rgba(65, 52, 42, 0.22), rgba(65, 52, 42, 0.07) 45%, rgba(0, 0, 0, 0) 75%);
   filter: blur(14px);
   opacity: var(--shadow-opacity, 0.92);
   pointer-events: none;
@@ -462,26 +463,65 @@ a {
   left: var(--corner);
 }
 
-/* Continuous ultra-smooth micro-facets forming a silky seamless 90° circular curve */
+/* Seamless smooth corner facets — 100% solid, opaque titanium with continuous hairline seam & chamfer */
 .corner-facet {
   position: absolute;
   left: 0;
   top: 0;
-  width: var(--facet-w, calc(var(--corner) * 0.036));
-  height: var(--depth);
-  margin-left: var(--facet-ml, calc(var(--corner) * -0.018));
-  margin-top: calc(var(--depth) * -0.5);
-  background: linear-gradient(180deg,
-      rgba(255, 255, 255, 0.38) 0%,
-      var(--titanium-2) 12%,
-      var(--titanium-3) 48%,
-      var(--titanium-2) 88%,
-      rgba(255, 255, 255, 0.38) 100%);
+  width: var(--facet-w, calc(var(--corner) * 0.128));
+  height: calc(var(--depth) + 0.6px);
+  margin-left: var(--facet-ml, calc(var(--corner) * -0.064));
+  margin-top: calc((var(--depth) + 0.6px) * -0.5);
+  background-color: var(--titanium-2);
+  background:
+    /* Delicate satin longitudinal reflection */
+    linear-gradient(to bottom,
+      rgba(255, 255, 255, 0.12) 0%,
+      transparent 22%,
+      transparent 78%,
+      rgba(255, 255, 255, 0.08) 100%),
+    /* Delicate specular glint */
+    radial-gradient(ellipse 100% 60% at 50% var(--spot-edge-depth, 50%),
+      rgba(255, 255, 255, 0.22) 0%,
+      rgba(255, 255, 255, 0.08) 32%,
+      transparent 68%),
+    var(--titanium-2);
   transform: rotateZ(var(--facet-deg)) translateY(calc(-1 * var(--corner))) rotateX(90deg);
   transform-origin: center center;
   backface-visibility: visible !important;
   -webkit-backface-visibility: visible !important;
   outline: none;
+  border: none;
+  opacity: 1 !important;
+  box-shadow:
+    /* Back face junction: crisp dark hairline seam + bright chamfer + 2.5D curve roll-off */
+    inset 0 0.85px 0 0 rgba(35, 25, 20, 0.48),
+    inset 0 1.8px 0 0 rgba(255, 255, 255, 0.50),
+    inset 0 3.5px 0 0 rgba(0, 0, 0, 0.08),
+    /* Front face junction: crisp dark hairline seam + bright chamfer + 2.5D curve roll-off */
+    inset 0 -0.85px 0 0 rgba(35, 25, 20, 0.48),
+    inset 0 -1.8px 0 0 rgba(255, 255, 255, 0.42),
+    inset 0 -3.5px 0 0 rgba(0, 0, 0, 0.08);
+}
+
+/* 100% Solid Inner Backing Facets (Bridges all seams & eliminates all translucency) */
+.corner-facet-inner {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: calc(var(--facet-w) * 1.25);
+  height: calc(var(--depth) + 0.5px);
+  margin-left: calc(var(--facet-ml) * 1.25);
+  margin-top: calc((var(--depth) + 0.5px) * -0.5);
+  background-color: var(--titanium-2);
+  background: var(--titanium-2);
+  transform: rotateZ(var(--facet-deg)) translateY(calc(-1 * (var(--corner) - 0.6px))) rotateX(90deg);
+  transform-origin: center center;
+  backface-visibility: visible !important;
+  -webkit-backface-visibility: visible !important;
+  outline: none;
+  border: none;
+  opacity: 1 !important;
 }
 
 /* =========================================================
@@ -490,194 +530,343 @@ a {
 
 .edge {
   position: absolute;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
+  backface-visibility: visible;
+  -webkit-backface-visibility: visible;
   transform-style: preserve-3d;
   outline: none;
 }
 
 .edge-top {
   position: absolute;
-  top: calc(var(--depth) * -0.5);
-  left: calc(var(--corner) - 0.5px);
-  width: calc(var(--dw) - var(--corner) * 2 + 1px);
-  height: var(--depth);
-  background: linear-gradient(180deg,
-      rgba(255, 255, 255, 0.38) 0%,
-      var(--titanium-2) 12%,
-      var(--titanium-3) 48%,
-      var(--titanium-2) 88%,
-      rgba(255, 255, 255, 0.38) 100%);
+  top: calc((var(--depth) + 0.5px) * -0.5);
+  left: calc(var(--corner) - 0.6px);
+  width: calc(var(--dw) - var(--corner) * 2 + 1.2px);
+  height: calc(var(--depth) + 0.5px);
+  background:
+    linear-gradient(to bottom,
+      rgba(255, 255, 255, 0.12) 0%,
+      transparent 20%,
+      transparent 80%,
+      rgba(255, 255, 255, 0.08) 100%),
+    var(--titanium-2);
+  box-shadow:
+    /* Back face junction (top of element when rotateX(90deg) is at Z = -depth/2) */
+    inset 0 0.85px 0 0 rgba(35, 25, 20, 0.48),
+    inset 0 1.8px 0 0 rgba(255, 255, 255, 0.50),
+    inset 0 3.5px 0 0 rgba(0, 0, 0, 0.08),
+    /* Front face junction (bottom of element when rotateX(90deg) is at Z = +depth/2) */
+    inset 0 -0.85px 0 0 rgba(35, 25, 20, 0.48),
+    inset 0 -1.8px 0 0 rgba(255, 255, 255, 0.42),
+    inset 0 -3.5px 0 0 rgba(0, 0, 0, 0.08);
   transform: rotateX(90deg);
   transform-origin: center center;
 }
 
 .edge-bottom {
   position: absolute;
-  bottom: calc(var(--depth) * -0.5);
-  left: calc(var(--corner) - 0.5px);
-  width: calc(var(--dw) - var(--corner) * 2 + 1px);
-  height: var(--depth);
-  background: linear-gradient(180deg,
-      rgba(255, 255, 255, 0.38) 0%,
-      var(--titanium-2) 12%,
-      var(--titanium-3) 48%,
-      var(--titanium-2) 88%,
-      rgba(255, 255, 255, 0.38) 100%);
+  bottom: calc((var(--depth) + 0.5px) * -0.5);
+  left: calc(var(--corner) - 0.6px);
+  width: calc(var(--dw) - var(--corner) * 2 + 1.2px);
+  height: calc(var(--depth) + 0.5px);
+  background:
+    linear-gradient(to bottom,
+      rgba(255, 255, 255, 0.08) 0%,
+      transparent 20%,
+      transparent 80%,
+      rgba(255, 255, 255, 0.12) 100%),
+    var(--titanium-2);
+  box-shadow:
+    /* Front face junction (top of element when rotateX(-90deg) is at Z = +depth/2) */
+    inset 0 0.85px 0 0 rgba(35, 25, 20, 0.48),
+    inset 0 1.8px 0 0 rgba(255, 255, 255, 0.42),
+    inset 0 3.5px 0 0 rgba(0, 0, 0, 0.08),
+    /* Back face junction (bottom of element when rotateX(-90deg) is at Z = -depth/2) */
+    inset 0 -0.85px 0 0 rgba(35, 25, 20, 0.48),
+    inset 0 -1.8px 0 0 rgba(255, 255, 255, 0.50),
+    inset 0 -3.5px 0 0 rgba(0, 0, 0, 0.08);
   transform: rotateX(-90deg);
   transform-origin: center center;
 }
 
-/* Left Edge: Clean satin titanium with antenna bands */
+/* Left Edge: exact matching body color with hairline seam & chamfer highlights */
 .edge-left {
   position: absolute;
-  left: calc(var(--depth) * -0.5);
-  top: calc(var(--corner) - 0.5px);
-  width: var(--depth);
-  height: calc(var(--dh) - var(--corner) * 2 + 1px);
-  background: linear-gradient(90deg,
-      rgba(255, 255, 255, 0.38) 0%,
-      var(--titanium-2) 12%,
-      var(--titanium-3) 48%,
-      var(--titanium-2) 88%,
-      rgba(255, 255, 255, 0.38) 100%);
+  left: calc((var(--depth) + 0.5px) * -0.5);
+  top: calc(var(--corner) - 0.6px);
+  width: calc(var(--depth) + 0.5px);
+  height: calc(var(--dh) - var(--corner) * 2 + 1.2px);
+  background:
+    linear-gradient(to right,
+      rgba(255, 255, 255, 0.12) 0%,
+      transparent 20%,
+      transparent 80%,
+      rgba(255, 255, 255, 0.08) 100%),
+    var(--titanium-2);
+  box-shadow:
+    /* Back face junction (left of element when rotateY(-90deg) is at Z = -depth/2) */
+    inset 0.85px 0 0 0 rgba(35, 25, 20, 0.48),
+    inset 1.8px 0 0 0 rgba(255, 255, 255, 0.50),
+    inset 3.5px 0 0 0 rgba(0, 0, 0, 0.08),
+    /* Front face junction (right of element when rotateY(-90deg) is at Z = +depth/2) */
+    inset -0.85px 0 0 0 rgba(35, 25, 20, 0.48),
+    inset -1.8px 0 0 0 rgba(255, 255, 255, 0.42),
+    inset -3.5px 0 0 0 rgba(0, 0, 0, 0.08);
   transform: rotateY(-90deg);
   transform-origin: center center;
 }
 
-/* Right Edge: Tactile raised Volume & Power buttons with recessed trenches */
+/* Right Edge: exact matching body color with hairline seam & chamfer highlights */
 .edge-right {
   position: absolute;
-  right: calc(var(--depth) * -0.5);
-  top: calc(var(--corner) - 0.5px);
-  width: var(--depth);
-  height: calc(var(--dh) - var(--corner) * 2 + 1px);
-  background: linear-gradient(90deg,
-      rgba(255, 255, 255, 0.38) 0%,
-      var(--titanium-2) 12%,
-      var(--titanium-3) 48%,
-      var(--titanium-2) 88%,
-      rgba(255, 255, 255, 0.38) 100%);
+  right: calc((var(--depth) + 0.5px) * -0.5);
+  top: calc(var(--corner) - 0.6px);
+  width: calc(var(--depth) + 0.5px);
+  height: calc(var(--dh) - var(--corner) * 2 + 1.2px);
+  background:
+    linear-gradient(to right,
+      rgba(255, 255, 255, 0.08) 0%,
+      transparent 20%,
+      transparent 80%,
+      rgba(255, 255, 255, 0.12) 100%),
+    var(--titanium-2);
+  box-shadow:
+    /* Front face junction (left of element when rotateY(90deg) is at Z = +depth/2) */
+    inset 0.85px 0 0 0 rgba(35, 25, 20, 0.48),
+    inset 1.8px 0 0 0 rgba(255, 255, 255, 0.42),
+    inset 3.5px 0 0 0 rgba(0, 0, 0, 0.08),
+    /* Back face junction (right of element when rotateY(90deg) is at Z = -depth/2) */
+    inset -0.85px 0 0 0 rgba(35, 25, 20, 0.48),
+    inset -1.8px 0 0 0 rgba(255, 255, 255, 0.50),
+    inset -3.5px 0 0 0 rgba(0, 0, 0, 0.08);
   transform: rotateY(90deg);
   transform-origin: center center;
 }
 
-/* Dynamic Spotlight Sheen Traveling Along Side Rails (Soft Natural Satin Sheen) */
+/* Dynamic Spotlight Sheen Traveling Along Side Rails (Preserves True Body Color) */
 .edge-left::after,
 .edge-right::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse 80% 35% at 50% var(--spot-front-y, 30%),
-      rgba(255, 255, 255, 0.42) 0%,
-      rgba(235, 218, 208, 0.18) 35%,
-      transparent 70%);
-  -webkit-mask-image: linear-gradient(180deg, transparent 0%, black 4%, black 96%, transparent 100%);
-  mask-image: linear-gradient(180deg, transparent 0%, black 4%, black 96%, transparent 100%);
+  background:
+    /* Delicate specular spotlight core glint */
+    radial-gradient(circle 85px at var(--spot-edge-depth, 50%) var(--spot-edge-y, 30%),
+      rgba(255, 255, 255, 0.40) 0%,
+      rgba(255, 250, 240, 0.16) 35%,
+      transparent 72%),
+    /* Faint light bloom */
+    radial-gradient(ellipse 100% 220px at var(--spot-edge-depth, 50%) var(--spot-edge-y, 30%),
+      rgba(255, 255, 255, 0.10) 0%,
+      transparent 65%),
+    /* Subtle anisotropic longitudinal satin sheen */
+    linear-gradient(to bottom,
+      transparent 15%,
+      rgba(255, 255, 255, 0.05) 40%,
+      rgba(255, 255, 255, 0.14) 50%,
+      rgba(255, 255, 255, 0.05) 60%,
+      transparent 85%);
   pointer-events: none;
-}
-
-.edge-right::after {
-  opacity: calc(var(--light-right, 0.5) * 0.45 + var(--light-rim, 0.5) * 0.25);
+  transition: opacity 0.12s ease-out;
 }
 
 .edge-left::after {
-  opacity: calc(var(--light-left, 0.5) * 0.45 + var(--light-rim, 0.5) * 0.25);
+  opacity: calc(0.12 + var(--light-left, 0.5) * 0.28 + var(--spec-left, 0.5) * 0.38);
 }
 
-.edge-top::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse 35% 80% at var(--spot-front-x, 30%) 50%,
-      rgba(255, 255, 255, 0.42) 0%,
-      rgba(235, 218, 208, 0.18) 35%,
-      transparent 70%);
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 4%, black 96%, transparent 100%);
-  mask-image: linear-gradient(90deg, transparent 0%, black 4%, black 96%, transparent 100%);
-  pointer-events: none;
-  opacity: calc(var(--light-top, 0.5) * 0.45 + var(--light-rim, 0.5) * 0.25);
+.edge-right::after {
+  opacity: calc(0.12 + var(--light-right, 0.5) * 0.28 + var(--spec-right, 0.5) * 0.38);
 }
 
+/* Dynamic Spotlight Sheen Traveling Along Top & Bottom Rails */
+.edge-top::after,
 .edge-bottom::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse 35% 80% at var(--spot-front-x, 30%) 50%,
-      rgba(255, 255, 255, 0.42) 0%,
-      rgba(235, 218, 208, 0.18) 35%,
-      transparent 70%);
+  background:
+    /* Delicate specular spotlight core hotspot */
+    radial-gradient(circle 85px at var(--spot-edge-x, 30%) var(--spot-edge-depth, 50%),
+      rgba(255, 255, 255, 0.40) 0%,
+      rgba(255, 250, 240, 0.16) 35%,
+      transparent 72%),
+    /* Faint light bloom */
+    radial-gradient(ellipse 220px 100% at var(--spot-edge-x, 30%) var(--spot-edge-depth, 50%),
+      rgba(255, 255, 255, 0.10) 0%,
+      transparent 65%),
+    /* Sweeping subtle metallic reflection */
+    linear-gradient(to right,
+      transparent 15%,
+      rgba(255, 255, 255, 0.05) 40%,
+      rgba(255, 255, 255, 0.14) 50%,
+      rgba(255, 255, 255, 0.05) 60%,
+      transparent 85%);
   pointer-events: none;
-  opacity: calc(var(--light-bottom, 0.5) * 0.45 + var(--light-rim, 0.5) * 0.25);
+  transition: opacity 0.12s ease-out;
+}
+
+.edge-top::after {
+  opacity: calc(0.12 + var(--light-top, 0.5) * 0.28 + var(--spec-top, 0.5) * 0.38);
+}
+
+.edge-bottom::after {
+  opacity: calc(0.12 + var(--light-bottom, 0.5) * 0.28 + var(--spec-bottom, 0.5) * 0.38);
 }
 
 /* Antenna band lines matching side profile photos */
 .antenna-line {
   position: absolute;
-  height: 2px;
+  height: 1.5px;
   left: 0;
   right: 0;
-  background: #0f131a;
-  box-shadow: 0 0.5px 0.5px rgba(255, 255, 255, 0.4);
+  background: #383431;
+  box-shadow:
+    0 0.5px 0.5px rgba(255, 255, 255, 0.45),
+    0 -0.5px 0.5px rgba(0, 0, 0, 0.25);
+  z-index: 2;
 }
 
-.edge-left .antenna-1 {
-  top: 8%;
-}
-
-.edge-left .antenna-2 {
-  bottom: 10%;
-}
-
+.edge-left .antenna-1,
 .edge-right .antenna-1 {
-  top: 8%;
+  top: 5.2%;
 }
 
+.edge-left .antenna-2,
 .edge-right .antenna-2 {
-  bottom: 10%;
+  bottom: 8.5%;
 }
 
-/* 3D Physical Buttons with Recess Trenches (Original Length, Reduced Slender Width) */
+/* Left Rail Microphone / Sensor Pinhole */
+.rail-pinhole {
+  position: absolute;
+  top: 13.5%;
+  left: 50%;
+  translate: -50% 0;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: #151312;
+  box-shadow:
+    inset 0 0.5px 1px rgba(0, 0, 0, 0.9),
+    0 0.5px 0.5px rgba(255, 255, 255, 0.35);
+  z-index: 3;
+}
+
+/* Authentic Flagship SIM Card Tray Slot on Left Rail (Matching Reference Photo) */
+.sim-tray-slot {
+  position: absolute;
+  top: 22.5%;
+  left: 50%;
+  translate: -50% 0;
+  width: calc(var(--depth) * 0.38);
+  height: 9.6%;
+  border-radius: 999px;
+  background: var(--titanium-2);
+  border: 0.8px solid rgba(45, 35, 28, 0.45);
+  box-shadow:
+    inset 0 0.5px 1px rgba(0, 0, 0, 0.22),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.22),
+    0 0.5px 0.5px rgba(255, 255, 255, 0.35);
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding-bottom: 5px;
+}
+
+.sim-tray-cutout {
+  position: absolute;
+  inset: 0.5px;
+  border-radius: inherit;
+  background: linear-gradient(to right,
+    rgba(0, 0, 0, 0.04) 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(0, 0, 0, 0.04) 100%);
+  pointer-events: none;
+}
+
+.sim-pinhole {
+  position: absolute;
+  bottom: 4px;
+  width: 1.6px;
+  height: 1.6px;
+  border-radius: 50%;
+  background: #141211;
+  box-shadow:
+    inset 0 0.5px 0.5px #000,
+    0 0.5px 0.5px rgba(255, 255, 255, 0.4);
+}
+
+/* 3D Physical Buttons with Precision CNC Cutout Trenches (Matching Reference Image) */
 .edge-right .button-recess,
 .edge-left .button-recess {
   position: absolute;
-  left: 34%;
-  right: 34%;
+  left: 28%;
+  right: 28%;
   border-radius: 999px;
-  background: rgba(10, 14, 20, 0.85);
+  background: rgba(45, 36, 32, 0.55);
   box-shadow:
-    inset 0 1px 2px rgba(0, 0, 0, 0.9),
-    0 0 0 1px rgba(255, 255, 255, 0.15);
+    /* Precision CNC cutout outer chamfer rim */
+    0 0 0 0.65px rgba(255, 255, 255, 0.55),
+    /* Recessed tolerance trench depth shadow */
+    inset 0 0.6px 1.5px rgba(0, 0, 0, 0.6),
+    inset 0 -0.6px 1px rgba(0, 0, 0, 0.4);
   transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
 }
 
 .edge-right .button-recess.volume-recess,
 .edge-left .button-recess.volume-recess {
-  top: 17%;
-  height: 11.5%;
+  top: 15.5%;
+  height: 12.8%;
 }
 
 .edge-right .button-recess.power-recess,
 .edge-left .button-recess.power-recess {
-  top: 32%;
-  height: 6%;
+  top: 31.5%;
+  height: 7.2%;
 }
 
 .edge-right .button-key,
 .edge-left .button-key {
   position: absolute;
-  inset: 1px;
+  inset: 0.85px;
   border-radius: 999px;
-  background: linear-gradient(90deg,
+  background-color: var(--titanium-2);
+  background:
+    /* Delicate satin highlight sheen */
+    linear-gradient(to bottom,
+      rgba(255, 255, 255, 0.32) 0%,
+      rgba(255, 255, 255, 0.10) 25%,
+      transparent 55%,
+      rgba(0, 0, 0, 0.08) 100%),
+    /* Anisotropic cross-rail metallic sheen matching body color */
+    linear-gradient(to right,
       var(--titanium-3) 0%,
-      var(--titanium-1) 45%,
-      var(--titanium-2) 65%,
-      var(--titanium-4) 100%);
+      var(--titanium-1) 28%,
+      var(--titanium-2) 60%,
+      var(--titanium-3) 100%);
   box-shadow:
-    0 1.5px 3px rgba(0, 0, 0, 0.6),
-    inset 0 1px 0 rgba(255, 255, 255, 0.75),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.6);
-  transform: translateZ(1.6px);
+    /* Micro drop shadow on the bottom and sides */
+    0 0.6px 1.5px rgba(0, 0, 0, 0.35),
+    /* Top chamfer glint */
+    inset 0 0.8px 0.8px rgba(255, 255, 255, 0.75),
+    /* Bottom micro-bevel */
+    inset 0 -0.8px 0.8px rgba(0, 0, 0, 0.3),
+    /* Side delicate bevels */
+    inset 0.5px 0 0.5px rgba(255, 255, 255, 0.35),
+    inset -0.5px 0 0.5px rgba(0, 0, 0, 0.15);
+  transform: translateZ(0.9px);
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  backface-visibility: visible !important;
+  -webkit-backface-visibility: visible !important;
+  transition: transform 0.1s ease-out;
+}
+
+.edge-right .button-recess:active .button-key,
+.edge-left .button-recess:active .button-key {
+  transform: translateZ(0.3px);
 }
 
 /* Top Edge & Bottom Edge controls */
@@ -849,7 +1038,10 @@ a {
       var(--titanium-2) 50%,
       var(--titanium-1) 75%,
       rgba(255, 255, 255, 0.6) 100%);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+  box-shadow:
+    inset 0 0 0 0.85px rgba(35, 25, 20, 0.48),
+    inset 0 0 0 1.8px rgba(255, 255, 255, 0.55),
+    inset 0 0 4.5px rgba(0, 0, 0, 0.12);
   transform: translateZ(calc(var(--depth) / 2));
   -webkit-transform: translateZ(calc(var(--depth) / 2));
   outline: none;
@@ -932,24 +1124,20 @@ a {
   /* Dynamic light reflection: moves in real time as phone rotates in 3D */
   background:
     /* Intense specular pinpoint reflection glinting along bezel when moved */
-    radial-gradient(
-      circle 240px at var(--spot-front-x, 35%) var(--spot-front-y, 25%),
+    radial-gradient(circle 240px at var(--spot-front-x, 35%) var(--spot-front-y, 25%),
       rgba(255, 255, 255, 1) 0%,
       rgba(255, 255, 255, 0.85) 12%,
       rgba(205, 232, 255, 0.45) 30%,
-      transparent 65%
-    ),
+      transparent 65%),
     /* Rotating specular glass sheen */
-    conic-gradient(
-      from var(--sheen-angle, 45deg) at var(--spot-front-x, 50%) var(--spot-front-y, 50%),
+    conic-gradient(from var(--sheen-angle, 45deg) at var(--spot-front-x, 50%) var(--spot-front-y, 50%),
       rgba(255, 255, 255, 0.25) 0deg,
       rgba(255, 255, 255, 0.95) 55deg,
       rgba(195, 228, 255, 1) 85deg,
       rgba(255, 255, 255, 0.4) 130deg,
       rgba(255, 255, 255, 0.1) 180deg,
       rgba(255, 255, 255, 0.9) 240deg,
-      rgba(255, 255, 255, 0.25) 360deg
-    );
+      rgba(255, 255, 255, 0.25) 360deg);
   /* Modern CSS mask: isolates the shining effect strictly to the thin bezel border ONLY */
   -webkit-mask:
     linear-gradient(#fff 0 0) padding-box,
@@ -966,9 +1154,12 @@ a {
 }
 
 @keyframes bezel-shimmer {
-  0%, 100% {
+
+  0%,
+  100% {
     filter: drop-shadow(0 0 0.6px rgba(255, 255, 255, 0.65));
   }
+
   50% {
     filter: drop-shadow(0 0 1.5px rgba(255, 255, 255, 0.95)) brightness(1.2);
   }
@@ -1304,7 +1495,8 @@ a {
   border-radius: var(--corner);
   /* Organic 2.5D curved glass edge falloff */
   box-shadow:
-    inset 0 0 4px rgba(0, 0, 0, 0.08);
+    inset 0 0 4.5px rgba(0, 0, 0, 0.12),
+    inset 0 0 10px rgba(0, 0, 0, 0.04);
   transform: rotateY(180deg) translateZ(calc(var(--depth) / 2));
   overflow: visible;
   transform-style: preserve-3d;
@@ -1313,23 +1505,22 @@ a {
   -webkit-backface-visibility: visible !important;
 }
 
-/* Authentic Samsung Galaxy S26 Ultra Micro-Hairline Seam Lining */
+/* Authentic Samsung Galaxy Flagship Micro-Hairline Seam Lining */
 .back-edge-lining {
   position: absolute;
   inset: 0;
   border-radius: inherit;
   pointer-events: none;
   z-index: 5;
-  /* Ultra-fine hairline assembly seam: crisp subtle groove with delicate specular bevel */
+  /* Precision hairline assembly groove + specular 2.5D glass curve (matching reference photo) */
   box-shadow:
-    /* Subtle outer chassis frame edge line */
-    0 0 0 0.75px rgba(255, 255, 255, 0.4),
-    /* Fine hairline assembly groove separating back glass from metal rail */
-    inset 0 0 0 0.75px rgba(0, 0, 0, 0.28),
-    /* Delicate 2.5D glass perimeter highlight line */
-    inset 0 0 0 1.5px rgba(255, 255, 255, 0.5),
-    /* Silky smooth curvature shadow */
-    inset 0 0 3px rgba(0, 0, 0, 0.08);
+    /* Hairline assembly groove (gap between back glass panel and titanium chassis rail) */
+    inset 0 0 0 0.85px rgba(35, 25, 20, 0.52),
+    /* Delicate 2.5D glass perimeter specular highlight rim */
+    inset 0 0 0 2.0px rgba(255, 255, 255, 0.68),
+    /* Organic 2.5D curved glass edge depth roll-off */
+    inset 0 0 5.5px rgba(0, 0, 0, 0.14),
+    inset 0 0 12px rgba(0, 0, 0, 0.05);
 }
 
 .back-satin-sheen {
@@ -1337,26 +1528,26 @@ a {
   inset: 0;
   border-radius: inherit;
   background:
-    /* Brilliant specular spotlight core hotspot */
-    radial-gradient(circle 160px at var(--spot-back-x, 32%) var(--spot-back-y, 22%),
-      rgba(255, 255, 255, 0.95) 0%,
-      rgba(255, 255, 255, 0.55) 24%,
-      rgba(224, 235, 255, 0.22) 50%,
-      transparent 76%),
-    /* Wide specular light bloom across backplate */
+    /* Radiant specular spotlight core hotspot with champagne bloom */
+    radial-gradient(circle 170px at var(--spot-back-x, 32%) var(--spot-back-y, 22%),
+      rgba(255, 255, 255, 0.90) 0%,
+      rgba(250, 240, 235, 0.48) 22%,
+      rgba(235, 218, 208, 0.16) 48%,
+      transparent 75%),
+    /* Wide ambient studio light bloom across backplate */
     radial-gradient(circle 440px at var(--spot-back-x, 32%) var(--spot-back-y, 22%),
-      rgba(255, 255, 255, 0.38) 0%,
-      rgba(216, 226, 255, 0.2) 32%,
-      rgba(165, 180, 252, 0.08) 55%,
+      rgba(255, 255, 255, 0.32) 0%,
+      rgba(240, 225, 215, 0.16) 32%,
+      rgba(225, 208, 198, 0.06) 55%,
       transparent 80%),
     /* Sweeping anisotropic gloss reflection slash */
     linear-gradient(calc(135deg + var(--sheen-angle, 0deg)),
       transparent 8%,
-      rgba(255, 255, 255, 0.06) 26%,
-      rgba(255, 255, 255, 0.45) 46%,
-      rgba(255, 255, 255, 0.16) 56%,
+      rgba(255, 255, 255, 0.05) 26%,
+      rgba(255, 255, 255, 0.38) 46%,
+      rgba(255, 255, 255, 0.14) 56%,
       transparent 76%);
-  opacity: calc(0.18 + var(--light-back, 0.7) * 0.35 + var(--spec-back, 0.5) * 0.45);
+  opacity: calc(0.20 + var(--light-back, 0.7) * 0.32 + var(--spec-back, 0.5) * 0.42);
   transition: opacity 0.12s ease-out;
   pointer-events: none;
   transform: translateZ(0.5px);

@@ -563,7 +563,7 @@ function ScrollableAppBody({ children }: { children: ReactNode }) {
     el.classList.add("is-scrolling");
     try {
       el.setPointerCapture(e.pointerId);
-    } catch {}
+    } catch { }
   };
 
   const onPointerMove = (e: ReactPointerEvent<HTMLDivElement>) => {
@@ -585,7 +585,7 @@ function ScrollableAppBody({ children }: { children: ReactNode }) {
       el.classList.remove("is-scrolling");
       try {
         el.releasePointerCapture(e.pointerId);
-      } catch {}
+      } catch { }
     }
   };
 
@@ -699,37 +699,37 @@ const MAX_RX = 35;
 type ViewPreset = "front" | "angle" | "back" | "right-side" | "left-side" | "spen";
 type TitaniumColor = "sand" | "gray" | "black" | "silverblue";
 
-/* ---------- Seamless 3D Corner Cylinders (Ultra Smooth Continuous Arc) ---------- */
+/* ---------- Seamless 3D Corner Cylinders (100% Solid Opaque Continuous Arc) ---------- */
 
 function CornerCylinder({
   corner,
-  numFacets = 60,
+  numFacets = 28,
 }: {
   corner: "top-left" | "top-right" | "bottom-right" | "bottom-left";
   numFacets?: number;
 }) {
-  const facets = Array.from({ length: numFacets }, (_, i) => {
-    const fraction = i / (numFacets - 1);
-    let baseDeg = 0;
-    if (corner === "top-left") {
-      baseDeg = -90 + fraction * 90;
-    } else if (corner === "top-right") {
-      baseDeg = 0 + fraction * 90;
-    } else if (corner === "bottom-right") {
-      baseDeg = 90 + fraction * 90;
-    } else if (corner === "bottom-left") {
-      baseDeg = 180 + fraction * 90;
-    }
+  const getDeg = (fraction: number) => {
+    if (corner === "top-left") return -90 + fraction * 90;
+    if (corner === "top-right") return 0 + fraction * 90;
+    if (corner === "bottom-right") return 90 + fraction * 90;
+    return 180 + fraction * 90;
+  };
 
-    return {
-      id: i,
-      deg: baseDeg,
-    };
-  });
+  // Outer visible facets with hairline assembly seam and chamfers
+  const facets = Array.from({ length: numFacets }, (_, i) => ({
+    id: i,
+    deg: getDeg(i / (numFacets - 1)),
+  }));
+
+  // Staggered solid inner backing facets to completely block all light bleed & translucency
+  const innerFacets = Array.from({ length: numFacets - 1 }, (_, i) => ({
+    id: `in-${i}`,
+    deg: getDeg((i + 0.5) / (numFacets - 1)),
+  }));
 
   const stepRad = (Math.PI / 2) / (numFacets - 1);
-  const widthFactor = (stepRad * 1.35).toFixed(5);
-  const marginFactor = (-stepRad * 1.35 * 0.5).toFixed(5);
+  const widthFactor = (stepRad * 2.2).toFixed(5);
+  const marginFactor = (-stepRad * 2.2 * 0.5).toFixed(5);
 
   return (
     <div
@@ -742,6 +742,15 @@ function CornerCylinder({
       }
       aria-hidden="true"
     >
+      {/* 100% Solid Opaque Inner Layer (Bridges all seams) */}
+      {innerFacets.map((f) => (
+        <div
+          key={f.id}
+          className="corner-facet-inner"
+          style={{ "--facet-deg": `${f.deg.toFixed(2)}deg` } as CSSProperties}
+        />
+      ))}
+      {/* Outer Styled Facets (Carries Hairline Seam, Chamfers & Curvature) */}
       {facets.map((f) => (
         <div
           key={f.id}
@@ -941,8 +950,17 @@ function PhoneStage({
     // Specular highlights with bloom & glossy falloff
     const frontSpec = Math.min(1.2, Math.pow(frontIntensity, 1.8) * 1.45);
     const backSpec = Math.min(1.2, Math.pow(backIntensity, 1.8) * 1.55);
+    const rightSpec = Math.min(1.2, Math.pow(rightIntensity, 1.8) * 1.55);
+    const leftSpec = Math.min(1.2, Math.pow(leftIntensity, 1.8) * 1.55);
+    const topSpec = Math.min(1.2, Math.pow(topIntensity, 1.8) * 1.55);
+    const bottomSpec = Math.min(1.2, Math.pow(bottomIntensity, 1.8) * 1.55);
     const lensSpec = Math.min(1.3, Math.pow(backIntensity, 1.35) * 1.6);
     const rimLight = Math.min(1, Math.pow(1 - Math.abs(lz), 1.5) * 1.25);
+
+    // Dynamic spot positions along perimeter edges and rails
+    const spotEdgeY = Math.min(96, Math.max(4, 50 + ly * 55));
+    const spotEdgeX = Math.min(96, Math.max(4, 50 - lx * 55));
+    const spotEdgeDepth = Math.min(90, Math.max(10, 50 - lz * 40));
 
     // Lens coating sheen offsets
     const sheenX = -lx * 55;
@@ -958,6 +976,9 @@ function PhoneStage({
     el.style.setProperty("--spot-front-y", `${spotFrontY.toFixed(1)}%`);
     el.style.setProperty("--spot-back-x", `${spotBackX.toFixed(1)}%`);
     el.style.setProperty("--spot-back-y", `${spotBackY.toFixed(1)}%`);
+    el.style.setProperty("--spot-edge-x", `${spotEdgeX.toFixed(1)}%`);
+    el.style.setProperty("--spot-edge-y", `${spotEdgeY.toFixed(1)}%`);
+    el.style.setProperty("--spot-edge-depth", `${spotEdgeDepth.toFixed(1)}%`);
 
     el.style.setProperty("--light-front", frontIntensity.toFixed(3));
     el.style.setProperty("--light-back", backIntensity.toFixed(3));
@@ -969,6 +990,10 @@ function PhoneStage({
 
     el.style.setProperty("--spec-front", frontSpec.toFixed(3));
     el.style.setProperty("--spec-back", backSpec.toFixed(3));
+    el.style.setProperty("--spec-right", rightSpec.toFixed(3));
+    el.style.setProperty("--spec-left", leftSpec.toFixed(3));
+    el.style.setProperty("--spec-top", topSpec.toFixed(3));
+    el.style.setProperty("--spec-bottom", bottomSpec.toFixed(3));
     el.style.setProperty("--spec-lens", lensSpec.toFixed(3));
 
     el.style.setProperty("--sheen-x", sheenX.toFixed(1));
@@ -1006,21 +1031,21 @@ function PhoneStage({
       let needNextFrame = false;
 
       if (mode.current === "dragging") {
-        // High-end critically damped low-pass filter: eliminates input noise without perceived lag
-        const followFactor = 1 - Math.pow(0.70, dt);
+        // High-precision immediate tracking with subtle micro-cushion against sensor jitter
+        const followFactor = 1 - Math.pow(0.12, dt);
         rot.current.rx += (targetRot.current.rx - rot.current.rx) * followFactor;
         rot.current.ry += (targetRot.current.ry - rot.current.ry) * followFactor;
         applyTransform();
         needNextFrame = true;
       } else if (mode.current === "inertia") {
-        // Silky weighted momentum glide for horizontal rotation
-        const friction = Math.pow(0.963, dt);
+        // Silky, luxurious momentum glide for continuous 360-degree rotation
+        const friction = Math.pow(0.966, dt);
         velocity.current.vx *= friction;
         velocity.current.vy *= friction;
 
         rot.current.ry += velocity.current.vx * dt;
-        // As soon as user releases, smoothly return vertical tilt to 0 (vertically straight)
-        const restoreFactor = 1 - Math.pow(0.85, dt);
+        // As phone coasts, gently restore vertical tilt to 0 (vertically upright)
+        const restoreFactor = 1 - Math.pow(0.90, dt);
         rot.current.rx += (0 - rot.current.rx) * restoreFactor;
         targetRot.current = { ...rot.current };
 
@@ -1029,8 +1054,8 @@ function PhoneStage({
         const diffRy = Math.abs(rot.current.ry - targetFrontRy);
         const diffRx = Math.abs(rot.current.rx);
 
-        // Smooth magnetic front docking when slowing down near front screen
-        if (speed < 0.70 && diffRy <= 32 && Math.abs(rot.current.rx) <= 22) {
+        // Gentle front magnetic dock only when coasting right in front at very low speed
+        if (speed < 0.28 && diffRy <= 14 && diffRx <= 10) {
           mode.current = "tweening";
           velocity.current = { vx: 0, vy: 0 };
           tween.current = {
@@ -1039,36 +1064,17 @@ function PhoneStage({
             targetRx: 0,
             targetRy: targetFrontRy,
             startTime: performance.now(),
-            duration: 520,
+            duration: 480,
             onComplete: () => setActivePreset("front"),
           };
           needNextFrame = true;
-        } else {
+        } else if (speed > 0.015 || diffRx > 0.05) {
           applyTransform();
-
-          if (speed > 0.02 || diffRx > 0.08) {
-            needNextFrame = true;
-          } else {
-            rot.current.rx = 0;
-            applyTransform();
-
-            if (diffRy <= 26 && Math.abs(rot.current.rx) <= 18) {
-              mode.current = "tweening";
-              velocity.current = { vx: 0, vy: 0 };
-              tween.current = {
-                startRx: rot.current.rx,
-                startRy: rot.current.ry,
-                targetRx: 0,
-                targetRy: targetFrontRy,
-                startTime: performance.now(),
-                duration: 500,
-                onComplete: () => setActivePreset("front"),
-              };
-              needNextFrame = true;
-            } else {
-              mode.current = "idle";
-            }
-          }
+          needNextFrame = true;
+        } else {
+          rot.current.rx = 0;
+          applyTransform();
+          mode.current = "idle";
         }
       } else if (mode.current === "spring") {
         const elapsedSec = (time - spring.current.startTime) / 1000;
@@ -1289,21 +1295,14 @@ function PhoneStage({
       dragStart.current.moved = true;
     }
 
-    // When user tries to turn vertically, keep horizontal rotation stable and clean
-    const isVerticalDrag = totalDy > totalDx * 1.25 && totalDy > 6;
-    if (!isVerticalDrag) {
-      targetRot.current.ry += dx * 0.36;
-    } else {
-      targetRot.current.ry += dx * 0.05;
-    }
-
-    // Limit vertical tilt strictly up to 35 degrees maximum while user is pressing the phone
-    const nextRx = targetRot.current.rx - dy * 0.30;
+    // Continuous, silky smooth 2-axis dragging (no artificial axis-locks!)
+    targetRot.current.ry += dx * 0.40;
+    const nextRx = targetRot.current.rx - dy * 0.32;
     targetRot.current.rx = Math.max(-MAX_RX, Math.min(MAX_RX, nextRx));
 
     // Instant velocity normalized to standard 60fps frame (16.67ms)
-    const instVx = (dx / deltaMs) * 16.67 * 0.36;
-    const instVy = (dy / deltaMs) * 16.67 * 0.30;
+    const instVx = (dx / deltaMs) * 16.67 * 0.40;
+    const instVy = (dy / deltaMs) * 16.67 * 0.32;
 
     // Exponential moving average filter: filters out USB sensor jitter and micro-stutter
     velocity.current.vx = velocity.current.vx * 0.35 + instVx * 0.65;
@@ -1324,44 +1323,20 @@ function PhoneStage({
       }
     }
 
-    const totalDx = Math.abs(e.clientX - dragStart.current.x);
-    const totalDy = Math.abs(e.clientY - dragStart.current.y);
-
-    // When user turns vertically (or vertical gesture):
-    // As soon as he releases the phone, return with liquid-smooth physical spring to vertically straight (rx = 0)!
-    if (totalDy >= totalDx || totalDx < 14) {
-      startSpringReturn(0, dragStartRot.current.ry);
-      return;
-    }
-
-    // Otherwise (horizontal rotation):
     const speed = Math.hypot(velocity.current.vx, velocity.current.vy);
-    const dir = velocity.current.vx > 0.05 ? 1 : velocity.current.vx < -0.05 ? -1 : 0;
+    const targetFrontRy = Math.round(rot.current.ry / 360) * 360;
+    const diffRy = Math.abs(rot.current.ry - targetFrontRy);
 
-    // Target front screen in continuous direction of movement (never flips backwards)
-    let targetRy = Math.round(rot.current.ry / 360) * 360;
-    if (dir > 0 && rot.current.ry > targetRy) {
-      targetRy += 360;
-    } else if (dir < 0 && rot.current.ry < targetRy) {
-      targetRy -= 360;
-    }
-
-    const diffRy = Math.abs(rot.current.ry - targetRy);
-
-    // Gentle release near front screen: magnetic docking to front screen (rx = 0)
-    if (speed < 0.40 && diffRy <= 32) {
-      startSpringReturn(0, targetRy, () => setActivePreset("front"));
-      return;
-    }
-
-    // Significant horizontal momentum: inertia glide (rx smoothly returns to 0 vertically straight)
-    if (Math.abs(velocity.current.vx) > 0.18) {
+    // If released with horizontal momentum: silky inertia glide
+    if (Math.abs(velocity.current.vx) > 0.12) {
       mode.current = "inertia";
+      ensureLoopRunning();
     } else {
-      if (diffRy <= 26) {
-        startSpringReturn(0, targetRy, () => setActivePreset("front"));
+      // Gentle release: return rx to 0 vertically upright without resetting horizontal angle!
+      // Only dock to front if already pointing almost directly at front (<14 deg) and low tilt
+      if (diffRy <= 14 && Math.abs(rot.current.rx) <= 12) {
+        startSpringReturn(0, targetFrontRy, () => setActivePreset("front"));
       } else {
-        // Return rx smoothly to vertically straight (rx = 0)
         startSpringReturn(0, rot.current.ry);
       }
     }
@@ -1566,8 +1541,13 @@ function PhoneStage({
 
           {/* PERIMETER TITANIUM EDGES (MATCHING REFERENCE IMAGES) */}
           <div className="edge edge-left">
-            {/* Left Frame: Clean satin titanium with antenna bands (Image 2) */}
+            {/* Left Frame: Clean satin titanium with antenna bands & SIM tray (Matching Reference Photo) */}
             <i className="antenna-line antenna-1" />
+            <i className="rail-pinhole" aria-hidden="true" />
+            <div className="sim-tray-slot" aria-hidden="true">
+              <div className="sim-tray-cutout" />
+              <i className="sim-pinhole" />
+            </div>
             <i className="antenna-line antenna-2" />
           </div>
 
