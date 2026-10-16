@@ -2209,44 +2209,41 @@ a {
   align-items: center;
   gap: calc(var(--u) * 1.1);
   cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
 }
 
 .icon {
-  display: grid;
-  place-items: center;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: calc(var(--u) * 13.5);
   aspect-ratio: 1;
   border-radius: calc(var(--u) * 3.2);
   overflow: hidden;
   color: #fff;
-  background: linear-gradient(145deg, var(--c1), var(--c2));
-  box-shadow:
-    0 calc(var(--u) * 1) calc(var(--u) * 2.8) rgba(0, 0, 0, 0.38),
-    inset 0 1px 1px rgba(255, 255, 255, 0.35);
+  background: transparent !important;
+  box-shadow: 0 calc(var(--u) * 0.8) calc(var(--u) * 2.2) rgba(0, 0, 0, 0.35);
   transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.18s ease;
 }
 
 .app:hover .icon {
   transform: translateY(-2px) scale(1.05);
-  box-shadow:
-    0 calc(var(--u) * 1.8) calc(var(--u) * 3.8) rgba(0, 0, 0, 0.45),
-    inset 0 1px 1px rgba(255, 255, 255, 0.45);
+  box-shadow: 0 calc(var(--u) * 1.5) calc(var(--u) * 3.2) rgba(0, 0, 0, 0.45);
 }
 
 .app:active .icon {
   transform: scale(0.92);
 }
 
-.app-svg {
-  width: 100%;
-  height: 100%;
+.app-svg,
+.icon svg {
+  width: 100% !important;
+  height: 100% !important;
   display: block;
   border-radius: inherit;
-}
-
-.icon svg {
-  width: 50%;
-  height: 50%;
 }
 
 .label {

@@ -157,72 +157,83 @@ const GITHUB_GRID = [
 
 function AppGraphic({ id, icon }: { id: string; icon: IconName }) {
   switch (id) {
+    /* ---- Spotify: Official green squircle with 3 soundwave arcs ---- */
     case "spotify":
       return (
         <svg viewBox="0 0 60 60" className="app-svg" aria-hidden="true">
-          <rect width="60" height="60" rx="14" fill="#000000" />
-          <circle cx="30" cy="30" r="23" fill="#1ed760" />
-          <path d="M20 23.5c7-1.8 14-0.8 19.5 2.2" stroke="#000000" strokeWidth="3.6" strokeLinecap="round" fill="none" />
-          <path d="M21.5 29.5c5.8-1.4 12-0.5 16.5 2" stroke="#000000" strokeWidth="3.1" strokeLinecap="round" fill="none" />
-          <path d="M23 35.2c4.6-1.1 9.4-0.4 13.2 1.6" stroke="#000000" strokeWidth="2.6" strokeLinecap="round" fill="none" />
+          <rect width="60" height="60" rx="14" fill="#1ed760" />
+          <path d="M18.5 38.2c-.3 0-.5-.1-.7-.3-.4-.5-.3-1.1.2-1.5 4.6-3.2 10.4-4 15.8-2.2.6.2.9.8.7 1.4-.2.6-.8.9-1.4.7-4.7-1.5-9.8-.8-13.8 1.9-.2.1-.5.1-.8 0z" fill="#000000" />
+          <path d="M17 32.8c-.3 0-.6-.1-.8-.3-.5-.5-.4-1.3.2-1.7 5.5-3.7 12.3-4.6 18.7-2.5.7.2 1 .9.8 1.6-.2.7-.9 1-1.6.8-5.6-1.8-11.6-1-16.4 2.2-.3.2-.6.2-.9-.1z" fill="#000000" />
+          <path d="M15.5 27c-.3 0-.7-.1-.9-.4-.6-.6-.4-1.5.2-2 6.5-4.2 14.6-5.2 22-2.7.8.2 1.2 1.1 1 1.9-.3.8-1.1 1.2-1.9 1-6.6-2.2-13.8-1.3-19.5 2.3-.3.2-.6.2-.9-.1z" fill="#000000" />
         </svg>
       );
+    /* ---- YouTube: Official Android red squircle with centered white play button ---- */
     case "tv":
       return (
         <svg viewBox="0 0 60 60" className="app-svg" aria-hidden="true">
-          <rect width="60" height="60" rx="14" fill="#000000" />
-          <path d="M23.5 20.2c1.2-1.5 2-3.5 1.8-5.4-1.8.1-3.9 1.2-5.1 2.7-1.1 1.3-2 3.3-1.8 5.2 2 .2 3.9-1 5.1-2.5z" fill="#ffffff" />
-          <path d="M25.8 28.2c-1-.6-2.4-1-4-1-2.8 0-4.6 1.6-6.2 1.6-1.6 0-3.4-1.6-5.6-1.6-3 0-6 2.2-7.4 5.6-1.6 3.8-.4 9.4 2 13.2 1.2 1.8 2.6 3.8 4.6 3.8 1.8 0 2.6-1.2 5-1.2 2.4 0 3.2 1.2 5 1.2 2 0 3.2-1.8 4.4-3.6 1.4-2 2-4 2-4.2-.2 0-4-1.6-4-6 0-3.6 3-5.4 3.2-5.6-1.8-2.6-4.2-2.8-5-3z" fill="#ffffff" transform="translate(10, -5)" />
-          <text x="33" y="38" fill="#ffffff" fontFamily="-apple-system, sans-serif" fontWeight="700" fontSize="18.5" letterSpacing="-0.5">tv</text>
+          <rect width="60" height="60" rx="14" fill="#FF0000" />
+          <polygon points="25,20 25,40 41,30" fill="#ffffff" />
         </svg>
       );
+    /* ---- Samsung Contacts: Official warm orange One UI gradient with person silhouette ---- */
     case "about":
       return (
         <svg viewBox="0 0 60 60" className="app-svg" aria-hidden="true">
-          <rect width="60" height="60" rx="14" fill="#e5e7eb" />
-          <rect x="54" y="10" width="4.5" height="11" rx="2" fill="#007aff" />
-          <rect x="54" y="24" width="4.5" height="11" rx="2" fill="#ff9500" />
-          <rect x="54" y="38" width="4.5" height="11" rx="2" fill="#34c759" />
-          <circle cx="28" cy="30" r="17" fill="#6b7280" />
-          <circle cx="28" cy="24" r="6.2" fill="#ffffff" />
-          <path d="M17 40.5c1.6-5.5 5.8-8.5 11-8.5s9.4 3 11 8.5" fill="#ffffff" />
+          <defs>
+            <linearGradient id="ct-g" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#FF7A28" />
+              <stop offset="100%" stopColor="#FF5722" />
+            </linearGradient>
+          </defs>
+          <rect width="60" height="60" rx="14" fill="url(#ct-g)" />
+          <circle cx="30" cy="22" r="8.5" fill="#ffffff" />
+          <path d="M16 47c0-7.7 6.3-14 14-14s14 6.3 14 14" fill="#ffffff" />
         </svg>
       );
+    /* ---- Samsung Notes: Official One UI amber-orange gradient with notepad and pen ---- */
     case "blog":
       return (
         <svg viewBox="0 0 60 60" className="app-svg" aria-hidden="true">
           <defs>
-            <linearGradient id="blg-g" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#ff5722" />
-              <stop offset="100%" stopColor="#d50000" />
+            <linearGradient id="sn-g" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#FF9800" />
+              <stop offset="100%" stopColor="#F57C00" />
             </linearGradient>
           </defs>
-          <rect width="60" height="60" rx="14" fill="url(#blg-g)" />
-          <path d="M43 15c1.2 1.2 1.2 3.2 0 4.4L25 37.4c-.6.6-1.4 1-2.2 1.2l-6 1.4 1.4-6c.2-.8.6-1.6 1.2-2.2L37.4 13.8c1.2-1.2 3.2-1.2 4.4 0l1.2 1.2z" fill="#ffd166" />
-          <path d="M18 43c4.5-1.5 11.5-1 25 1" stroke="#ffd166" strokeWidth="2.8" strokeLinecap="round" fill="none" />
+          <rect width="60" height="60" rx="14" fill="url(#sn-g)" />
+          {/* Notepad sheet */}
+          <rect x="15" y="12" width="30" height="36" rx="4" fill="#ffffff" />
+          {/* Note text lines */}
+          <line x1="21" y1="21" x2="39" y2="21" stroke="#FFB74D" strokeWidth="2" strokeLinecap="round" />
+          <line x1="21" y1="27" x2="39" y2="27" stroke="#FFB74D" strokeWidth="2" strokeLinecap="round" />
+          <line x1="21" y1="33" x2="34" y2="33" stroke="#FFB74D" strokeWidth="2" strokeLinecap="round" />
+          <line x1="21" y1="39" x2="30" y2="39" stroke="#FFB74D" strokeWidth="2" strokeLinecap="round" />
+          {/* Pencil */}
+          <g transform="translate(37, 39) rotate(-45)">
+            <rect x="-2" y="-14" width="4" height="12" rx="0.5" fill="#E65100" />
+            <polygon points="-2,-2 2,-2 0,3" fill="#37474F" />
+          </g>
         </svg>
       );
+    /* ---- Samsung Settings: Official One UI slate-gray squircle with gear ---- */
     case "settings":
       return (
         <svg viewBox="0 0 60 60" className="app-svg" aria-hidden="true">
           <defs>
-            <linearGradient id="set-g" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#9ca3af" />
-              <stop offset="100%" stopColor="#6b7280" />
+            <linearGradient id="sset-g" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#5E6773" />
+              <stop offset="100%" stopColor="#4A525C" />
             </linearGradient>
           </defs>
-          <rect width="60" height="60" rx="14" fill="url(#set-g)" />
+          <rect width="60" height="60" rx="14" fill="url(#sset-g)" />
           <g transform="translate(30, 30)">
-            {[0, 45, 90, 135, 180, 225, 270, 315].map((deg) => (
-              <rect key={deg} x="-3" y="-19" width="6" height="6.5" rx="1.5" fill="#f3f4f6" transform={`rotate(${deg})`} />
-            ))}
-            <circle cx="0" cy="0" r="16" fill="#f3f4f6" />
-            <circle cx="0" cy="0" r="12" fill="#6b7280" />
-            <circle cx="0" cy="0" r="7.5" fill="#f3f4f6" />
-            <circle cx="0" cy="0" r="4.2" fill="#4b5563" />
+            {/* Gear teeth */}
+            <path d="M-3.5-18h7l1.2 4.6a13 13 0 013.6 2.1l4.3-1.8 3.5 6-3.5 3a13 13 0 010 4.2l3.5 3-3.5 6-4.3-1.8a13 13 0 01-3.6 2.1l-1.2 4.6h-7l-1.2-4.6a13 13 0 01-3.6-2.1l-4.3 1.8-3.5-6 3.5-3a13 13 0 010-4.2l-3.5-3 3.5-6 4.3 1.8a13 13 0 013.6-2.1z" fill="#ffffff" />
+            <circle cx="0" cy="0" r="6.5" fill="#4A525C" />
           </g>
         </svg>
       );
+    /* ---- Steam: Official dark navy gradient with crosshair/crank logo ---- */
     case "steam":
       return (
         <svg viewBox="0 0 60 60" className="app-svg" aria-hidden="true">
@@ -234,93 +245,110 @@ function AppGraphic({ id, icon }: { id: string; icon: IconName }) {
             </linearGradient>
           </defs>
           <rect width="60" height="60" rx="14" fill="url(#stm-g)" />
-          <circle cx="36" cy="24" r="8.5" fill="none" stroke="#ffffff" strokeWidth="3.2" />
-          <circle cx="36" cy="24" r="3.8" fill="#ffffff" />
-          <circle cx="21" cy="38" r="6" fill="none" stroke="#ffffff" strokeWidth="2.8" />
-          <circle cx="21" cy="38" r="2.6" fill="#ffffff" />
-          <polygon points="34,26 19,37 23,41 38,28" fill="#ffffff" />
+          <circle cx="36" cy="22" r="7.5" fill="none" stroke="#ffffff" strokeWidth="2.8" />
+          <circle cx="36" cy="22" r="3.2" fill="#ffffff" />
+          <circle cx="20" cy="38" r="5.5" fill="none" stroke="#ffffff" strokeWidth="2.4" />
+          <circle cx="20" cy="38" r="2.2" fill="#ffffff" />
+          <line x1="23" y1="35" x2="34" y2="25" stroke="#ffffff" strokeWidth="2.8" strokeLinecap="round" />
         </svg>
       );
+    /* ---- WHOOP: Matte black squircle with signature electric green waveform ---- */
     case "whoop":
       return (
         <svg viewBox="0 0 60 60" className="app-svg" aria-hidden="true">
-          <rect width="60" height="60" rx="14" fill="#000000" />
-          <circle cx="30" cy="30" r="18.5" fill="none" stroke="#ffffff" strokeWidth="2" opacity="0.9" />
-          <g stroke="#ffffff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" fill="none">
-            <polyline points="22 25 25.5 35 29 25" />
-            <polyline points="31 25 34.5 35 38 25" />
+          <rect width="60" height="60" rx="14" fill="#111114" />
+          <circle cx="30" cy="30" r="19" fill="none" stroke="#10e868" strokeWidth="1.6" opacity="0.35" />
+          <g stroke="#10e868" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" fill="none">
+            <polyline points="15,30 19,23 23,37 27,19 31,41 35,23 39,37 43,30" />
           </g>
         </svg>
       );
+    /* ---- Flighty: Dark navy with crisp ascending airliner ---- */
     case "flighty":
       return (
         <svg viewBox="0 0 60 60" className="app-svg" aria-hidden="true">
-          <rect width="60" height="60" rx="14" fill="#1e232a" />
+          <defs>
+            <linearGradient id="fly-g" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#0f172a" />
+              <stop offset="100%" stopColor="#1e293b" />
+            </linearGradient>
+          </defs>
+          <rect width="60" height="60" rx="14" fill="url(#fly-g)" />
           <g transform="translate(30,30) rotate(-45) translate(-30,-30)">
-            <path d="M30 11c-1 0-1.8 1.2-1.8 2.6v12.2l-14 7.2v3.6l14-4.5v9.5l-3.8 2.8v2.4l5.6-1.6 5.6 1.6v-2.4l-3.8-2.8v-9.5l14 4.5v-3.6l-14-7.2V13.6c0-1.4-.8-2.6-1.8-2.6z" fill="#ffffff" />
+            <path d="M30 11c-1.2 0-2 1.2-2 2.8v12l-15 8v4l15-4.8v10l-4 3v2.8l6-1.8 6 1.8V46l-4-3v-10l15 4.8v-4l-15-8V13.8c0-1.6-.8-2.8-2-2.8z" fill="#ffffff" />
           </g>
         </svg>
       );
+    /* ---- Google Play Store: Official 4-color triangle on clean white squircle ---- */
     case "appstore":
       return (
         <svg viewBox="0 0 60 60" className="app-svg" aria-hidden="true">
+          <rect width="60" height="60" rx="14" fill="#ffffff" />
           <defs>
-            <linearGradient id="as-g" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#1a9bff" />
-              <stop offset="100%" stopColor="#005fd9" />
+            <linearGradient id="ps-blue" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#00c0ff" />
+              <stop offset="100%" stopColor="#0072ff" />
             </linearGradient>
           </defs>
-          <rect width="60" height="60" rx="14" fill="url(#as-g)" />
-          <g stroke="#ffffff" strokeWidth="4.2" strokeLinecap="round" strokeLinejoin="round" fill="none">
-            <line x1="20" y1="44" x2="30" y2="16" />
-            <line x1="40" y1="44" x2="30" y2="16" />
-            <line x1="16" y1="36" x2="44" y2="36" />
-          </g>
+          <path d="M15 11v38l21-19L15 11z" fill="#00E676" />
+          <path d="M15 11l21 19 6-5.5L18.5 9.5c-1.2-.7-2.6-.4-3.5 1.5z" fill="#FFD600" />
+          <path d="M15 49l21-19 6 5.5-23.5 15c-.9.6-2.3.9-3.5-1.5z" fill="#FF3D00" />
+          <path d="M36 30l6-5.5 4.5 3c1.3.9 1.3 2.1 0 3l-4.5 3-6-5.5z" fill="url(#ps-blue)" />
         </svg>
       );
+    /* ---- Google Photos: Official 4-petal pinwheel on clean white squircle ---- */
     case "photos":
       return (
         <svg viewBox="0 0 60 60" className="app-svg" aria-hidden="true">
           <rect width="60" height="60" rx="14" fill="#ffffff" />
-          <g transform="translate(30, 30)">
-            <path d="M-4 -18 C-4 -22, 4 -22, 4 -18 L3 -5 C2 -2, -2 -2, -3 -5 Z" fill="#ff2d55" opacity="0.88" />
-            <path d="M-4 -18 C-4 -22, 4 -22, 4 -18 L3 -5 C2 -2, -2 -2, -3 -5 Z" fill="#ff9500" opacity="0.88" transform="rotate(45)" />
-            <path d="M-4 -18 C-4 -22, 4 -22, 4 -18 L3 -5 C2 -2, -2 -2, -3 -5 Z" fill="#ffcc00" opacity="0.88" transform="rotate(90)" />
-            <path d="M-4 -18 C-4 -22, 4 -22, 4 -18 L3 -5 C2 -2, -2 -2, -3 -5 Z" fill="#34c759" opacity="0.88" transform="rotate(135)" />
-            <path d="M-4 -18 C-4 -22, 4 -22, 4 -18 L3 -5 C2 -2, -2 -2, -3 -5 Z" fill="#00c7be" opacity="0.88" transform="rotate(180)" />
-            <path d="M-4 -18 C-4 -22, 4 -22, 4 -18 L3 -5 C2 -2, -2 -2, -3 -5 Z" fill="#007aff" opacity="0.88" transform="rotate(225)" />
-            <path d="M-4 -18 C-4 -22, 4 -22, 4 -18 L3 -5 C2 -2, -2 -2, -3 -5 Z" fill="#5856d6" opacity="0.88" transform="rotate(270)" />
-            <path d="M-4 -18 C-4 -22, 4 -22, 4 -18 L3 -5 C2 -2, -2 -2, -3 -5 Z" fill="#af52de" opacity="0.88" transform="rotate(315)" />
-            <circle cx="0" cy="0" r="3.8" fill="#ffffff" />
-          </g>
+          {/* Top petal - Red */}
+          <path d="M30 11c-5 0-9 4-9 9h9V11z" fill="#EA4335" />
+          <path d="M30 20h9c0-5-4-9-9-9v9z" fill="#EA4335" />
+          {/* Right petal - Green */}
+          <path d="M39 30c0-5 4-9 9-9v9H39z" fill="#34A853" />
+          <path d="M39 30v9c5 0 9-4 9-9h-9z" fill="#34A853" />
+          {/* Bottom petal - Blue */}
+          <path d="M30 39c5 0 9-4 9-9h-9v9z" fill="#4285F4" />
+          <path d="M30 39h-9c0 5 4 9 9 9v-9z" fill="#4285F4" />
+          {/* Left petal - Yellow */}
+          <path d="M21 30c0 5-4 9-9 9v-9h9z" fill="#FBBC04" />
+          <path d="M21 30v-9c-5 0-9 4-9 9h9z" fill="#FBBC04" />
         </svg>
       );
+    /* ---- Gmail: Official Google 4-color M on clean white squircle ---- */
     case "mail":
       return (
         <svg viewBox="0 0 60 60" className="app-svg" aria-hidden="true">
-          <defs>
-            <linearGradient id="ml-g" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#40a4ff" />
-              <stop offset="100%" stopColor="#0071e3" />
-            </linearGradient>
-          </defs>
-          <rect width="60" height="60" rx="14" fill="url(#ml-g)" />
-          <rect x="10" y="18" width="40" height="25" rx="3.5" fill="#ffffff" />
-          <path d="M11 20.5L30 33L49 20.5" fill="none" stroke="#0071e3" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+          <rect width="60" height="60" rx="14" fill="#ffffff" />
+          {/* Left blue column */}
+          <rect x="12" y="24" width="7" height="23" rx="1" fill="#4285F4" />
+          {/* Right green column */}
+          <rect x="41" y="24" width="7" height="23" rx="1" fill="#34A853" />
+          {/* Left fold - red */}
+          <path d="M12 18.5c0-2.3 2.5-3.8 4.5-2.5L30 25.5l-11 9-7-5.5v-10.5z" fill="#EA4335" />
+          {/* Right fold - red */}
+          <path d="M48 18.5c0-2.3-2.5-3.8-4.5-2.5L30 25.5l11 9 7-5.5v-10.5z" fill="#EA4335" />
+          {/* Top-right yellow accent */}
+          <path d="M43.5 16c1.2-.8 2.8-.8 3.8.3l.7.7v3.5l-4.5-4.5z" fill="#FBBC04" />
         </svg>
       );
+    /* ---- Samsung My Files: Official One UI orange squircle with white folder ---- */
     case "files":
       return (
         <svg viewBox="0 0 60 60" className="app-svg" aria-hidden="true">
-          <rect width="60" height="60" rx="14" fill="#ffffff" />
           <defs>
-            <linearGradient id="fld-g" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#25a0ff" />
-              <stop offset="100%" stopColor="#007aff" />
+            <linearGradient id="myf-g" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#FF9800" />
+              <stop offset="100%" stopColor="#F57C00" />
             </linearGradient>
           </defs>
-          <path d="M13 19a3 3 0 0 1 3-3h10a3 3 0 0 1 2.2 1l2.6 3H44a3 3 0 0 1 3 3v20a3 3 0 0 1-3 3H16a3 3 0 0 1-3-3V19z" fill="#99d1ff" />
-          <rect x="13" y="24" width="34" height="20" rx="3" fill="url(#fld-g)" />
+          <rect width="60" height="60" rx="14" fill="url(#myf-g)" />
+          {/* Folder back tab */}
+          <path d="M14 19a3 3 0 013-3h8l3.5 4h14.5a3 3 0 013 3v4H14v-8z" fill="#ffffff" opacity="0.65" />
+          {/* Folder front body */}
+          <rect x="13" y="23" width="34" height="23" rx="3.5" fill="#ffffff" />
+          {/* Accent line on folder front */}
+          <line x1="19" y1="30" x2="31" y2="30" stroke="#F57C00" strokeWidth="2.2" strokeLinecap="round" />
         </svg>
       );
     default:
@@ -343,7 +371,7 @@ function AppIcon({
       onClick={(e) => onOpen(app, e.currentTarget.querySelector(".icon") as HTMLElement)}
       aria-label={app.label}
     >
-      <span className="icon" style={{ "--c1": app.c1, "--c2": app.c2 } as CSSProperties}>
+      <span className="icon">
         <AppGraphic id={app.id} icon={app.icon} />
       </span>
       {showLabel && <span className="label">{app.label}</span>}
