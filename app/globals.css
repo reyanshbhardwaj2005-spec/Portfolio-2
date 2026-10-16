@@ -116,6 +116,10 @@ a {
 
 /* Studio Stage */
 .stage {
+  --dh: min(84dvh, 880px);
+  --dw: calc(round(nearest, var(--dh) * 9 / 19.4, 2px));
+  --depth: calc(round(nearest, var(--dw) * 0.0864, 1px));
+  --corner: calc(round(nearest, var(--dh) * 0.026, 1px));
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
@@ -279,7 +283,7 @@ a {
    ========================================================= */
 
 .scene {
-  --dh: min(92dvh, 940px);
+  --dh: min(84dvh, 880px);
   --dw: calc(round(nearest, var(--dh) * 9 / 19.4, 2px));
   --depth: calc(round(nearest, var(--dw) * 0.0864, 1px));
   /* Ultra-sleek depth (reduced to 80% of previous value) */
@@ -312,7 +316,8 @@ a {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: geometricPrecision;
-  will-change: auto;
+  will-change: transform;
+  contain: layout style;
 }
 
 .phone3d.is-dragging {
@@ -779,9 +784,9 @@ a {
   inset: 0.5px;
   border-radius: inherit;
   background: linear-gradient(to right,
-    rgba(0, 0, 0, 0.04) 0%,
-    rgba(255, 255, 255, 0.08) 50%,
-    rgba(0, 0, 0, 0.04) 100%);
+      rgba(0, 0, 0, 0.04) 0%,
+      rgba(255, 255, 255, 0.08) 50%,
+      rgba(0, 0, 0, 0.04) 100%);
   pointer-events: none;
 }
 
@@ -2303,6 +2308,7 @@ a {
   justify-content: space-around;
   align-items: center;
   padding: calc(var(--u) * 2.8) calc(var(--u) * 2.5);
+  margin-bottom: calc(var(--u) * 4);
   border-radius: calc(var(--u) * 7.8);
   background: rgba(255, 255, 255, 0.22);
   backdrop-filter: blur(35px) saturate(190%);
@@ -2720,7 +2726,8 @@ a {
 
 .hint {
   position: absolute;
-  bottom: 20px;
+  top: calc(50% + var(--dh) / 2 + 18px);
+  bottom: auto;
   left: 50%;
   translate: -50% 0;
   font-size: 13px;
@@ -2742,6 +2749,162 @@ a {
 
 .hint.hidden {
   opacity: 0;
+}
+
+/* =========================================================
+   SAMSUNG ONE UI LIGHT MODE — ACTIVE WHEN APP IS OPEN
+   Clean white theme matching real Samsung Galaxy light UI
+   ========================================================= */
+
+/* ---- Status Bar: dark icons/text on light bg ---- */
+.ui.has-open-app .status {
+  color: #1a1a1a;
+  transition: color 0.3s ease;
+}
+
+.ui.has-open-app .status-icons svg {
+  fill: #1a1a1a;
+  color: #1a1a1a;
+}
+
+.ui.has-open-app .status-badge-5g {
+  background: rgba(0, 0, 0, 0.1);
+  color: #1a1a1a;
+}
+
+.ui.has-open-app .battery {
+  border-color: rgba(0, 0, 0, 0.75);
+}
+
+.ui.has-open-app .battery-fill {
+  background: #1a1a1a;
+}
+
+.ui.has-open-app .battery-nub {
+  background: rgba(0, 0, 0, 0.55);
+}
+
+/* ---- App Window: white background, dark text ---- */
+.ui.has-open-app .app-window {
+  background: #ffffff;
+  color: #1a1a1a;
+}
+
+/* ---- App Header: clean white/light gray ---- */
+.ui.has-open-app .app-head {
+  background: #f8f9fa;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.ui.has-open-app .app-head h1 {
+  color: #1a1a1a;
+}
+
+.ui.has-open-app .app-head p {
+  color: rgba(0, 0, 0, 0.65);
+}
+
+/* ---- Back Button: dark on light ---- */
+.ui.has-open-app .back-btn {
+  background: rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  color: #1a1a1a;
+}
+
+.ui.has-open-app .back-btn:hover {
+  background: rgba(0, 0, 0, 0.12);
+}
+
+/* ---- App Body: light scrollbar ---- */
+.ui.has-open-app .app-body {
+  background: #ffffff;
+}
+
+.ui.has-open-app .app-body::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.ui.has-open-app .app-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.ui.has-open-app .app-body {
+  scrollbar-color: rgba(0, 0, 0, 0.18) transparent;
+}
+
+/* ---- Cards: soft elevated white cards ---- */
+.ui.has-open-app .card {
+  background: #f2f3f5;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+/* ---- Card Headings: Samsung accent blue ---- */
+.ui.has-open-app .card h2 {
+  color: #1a73e8;
+}
+
+/* ---- Card Body Text: dark on white ---- */
+.ui.has-open-app .card .body {
+  color: #333333;
+}
+
+/* ---- List Rows: dark text, subtle separators ---- */
+.ui.has-open-app .row {
+  border-bottom-color: rgba(0, 0, 0, 0.06);
+}
+
+.ui.has-open-app .row .t {
+  color: #1a1a1a;
+}
+
+.ui.has-open-app .row .s {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+/* ---- Row Meta Badges: blue accent on light ---- */
+.ui.has-open-app .row .m {
+  color: #1a73e8;
+  background: rgba(26, 115, 232, 0.08);
+  border: 1px solid rgba(26, 115, 232, 0.2);
+}
+
+/* ---- Link Rows: dark text ---- */
+.ui.has-open-app .row.link .t {
+  color: #1a1a1a;
+}
+
+.ui.has-open-app .row.link .m {
+  color: #1a73e8;
+}
+
+/* ---- Chips: light gray fill, dark text ---- */
+.ui.has-open-app .chip {
+  background: rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  color: #333333;
+}
+
+/* ---- S-Pen Canvas Box: light mode ---- */
+.ui.has-open-app .spen-canvas-toolbar {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.ui.has-open-app .spen-clear-btn {
+  background: rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  color: #333333;
+}
+
+.ui.has-open-app .spen-draw-area {
+  background: #f5f5f7;
+  border: 1px dashed rgba(0, 0, 0, 0.15);
+}
+
+/* ---- Navbar Pill: dark on light ---- */
+.ui.has-open-app .navbar .pill {
+  background: rgba(0, 0, 0, 0.7);
+  box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.1);
 }
 
 @media (max-width: 640px) {
@@ -2772,13 +2935,30 @@ a {
   }
 
   .hint {
-    bottom: 14px;
+    top: calc(50% + var(--dh) / 2 + 12px);
+    bottom: auto;
     font-size: 11px;
     padding: 4px 10px;
   }
 
+  .stage,
   .scene {
-    --dh: min(80dvh, 620px);
+    --dh: min(78dvh, 600px);
+  }
+}
+
+@media (max-height: 640px) {
+
+  .stage,
+  .scene {
+    --dh: min(80dvh, 500px);
+  }
+
+  .hint {
+    top: calc(50% + var(--dh) / 2 + 10px);
+    bottom: auto;
+    font-size: 11px;
+    padding: 4px 10px;
   }
 }
 

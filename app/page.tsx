@@ -907,9 +907,10 @@ function PhoneStage({
     const currentRx = rot.current.rx;
     const currentRy = rot.current.ry;
 
-    el.style.setProperty("--rx", `${currentRx.toFixed(2)}deg`);
-    el.style.setProperty("--ry", `${currentRy.toFixed(2)}deg`);
-    el.style.transform = `rotateX(${currentRx.toFixed(2)}deg) rotateY(${currentRy.toFixed(2)}deg)`;
+    const rxStr = currentRx.toFixed(1);
+    const ryStr = currentRy.toFixed(1);
+
+    el.style.transform = `rotateX(${rxStr}deg) rotateY(${ryStr}deg)`;
 
     // Fixed Studio Key Spotlight in World Coordinates (elevated top-left-front)
     const lx_world = -0.32;
@@ -972,38 +973,41 @@ function PhoneStage({
     const shadowShiftX = lx * 18;
     const shadowOpacity = 0.76 + Math.abs(cosX) * 0.18;
 
-    el.style.setProperty("--spot-front-x", `${spotFrontX.toFixed(1)}%`);
-    el.style.setProperty("--spot-front-y", `${spotFrontY.toFixed(1)}%`);
-    el.style.setProperty("--spot-back-x", `${spotBackX.toFixed(1)}%`);
-    el.style.setProperty("--spot-back-y", `${spotBackY.toFixed(1)}%`);
-    el.style.setProperty("--spot-edge-x", `${spotEdgeX.toFixed(1)}%`);
-    el.style.setProperty("--spot-edge-y", `${spotEdgeY.toFixed(1)}%`);
-    el.style.setProperty("--spot-edge-depth", `${spotEdgeDepth.toFixed(1)}%`);
+    // Batch all CSS custom properties into a single style write to minimize reflows
+    const s = el.style;
+    s.setProperty("--spot-front-x", `${spotFrontX | 0}%`);
+    s.setProperty("--spot-front-y", `${spotFrontY | 0}%`);
+    s.setProperty("--spot-back-x", `${spotBackX | 0}%`);
+    s.setProperty("--spot-back-y", `${spotBackY | 0}%`);
+    s.setProperty("--spot-edge-x", `${spotEdgeX | 0}%`);
+    s.setProperty("--spot-edge-y", `${spotEdgeY | 0}%`);
+    s.setProperty("--spot-edge-depth", `${spotEdgeDepth | 0}%`);
 
-    el.style.setProperty("--light-front", frontIntensity.toFixed(3));
-    el.style.setProperty("--light-back", backIntensity.toFixed(3));
-    el.style.setProperty("--light-right", rightIntensity.toFixed(3));
-    el.style.setProperty("--light-left", leftIntensity.toFixed(3));
-    el.style.setProperty("--light-top", topIntensity.toFixed(3));
-    el.style.setProperty("--light-bottom", bottomIntensity.toFixed(3));
-    el.style.setProperty("--light-rim", rimLight.toFixed(3));
+    s.setProperty("--light-front", frontIntensity.toFixed(2));
+    s.setProperty("--light-back", backIntensity.toFixed(2));
+    s.setProperty("--light-right", rightIntensity.toFixed(2));
+    s.setProperty("--light-left", leftIntensity.toFixed(2));
+    s.setProperty("--light-top", topIntensity.toFixed(2));
+    s.setProperty("--light-bottom", bottomIntensity.toFixed(2));
+    s.setProperty("--light-rim", rimLight.toFixed(2));
 
-    el.style.setProperty("--spec-front", frontSpec.toFixed(3));
-    el.style.setProperty("--spec-back", backSpec.toFixed(3));
-    el.style.setProperty("--spec-right", rightSpec.toFixed(3));
-    el.style.setProperty("--spec-left", leftSpec.toFixed(3));
-    el.style.setProperty("--spec-top", topSpec.toFixed(3));
-    el.style.setProperty("--spec-bottom", bottomSpec.toFixed(3));
-    el.style.setProperty("--spec-lens", lensSpec.toFixed(3));
+    s.setProperty("--spec-front", frontSpec.toFixed(2));
+    s.setProperty("--spec-back", backSpec.toFixed(2));
+    s.setProperty("--spec-right", rightSpec.toFixed(2));
+    s.setProperty("--spec-left", leftSpec.toFixed(2));
+    s.setProperty("--spec-top", topSpec.toFixed(2));
+    s.setProperty("--spec-bottom", bottomSpec.toFixed(2));
+    s.setProperty("--spec-lens", lensSpec.toFixed(2));
 
-    el.style.setProperty("--sheen-x", sheenX.toFixed(1));
-    el.style.setProperty("--sheen-y", sheenY.toFixed(1));
-    el.style.setProperty("--sheen-angle", `${sheenAngle.toFixed(1)}deg`);
+    s.setProperty("--sheen-x", `${sheenX | 0}`);
+    s.setProperty("--sheen-y", `${sheenY | 0}`);
+    s.setProperty("--sheen-angle", `${sheenAngle | 0}deg`);
 
     if (sceneRef.current) {
-      sceneRef.current.style.setProperty("--shadow-scale-x", shadowScaleX.toFixed(3));
-      sceneRef.current.style.setProperty("--shadow-shift-x", `${shadowShiftX.toFixed(1)}px`);
-      sceneRef.current.style.setProperty("--shadow-opacity", shadowOpacity.toFixed(3));
+      const ss = sceneRef.current.style;
+      ss.setProperty("--shadow-scale-x", shadowScaleX.toFixed(2));
+      ss.setProperty("--shadow-shift-x", `${shadowShiftX | 0}px`);
+      ss.setProperty("--shadow-opacity", shadowOpacity.toFixed(2));
     }
 
     const targetFrontRy = Math.round(currentRy / 360) * 360;
@@ -1031,15 +1035,15 @@ function PhoneStage({
       let needNextFrame = false;
 
       if (mode.current === "dragging") {
-        // High-precision immediate tracking with subtle micro-cushion against sensor jitter
-        const followFactor = 1 - Math.pow(0.12, dt);
+        // Near-instant tracking with minimal micro-cushion (lower base = less lag)
+        const followFactor = 1 - Math.pow(0.02, dt);
         rot.current.rx += (targetRot.current.rx - rot.current.rx) * followFactor;
         rot.current.ry += (targetRot.current.ry - rot.current.ry) * followFactor;
         applyTransform();
         needNextFrame = true;
       } else if (mode.current === "inertia") {
         // Silky, luxurious momentum glide for continuous 360-degree rotation
-        const friction = Math.pow(0.966, dt);
+        const friction = Math.pow(0.975, dt);
         velocity.current.vx *= friction;
         velocity.current.vy *= friction;
 
@@ -1304,9 +1308,9 @@ function PhoneStage({
     const instVx = (dx / deltaMs) * 16.67 * 0.40;
     const instVy = (dy / deltaMs) * 16.67 * 0.32;
 
-    // Exponential moving average filter: filters out USB sensor jitter and micro-stutter
-    velocity.current.vx = velocity.current.vx * 0.35 + instVx * 0.65;
-    velocity.current.vy = velocity.current.vy * 0.35 + instVy * 0.65;
+    // Exponential moving average filter: responsive tracking with minimal jitter smoothing
+    velocity.current.vx = velocity.current.vx * 0.18 + instVx * 0.82;
+    velocity.current.vy = velocity.current.vy * 0.18 + instVy * 0.82;
   };
 
   const endDrag = (e: ReactPointerEvent<HTMLDivElement>) => {
