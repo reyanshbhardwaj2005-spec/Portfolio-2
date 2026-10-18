@@ -6,11 +6,17 @@ export const profile = {
   status: "Available for hire",
   location: "Bengaluru, India",
   tagline: "Crafting fluid digital experiences & high-performance systems",
-  email: "reyanshbhardwaj@example.com",
-  github: "https://github.com",
-  linkedin: "https://linkedin.com",
+  github: "https://github.com/reyanshbhardwaj2005-spec",
+  linkedin: "https://www.linkedin.com/in/reyansh-bhardwaj-6b2b59384/",
+  x: "https://x.com/ReyanshB292",
   spotify: "https://spotify.com",
   steam: "https://steamcommunity.com",
+};
+
+export const settingsProfile = {
+  name: "Reyansh Bhardwaj",
+  subtitle: "Engineer + Occasional Designer",
+  avatar: "/avatar.jpg",
 };
 
 export type Block =
@@ -29,7 +35,363 @@ export type Block =
   | {
       kind: "spen-canvas";
       heading?: string;
+    }
+  | {
+      kind: "elsewhere";
+      heading?: string;
     };
+
+/* =========================================================================
+   PHOTOS APP DATA (REAL ANDROID GALLERY EXPERIENCE)
+   👉 Easily replace any `url` below with your own images (e.g. "/my-photo.jpg"
+      or any external photo URL).
+   ========================================================================= */
+
+export type PhotoItem = {
+  id: string;
+  url: string;
+  title: string;
+  date: string;
+  time?: string;
+  location: string;
+  group: string; // "Today" | "Yesterday" | "October 2026" | "September 2026"
+  album: string; // "Camera" | "Gin & Tonic 🐱" | "Running & Races" | "Workspaces" | "Architecture"
+  exif?: {
+    camera: string;
+    lens: string;
+    settings: string;
+    resolution: string;
+    size: string;
+  };
+  favorite?: boolean;
+};
+
+export const initialPhotos: PhotoItem[] = [
+  {
+    id: "photo-1",
+    url: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=1200&q=80",
+    title: "Minimalist Dual 4K Workspace",
+    date: "Today",
+    time: "2:14 PM",
+    group: "Today",
+    location: "Bengaluru, India",
+    album: "Workspaces",
+    favorite: true,
+    exif: {
+      camera: "Samsung Galaxy S26 Ultra",
+      lens: "24mm f/1.7 200MP Main Wide",
+      settings: "ISO 50 • 1/250s",
+      resolution: "12.0 MP (3000 x 4000)",
+      size: "4.8 MB",
+    },
+  },
+  {
+    id: "photo-2",
+    url: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=1200&q=80",
+    title: "Gin resting on the warm amplifier",
+    date: "Today",
+    time: "11:20 AM",
+    group: "Today",
+    location: "Home",
+    album: "Gin & Tonic 🐱",
+    favorite: true,
+    exif: {
+      camera: "Samsung Galaxy S26 Ultra",
+      lens: "115mm f/3.4 5x Periscope Telephoto",
+      settings: "ISO 125 • 1/160s",
+      resolution: "12.0 MP (3000 x 4000)",
+      size: "3.9 MB",
+    },
+  },
+  {
+    id: "photo-3",
+    url: "https://images.unsplash.com/photo-1452626212852-811d58933cae?auto=format&fit=crop&w=1200&q=80",
+    title: "Morning 10K Sunrise Run",
+    date: "Today",
+    time: "6:45 AM",
+    group: "Today",
+    location: "Cubbon Park, Bengaluru",
+    album: "Running & Races",
+    favorite: true,
+    exif: {
+      camera: "Samsung Galaxy S26 Ultra",
+      lens: "24mm f/1.7 Main Wide",
+      settings: "ISO 64 • 1/500s",
+      resolution: "12.0 MP (3000 x 4000)",
+      size: "5.1 MB",
+    },
+  },
+  {
+    id: "photo-4",
+    url: "https://images.unsplash.com/photo-1573865526739-10659fec78a5?auto=format&fit=crop&w=1200&q=80",
+    title: "Tonic watching birds from the window",
+    date: "Yesterday",
+    time: "4:32 PM",
+    group: "Yesterday",
+    location: "Home",
+    album: "Gin & Tonic 🐱",
+    favorite: false,
+    exif: {
+      camera: "Samsung Galaxy S26 Ultra",
+      lens: "70mm f/2.4 3x Telephoto",
+      settings: "ISO 80 • 1/200s",
+      resolution: "12.0 MP (3000 x 4000)",
+      size: "3.7 MB",
+    },
+  },
+  {
+    id: "photo-5",
+    url: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&w=1200&q=80",
+    title: "Keychron Mechanical Keyboard with Custom Caps",
+    date: "Yesterday",
+    time: "1:15 PM",
+    group: "Yesterday",
+    location: "Bengaluru, India",
+    album: "Workspaces",
+    favorite: false,
+    exif: {
+      camera: "Samsung Galaxy S26 Ultra",
+      lens: "24mm f/1.7 Macro",
+      settings: "ISO 100 • 1/120s",
+      resolution: "12.0 MP (3000 x 4000)",
+      size: "4.2 MB",
+    },
+  },
+  {
+    id: "photo-6",
+    url: "https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1200&q=80",
+    title: "Dusk over UB City Skyline",
+    date: "Yesterday",
+    time: "6:58 PM",
+    group: "Yesterday",
+    location: "Bengaluru, India",
+    album: "Architecture",
+    favorite: true,
+    exif: {
+      camera: "Samsung Galaxy S26 Ultra",
+      lens: "24mm f/1.7 Nightography",
+      settings: "ISO 400 • 1/30s",
+      resolution: "12.0 MP (3000 x 4000)",
+      size: "6.2 MB",
+    },
+  },
+  {
+    id: "photo-7",
+    url: "https://images.unsplash.com/photo-1509785307050-d4066910ec1e?auto=format&fit=crop&w=1200&q=80",
+    title: "Flat White Espresso & Dev Notes",
+    date: "Oct 14, 2026",
+    time: "10:10 AM",
+    group: "October 2026",
+    location: "Indiranagar, Bengaluru",
+    album: "Camera",
+    favorite: false,
+    exif: {
+      camera: "Samsung Galaxy S26 Ultra",
+      lens: "24mm f/1.7 Main Wide",
+      settings: "ISO 125 • 1/180s",
+      resolution: "12.0 MP (3000 x 4000)",
+      size: "4.1 MB",
+    },
+  },
+  {
+    id: "photo-8",
+    url: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&q=80",
+    title: "Cruising at 36,000 ft over Western Ghats",
+    date: "Oct 12, 2026",
+    time: "11:42 AM",
+    group: "October 2026",
+    location: "Air India AI 504",
+    album: "Camera",
+    favorite: true,
+    exif: {
+      camera: "Samsung Galaxy S26 Ultra",
+      lens: "13mm f/2.2 Ultra-Wide",
+      settings: "ISO 50 • 1/1200s",
+      resolution: "12.0 MP (3000 x 4000)",
+      size: "5.5 MB",
+    },
+  },
+  {
+    id: "photo-9",
+    url: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80",
+    title: "Brutalist Glass & Concrete Facade",
+    date: "Oct 10, 2026",
+    time: "3:30 PM",
+    group: "October 2026",
+    location: "New Delhi, India",
+    album: "Architecture",
+    favorite: false,
+    exif: {
+      camera: "Samsung Galaxy S26 Ultra",
+      lens: "13mm f/2.2 Ultra-Wide",
+      settings: "ISO 80 • 1/640s",
+      resolution: "12.0 MP (3000 x 4000)",
+      size: "4.9 MB",
+    },
+  },
+  {
+    id: "photo-10",
+    url: "https://images.unsplash.com/photo-1533738363-b7f9aef128ce?auto=format&fit=crop&w=1200&q=80",
+    title: "Gin inspecting the S-Pen on the desk",
+    date: "Oct 8, 2026",
+    time: "5:15 PM",
+    group: "October 2026",
+    location: "Home Studio",
+    album: "Gin & Tonic 🐱",
+    favorite: true,
+    exif: {
+      camera: "Samsung Galaxy S26 Ultra",
+      lens: "70mm f/2.4 3x Telephoto",
+      settings: "ISO 160 • 1/125s",
+      resolution: "12.0 MP (3000 x 4000)",
+      size: "3.8 MB",
+    },
+  },
+  {
+    id: "photo-11",
+    url: "https://images.unsplash.com/photo-1530549387789-4c1017266635?auto=format&fit=crop&w=1200&q=80",
+    title: "Bengaluru Half Marathon Finish Line",
+    date: "Oct 5, 2026",
+    time: "8:25 AM",
+    group: "October 2026",
+    location: "Kanteerava Stadium",
+    album: "Running & Races",
+    favorite: true,
+    exif: {
+      camera: "Samsung Galaxy S26 Ultra",
+      lens: "24mm f/1.7 Main Wide",
+      settings: "ISO 50 • 1/1000s",
+      resolution: "12.0 MP (3000 x 4000)",
+      size: "6.0 MB",
+    },
+  },
+  {
+    id: "photo-12",
+    url: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&w=1200&q=80",
+    title: "Keynote Talk: 3D Spatial Interfaces",
+    date: "Sept 28, 2026",
+    time: "2:00 PM",
+    group: "September 2026",
+    location: "React India Conference",
+    album: "Workspaces",
+    favorite: true,
+    exif: {
+      camera: "Samsung Galaxy S26 Ultra",
+      lens: "115mm f/3.4 5x Telephoto",
+      settings: "ISO 320 • 1/200s",
+      resolution: "12.0 MP (3000 x 4000)",
+      size: "4.7 MB",
+    },
+  },
+  {
+    id: "photo-13",
+    url: "https://images.unsplash.com/photo-1526738549149-8e07eca6c147?auto=format&fit=crop&w=1200&q=80",
+    title: "Late Night Code Sprint with Coffee",
+    date: "Sept 24, 2026",
+    time: "11:45 PM",
+    group: "September 2026",
+    location: "Bengaluru, India",
+    album: "Workspaces",
+    favorite: false,
+    exif: {
+      camera: "Samsung Galaxy S26 Ultra",
+      lens: "24mm f/1.7",
+      settings: "ISO 500 • 1/40s",
+      resolution: "12.0 MP (3000 x 4000)",
+      size: "5.3 MB",
+    },
+  },
+  {
+    id: "photo-14",
+    url: "https://images.unsplash.com/photo-1543852786-1cf6624b9987?auto=format&fit=crop&w=1200&q=80",
+    title: "Tonic sleeping in sunny patch",
+    date: "Sept 20, 2026",
+    time: "3:10 PM",
+    group: "September 2026",
+    location: "Home",
+    album: "Gin & Tonic 🐱",
+    favorite: false,
+    exif: {
+      camera: "Samsung Galaxy S26 Ultra",
+      lens: "70mm f/2.4 3x Telephoto",
+      settings: "ISO 100 • 1/250s",
+      resolution: "12.0 MP (3000 x 4000)",
+      size: "3.5 MB",
+    },
+  },
+  {
+    id: "photo-15",
+    url: "https://images.unsplash.com/photo-1502680390469-be75c86b636f?auto=format&fit=crop&w=1200&q=80",
+    title: "Trail Running Path at Dawn",
+    date: "Sept 18, 2026",
+    time: "6:15 AM",
+    group: "September 2026",
+    location: "Nandi Hills, Karnataka",
+    album: "Running & Races",
+    favorite: true,
+    exif: {
+      camera: "Samsung Galaxy S26 Ultra",
+      lens: "24mm f/1.7",
+      settings: "ISO 80 • 1/400s",
+      resolution: "12.0 MP (3000 x 4000)",
+      size: "5.8 MB",
+    },
+  },
+  {
+    id: "photo-16",
+    url: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1200&q=80",
+    title: "Modern Minimalist Concrete Geometry",
+    date: "Sept 12, 2026",
+    time: "1:40 PM",
+    group: "September 2026",
+    location: "Bengaluru, India",
+    album: "Architecture",
+    favorite: false,
+    exif: {
+      camera: "Samsung Galaxy S26 Ultra",
+      lens: "24mm f/1.7",
+      settings: "ISO 50 • 1/800s",
+      resolution: "12.0 MP (3000 x 4000)",
+      size: "4.4 MB",
+    },
+  },
+  {
+    id: "photo-17",
+    url: "https://images.unsplash.com/photo-1477959858617-67f30bc75b82?auto=format&fit=crop&w=1200&q=80",
+    title: "Night Skyline City Lights Long Exposure",
+    date: "Sept 5, 2026",
+    time: "9:20 PM",
+    group: "September 2026",
+    location: "Delhi NCR",
+    album: "Architecture",
+    favorite: true,
+    exif: {
+      camera: "Samsung Galaxy S26 Ultra",
+      lens: "24mm f/1.7 Nightography",
+      settings: "ISO 200 • 2.0s Tripod",
+      resolution: "12.0 MP (3000 x 4000)",
+      size: "6.8 MB",
+    },
+  },
+  {
+    id: "photo-18",
+    url: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1200&q=80",
+    title: "Retro Audio & Synthesizers",
+    date: "Sept 1, 2026",
+    time: "4:50 PM",
+    group: "September 2026",
+    location: "Studio",
+    album: "Workspaces",
+    favorite: false,
+    exif: {
+      camera: "Samsung Galaxy S26 Ultra",
+      lens: "24mm f/1.7",
+      settings: "ISO 160 • 1/100s",
+      resolution: "12.0 MP (3000 x 4000)",
+      size: "4.6 MB",
+    },
+  },
+];
 
 export type AppDef = {
   id: string;
@@ -151,40 +513,14 @@ export const apps: AppDef[] = [
     id: "about",
     label: "About",
     icon: "user",
-    c1: "#3b82f6",
-    c2: "#1d4ed8",
-    title: "About Reyansh",
+    c1: "#000034",
+    c2: "#FFA523",
+    title: "About",
     subtitle: profile.role,
     blocks: [
       {
         kind: "text",
-        body: "Hello! I am a full-stack engineer and mobile application architect based in Bengaluru, India. I specialize in building ultra-refined, fluid digital products that marry deep engineering precision with world-class user experiences.",
-      },
-      {
-        kind: "items",
-        heading: "Core Highlights",
-        items: [
-          {
-            title: "Specialization",
-            sub: "Next.js 15, React 19, TypeScript, React Native & Flutter, WebGL",
-            meta: "Full Stack",
-          },
-          {
-            title: "Design Philosophy",
-            sub: "Micro-interactions, 60fps gesture physics, 3D Spatial UI",
-            meta: "Spatial UI",
-          },
-          {
-            title: "Location",
-            sub: "Bengaluru, Karnataka, India",
-            meta: profile.status,
-          },
-          {
-            title: "Languages",
-            sub: "English, Hindi",
-            meta: "Bilingual",
-          },
-        ],
+        body: "I build software, chase half marathons, and answer to two cats named Gin & Tonic.",
       },
       {
         kind: "items",
@@ -208,29 +544,8 @@ export const apps: AppDef[] = [
         ],
       },
       {
-        kind: "chips",
-        heading: "Core Competencies",
-        chips: [
-          "Full-Stack Web",
-          "Mobile iOS & Android",
-          "3D Spatial UI",
-          "Micro-Interactions",
-          "Distributed APIs",
-          "Performance Optimization",
-          "Cloud Infrastructure",
-          "TypeScript Strict",
-        ],
-      },
-      {
-        kind: "items",
-        heading: "Education & Credentials",
-        items: [
-          {
-            title: "B.Tech in Computer Science & Engineering",
-            sub: "First Class with Distinction • Focus on Distributed Systems & Graphics",
-            meta: "Honors Graduate",
-          },
-        ],
+        kind: "elsewhere",
+        heading: "ELSEWHERE",
       },
     ],
   },
@@ -312,6 +627,7 @@ export const apps: AppDef[] = [
         kind: "items",
         heading: "Device Specifications",
         items: [
+          { title: "Physical Dimensions", sub: "163.6 x 78.1 x 7.9 mm • 218g", meta: "True 1:1" },
           { title: "Model Name", sub: "Samsung Galaxy S26 Ultra 5G", meta: "Titanium Sand" },
           { title: "One UI Version", sub: "One UI 8.0 • Android 16", meta: "Up to date" },
           { title: "Processor", sub: "Snapdragon 8 Elite Mobile Platform (3nm)", meta: "Octa-Core" },
@@ -635,8 +951,8 @@ export const apps: AppDef[] = [
     c1: "#38bdf8",
     c2: "#0284c7",
     dock: true,
-    title: "Direct Mail",
-    subtitle: "Always open for exciting opportunities",
+    title: "New Message",
+    subtitle: "Send a direct message",
     blocks: [
       {
         kind: "text",
@@ -655,9 +971,10 @@ export const apps: AppDef[] = [
         kind: "links",
         heading: "Communication Channels",
         links: [
-          { label: "Email Reyansh Directly", href: `mailto:${profile.email}`, hint: profile.email },
-          { label: "Connect on LinkedIn", href: profile.linkedin, hint: "linkedin.com" },
-          { label: "GitHub Profile", href: profile.github, hint: "github.com" },
+          { label: "Send Direct Message", href: "#mail", hint: "Direct Message" },
+          { label: "Connect on LinkedIn", href: profile.linkedin, hint: "linkedin.com/in/reyansh-bhardwaj" },
+          { label: "GitHub Profile", href: profile.github, hint: "github.com/reyanshbhardwaj2005-spec" },
+          { label: "Follow on X", href: profile.x, hint: "@ReyanshB292" },
         ],
       },
       {
@@ -735,7 +1052,7 @@ export const apps: AppDef[] = [
     c1: "#ffffff",
     c2: "#f3f4f6",
     title: "GitHub Contributions",
-    subtitle: "Reyansh Bhardwaj • @reyanshbhardwaj",
+    subtitle: "Reyansh Bhardwaj • @reyanshbhardwaj2005-spec",
     blocks: [
       {
         kind: "items",
@@ -767,7 +1084,7 @@ export const apps: AppDef[] = [
         kind: "links",
         heading: "External Profile",
         links: [
-          { label: "View Complete GitHub Profile", href: profile.github, hint: "github.com" },
+          { label: "View Complete GitHub Profile", href: profile.github, hint: "github.com/reyanshbhardwaj2005-spec" },
         ],
       },
     ],
