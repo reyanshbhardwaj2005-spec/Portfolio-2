@@ -12,6 +12,7 @@ import { apps, profile, settingsProfile, initialPhotos } from "./data";
 import type { AppDef, Block, PhotoItem } from "./data";
 import { Icon } from "./icons";
 import type { IconName } from "./icons";
+import { GitHubAppView, useHorizontalScroll } from "./github-app";
 
 /* ---------- Date & Time Hooks ---------- */
 
@@ -420,8 +421,15 @@ function Home({
         <div
           className="widget-col"
           onClick={(e) => onOpen(githubApp, e.currentTarget)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              onOpen(githubApp, e.currentTarget);
+            }
+          }}
           role="button"
           tabIndex={0}
+          aria-label="Open GitHub Application"
         >
           <div className="home-widget widget-github">
             <div className="github-grid" aria-label="GitHub Contributions">
@@ -450,7 +458,7 @@ function Home({
         >
           <div className="home-widget widget-weather">
             <div className="weather-header">
-              <span className="weather-city">Bengaluru</span>
+              <span className="weather-city">Meerut</span>
               <svg className="weather-arrow" viewBox="0 0 24 24" fill="currentColor">
                 <polygon points="3 11 22 2 13 21 11 13 3 11" />
               </svg>
@@ -678,11 +686,7 @@ function useSmoothAppScroll(options?: {
   threshold?: number;
 }) {
   const scrollRef = useRef<HTMLDivElement | null>(null);
-  const targetScrollTop = useRef(0);
-  const isWheeling = useRef(false);
-  const wheelRafId = useRef<number | null>(null);
   const inertiaRafId = useRef<number | null>(null);
-  const lastTime = useRef(0);
 
   const dragData = useRef({
     active: false,
@@ -696,15 +700,10 @@ function useSmoothAppScroll(options?: {
   });
 
   const stopAllScrollPhysics = useCallback(() => {
-    if (wheelRafId.current !== null) {
-      cancelAnimationFrame(wheelRafId.current);
-      wheelRafId.current = null;
-    }
     if (inertiaRafId.current !== null) {
       cancelAnimationFrame(inertiaRafId.current);
       inertiaRafId.current = null;
     }
-    isWheeling.current = false;
   }, []);
 
   const checkReveals = useCallback(() => {
@@ -719,71 +718,30 @@ function useSmoothAppScroll(options?: {
     const threshold = options?.threshold ?? 20;
 
     items.forEach((item) => {
+      if (item.classList.contains("is-revealed")) return;
+
       const rect = item.getBoundingClientRect();
-      const isEntering = rect.top <= containerRect.bottom - threshold && rect.bottom >= containerRect.top;
-      const isWayBelow = rect.top > containerRect.bottom + 50;
+      const isEntering = rect.top <= containerRect.bottom + threshold && rect.bottom >= containerRect.top - threshold;
 
       if (isEntering) {
-        if (!item.classList.contains("is-revealed")) {
-          item.classList.add("is-revealed");
-        }
-      } else if (isWayBelow) {
-        item.classList.remove("is-revealed");
+        item.classList.add("is-revealed");
       }
     });
   }, [options?.threshold]);
 
-  const wheelLoop = useCallback((now: number) => {
-    const el = scrollRef.current;
-    if (!el) {
-      wheelRafId.current = null;
-      isWheeling.current = false;
-      return;
-    }
-
-    const dt = Math.min(32, Math.max(1, now - lastTime.current));
-    lastTime.current = now;
-
-    const current = el.scrollTop;
-    const target = targetScrollTop.current;
-    const diff = target - current;
-
-    const lerpFactor = 1 - Math.pow(0.005, dt / 220);
-    const step = diff * lerpFactor;
-
-    if (Math.abs(diff) < 0.6) {
-      el.scrollTop = target;
-      wheelRafId.current = null;
-      isWheeling.current = false;
-      checkReveals();
-    } else {
-      el.scrollTop = current + step;
-      checkReveals();
-      wheelRafId.current = requestAnimationFrame(wheelLoop);
-    }
+  const lastRevealTime = useRef(0);
+  const throttledCheckReveals = useCallback((force = false) => {
+    const now = performance.now();
+    if (!force && now - lastRevealTime.current < 80) return;
+    lastRevealTime.current = now;
+    checkReveals();
   }, [checkReveals]);
 
   const smoothScrollBy = useCallback((deltaY: number) => {
     const el = scrollRef.current;
     if (!el) return;
-
-    const maxScroll = el.scrollHeight - el.clientHeight;
-    if (maxScroll <= 0) return;
-
-    if (inertiaRafId.current !== null) {
-      cancelAnimationFrame(inertiaRafId.current);
-      inertiaRafId.current = null;
-    }
-
-    const currentTarget = isWheeling.current ? targetScrollTop.current : el.scrollTop;
-    targetScrollTop.current = Math.max(0, Math.min(maxScroll, currentTarget + deltaY));
-
-    if (!wheelRafId.current) {
-      isWheeling.current = true;
-      lastTime.current = performance.now();
-      wheelRafId.current = requestAnimationFrame(wheelLoop);
-    }
-  }, [wheelLoop]);
+    el.scrollBy({ top: deltaY, behavior: "smooth" });
+  }, []);
 
   const launchInertia = useCallback((initialVy: number) => {
     const el = scrollRef.current;
@@ -807,10 +765,11 @@ function useSmoothAppScroll(options?: {
 
       const maxScroll = node.scrollHeight - node.clientHeight;
       node.scrollTop += velocity * dt;
-      checkReveals();
+      throttledCheckReveals(false);
 
       if (node.scrollTop <= 0 || node.scrollTop >= maxScroll || Math.abs(velocity) < 0.02) {
         inertiaRafId.current = null;
+        throttledCheckReveals(true);
       } else {
         inertiaRafId.current = requestAnimationFrame(inertiaLoop);
       }
@@ -818,7 +777,7 @@ function useSmoothAppScroll(options?: {
 
     stopAllScrollPhysics();
     inertiaRafId.current = requestAnimationFrame(inertiaLoop);
-  }, [checkReveals, stopAllScrollPhysics]);
+  }, [throttledCheckReveals, stopAllScrollPhysics]);
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -826,45 +785,35 @@ function useSmoothAppScroll(options?: {
 
     (el as any).__smoothScrollBy = smoothScrollBy;
 
-    const onWheel = (e: WheelEvent) => {
-      e.stopPropagation();
-      e.preventDefault();
-
-      let delta = e.deltaY;
-      if (e.deltaMode === 1) delta *= 32;
-      else if (e.deltaMode === 2) delta *= el.clientHeight;
-
-      smoothScrollBy(delta);
-    };
-
-    el.addEventListener("wheel", onWheel, { passive: false });
-
     const timer = setTimeout(() => {
       checkReveals();
     }, 45);
 
     const onScroll = (e: Event) => {
-      checkReveals();
+      throttledCheckReveals();
       options?.onScroll?.(e);
     };
 
     el.addEventListener("scroll", onScroll, { passive: true });
 
     return () => {
-      el.removeEventListener("wheel", onWheel);
       el.removeEventListener("scroll", onScroll);
       clearTimeout(timer);
       stopAllScrollPhysics();
       delete (el as any).__smoothScrollBy;
     };
-  }, [smoothScrollBy, checkReveals, options, stopAllScrollPhysics]);
+  }, [smoothScrollBy, checkReveals, throttledCheckReveals, options, stopAllScrollPhysics]);
 
   const onPointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
     const el = scrollRef.current;
     if (!el) return;
     const target = e.target as HTMLElement;
 
-    if (target.closest("button, a, input, canvas, .spen-canvas-box, .spen-draw-area, .spen-ink-dot, .settings-toggle-switch, .photos-reset-btn")) {
+    if (
+      target.closest(
+        "button, a, input, canvas, .spen-canvas-box, .spen-draw-area, .spen-ink-dot, .settings-toggle-switch, .photos-reset-btn, .photos-filter-bar, .photos-chip, [data-horizontal-scroll]"
+      )
+    ) {
       return;
     }
 
@@ -914,7 +863,7 @@ function useSmoothAppScroll(options?: {
     dragData.current.history = dragData.current.history.filter((p) => now - p.time <= 100);
 
     el.scrollTop = dragData.current.scrollTop - dy;
-    checkReveals();
+    throttledCheckReveals();
   };
 
   const onPointerUp = (e: ReactPointerEvent<HTMLDivElement>) => {
@@ -1237,6 +1186,8 @@ function PhotosAppView({
     onScroll: handleScroll,
   });
 
+  const photosFilterRef = useHorizontalScroll<HTMLDivElement>();
+
   useEffect(() => {
     const timer = setTimeout(() => {
       checkReveals();
@@ -1458,7 +1409,7 @@ function PhotosAppView({
       </div>
 
       {/* Category Filter Chips Bar */}
-      <div className="photos-filter-bar">
+      <div className="photos-filter-bar" ref={photosFilterRef} data-horizontal-scroll="true">
         {[
           { key: "all", label: "All Photos" },
           { key: "favorites", label: "⭐ Favorites" },
@@ -2154,17 +2105,26 @@ function AppWindow({
     if (!win) return;
 
     const onWheel = (e: WheelEvent) => {
-      const scrollEl = (win.querySelector(".settings-window-body") || win.querySelector(".photos-scroll-content") || win.querySelector(".mail-app-container") || win.querySelector(".app-body")) as any;
+      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+
+      const scrollEl = (win.querySelector(".settings-window-body") ||
+        win.querySelector(".photos-scroll-content") ||
+        win.querySelector(".mail-app-container") ||
+        win.querySelector(".github-scroll-body") ||
+        win.querySelector(".app-body")) as any;
       if (!scrollEl) return;
-      if (typeof scrollEl.__smoothScrollBy === "function") {
-        scrollEl.__smoothScrollBy(e.deltaY);
-      } else {
-        scrollEl.scrollTop += e.deltaY;
+
+      // If target is inside scrollEl, scrollEl already handles its own scroll events
+      if (!scrollEl.contains(e.target as Node)) {
+        if (typeof scrollEl.__smoothScrollBy === "function") {
+          scrollEl.__smoothScrollBy(e.deltaY);
+        } else {
+          scrollEl.scrollBy({ top: e.deltaY, behavior: "smooth" });
+        }
       }
-      e.stopPropagation();
     };
 
-    win.addEventListener("wheel", onWheel, { passive: false });
+    win.addEventListener("wheel", onWheel, { passive: true });
     return () => win.removeEventListener("wheel", onWheel);
   }, []);
 
@@ -2192,7 +2152,7 @@ function AppWindow({
   return (
     <section
       ref={windowRef}
-      className={`app-window${closing ? " closing" : ""}${opened && !closing ? " opened" : ""}${app.id === "settings" || app.id === "about" ? " is-settings-app is-about-app" : ""}${app.id === "photos" ? " is-photos-app" : ""}${app.id === "mail" ? " is-mail-app" : ""}`}
+      className={`app-window${closing ? " closing" : ""}${opened && !closing ? " opened" : ""}${app.id === "settings" || app.id === "about" ? " is-settings-app is-about-app" : ""}${app.id === "photos" ? " is-photos-app" : ""}${app.id === "mail" ? " is-mail-app" : ""}${app.id === "github" ? " is-github-app" : ""}`}
       style={{ "--ox": origin.x, "--oy": origin.y } as CSSProperties}
       onAnimationEnd={handleEnd}
       role="dialog"
@@ -2219,6 +2179,12 @@ function AppWindow({
         <MailAppView
           onBack={onBack}
           isDarkMode={isDarkMode}
+        />
+      ) : app.id === "github" ? (
+        <GitHubAppView
+          onBack={onBack}
+          isDarkMode={isDarkMode}
+          onOpenApp={onOpenApp}
         />
       ) : (
         <>
@@ -3012,12 +2978,13 @@ function PhoneStage({
                 const scrollEl = (screenRef.current?.querySelector(".settings-window-body") ||
                   screenRef.current?.querySelector(".photos-scroll-content") ||
                   screenRef.current?.querySelector(".mail-app-container") ||
+                  screenRef.current?.querySelector(".github-scroll-body") ||
                   screenRef.current?.querySelector(".app-body")) as any;
-                if (scrollEl) {
+                if (scrollEl && !scrollEl.contains(e.target as Node)) {
                   if (typeof scrollEl.__smoothScrollBy === "function") {
                     scrollEl.__smoothScrollBy(e.deltaY);
                   } else {
-                    scrollEl.scrollTop += e.deltaY;
+                    scrollEl.scrollBy({ top: e.deltaY, behavior: "smooth" });
                   }
                 }
               }}
