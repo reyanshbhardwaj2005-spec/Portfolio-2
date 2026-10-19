@@ -1358,54 +1358,19 @@ function PhotosAppView({
 
   return (
     <div className="photos-app-container">
-      {/* Top Header: Android Google Photos Search Bar */}
-      <div className={`photos-top-bar${isScrolled ? " scrolled" : ""}`}>
+      {/* Top Header: Circular Back Button with blue chevron and Large Title below */}
+      <div className="photos-header">
         <button
-          className="photos-back-btn"
+          className="settings-back-btn"
           onClick={onBack}
           aria-label="Back to Home"
           title="Back to Home"
         >
-          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2.4" fill="none" strokeLinecap="round" strokeLinejoin="round">
+          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2.8" fill="none" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="15 18 9 12 15 6" />
           </svg>
         </button>
-
-        <div className="photos-search-box">
-          <GooglePhotosIcon size={18} />
-          <input
-            type="text"
-            className="photos-search-input"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search 'Cats', 'Running', 'Setup'..."
-            aria-label="Search photos"
-          />
-          {searchQuery && (
-            <button
-              className="photos-search-clear"
-              onClick={() => setSearchQuery("")}
-              aria-label="Clear search"
-            >
-              <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round">
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            </button>
-          )}
-        </div>
-
-        <button
-          className="photos-avatar-btn"
-          onClick={() => {
-            setActiveCategory("all");
-            setActiveTab("photos");
-          }}
-          title={settingsProfile.name}
-          aria-label="Profile"
-        >
-          <img src={settingsProfile.avatar} alt={settingsProfile.name} />
-        </button>
+        <h1 className="photos-header-title">Photos</h1>
       </div>
 
       {/* Category Filter Chips Bar */}
