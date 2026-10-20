@@ -1,0 +1,121 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R /F2 5 0 R >> >> /Contents 6 0 R >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+6 0 obj
+<< /Length 1600 >>
+stream
+BT
+/F1 22 Tf
+50 740 Td
+(REYANSH BHARDWAJ) Tj
+0 -20 Td
+/F2 11 Tf
+(Full-Stack & Mobile Engineer | Android, Java, Spring Boot, Spring AI, Kafka) Tj
+0 -15 Td
+(Email: reyanshbhardwaj.2005@gmail.com | Meerut, India) Tj
+0 -15 Td
+(GitHub: github.com/reyanshbhardwaj2005-spec | LinkedIn: linkedin.com/in/reyansh-bhardwaj-6b2b59384) Tj
+0 -30 Td
+/F1 14 Tf
+(EDUCATION & ACADEMICS) Tj
+0 -18 Td
+/F1 11 Tf
+(Bachelor of Technology (B.Tech) - IIIT Sonepat) Tj
+0 -14 Td
+/F2 10 Tf
+(Computer Science & Engineering | Batch: 2025 - 2029 | CGPA: 8.7) Tj
+0 -16 Td
+/F1 11 Tf
+(Senior Secondary Education (Class XII) - J.P. International) Tj
+0 -14 Td
+/F2 10 Tf
+(Central Board of Secondary Education (CBSE) | 92% Aggregate (Science PCM)) Tj
+0 -16 Td
+/F1 11 Tf
+(Joint Entrance Examination (JEE Mains)) Tj
+0 -14 Td
+/F2 10 Tf
+(98.12 Percentile | All India Rank (AIR): 28,834 | National Testing Agency) Tj
+0 -26 Td
+/F1 14 Tf
+(CERTIFICATIONS & CREDENTIALS) Tj
+0 -18 Td
+/F1 11 Tf
+(Spring Boot 0 to 100 Cohort 5.0 [AI + DevOps + System Design] - Coding Shuttle) Tj
+0 -14 Td
+/F2 10 Tf
+(Completed on 15/10/2026 | Verified Certificate ID: 3K031L0B | Instructor: Anuj Kumar Sharma) Tj
+0 -26 Td
+/F1 14 Tf
+(TECHNICAL SKILLS) Tj
+0 -18 Td
+/F1 10 Tf
+(Languages: ) Tj
+/F2 10 Tf
+(Java, Kotlin, Python, C, C++, JavaScript, TypeScript, Dart, SQL) Tj
+0 -16 Td
+/F1 10 Tf
+(Mobile Development: ) Tj
+/F2 10 Tf
+(Android Studio, Jetpack Compose, Room DB, XML Layouts, Material Design) Tj
+0 -16 Td
+/F1 10 Tf
+(Backend & Systems: ) Tj
+/F2 10 Tf
+(Spring Boot, Spring AI, Kafka, REST APIs, Microservices, Spring Security, MySQL, Redis) Tj
+0 -16 Td
+/F1 10 Tf
+(DevOps & Cloud Tools: ) Tj
+/F2 10 Tf
+(Git, GitHub, Docker, Kubernetes, Postman, CI/CD, AWS Deployment, Linux) Tj
+0 -26 Td
+/F1 14 Tf
+(FEATURED PROJECTS) Tj
+0 -18 Td
+/F1 11 Tf
+(RealityLens - Android Verification App) Tj
+0 -14 Td
+/F2 10 Tf
+(Screenshot authenticity verification app using custom analysis APIs and image telemetry.) Tj
+0 -18 Td
+/F1 11 Tf
+(PYQ Management Microservice - Spring Boot) Tj
+0 -14 Td
+/F2 10 Tf
+(Robust REST API backend for question paper indexing, search, filtering, and role-based access.) Tj
+0 -18 Td
+/F1 11 Tf
+(Offline AI Chat Assistant - Android) Tj
+0 -14 Td
+/F2 10 Tf
+(Android app featuring on-device local quantized LLM inference for zero-latency private chat.) Tj
+ET
+endstream
+endobj
+xref
+0 7
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000244 00000 n 
+0000000318 00000 n 
+0000000387 00000 n 
+trailer
+<< /Size 7 /Root 1 0 R >>
+startxref
+2460
+%%EOF

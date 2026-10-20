@@ -13,6 +13,7 @@ import type { AppDef, Block, PhotoItem } from "./data";
 import { Icon } from "./icons";
 import type { IconName } from "./icons";
 import { GitHubAppView, useHorizontalScroll } from "./github-app";
+import { YouTubeAppView } from "./youtube-app";
 
 /* ---------- Date & Time Hooks ---------- */
 
@@ -636,6 +637,21 @@ function BlockView({ block }: { block: Block }) {
               <div>
                 <div className="t">{it.title}</div>
                 {it.sub && <div className="s">{it.sub}</div>}
+                {it.image && (
+                  <div className="cert-preview-card">
+                    <a href={it.image} target="_blank" rel="noreferrer" className="cert-preview-link" title="Click to view full certificate">
+                      <img src={it.image} alt={it.title} className="cert-preview-thumb" loading="lazy" />
+                      <div className="cert-preview-overlay">
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M15 3h6v6" />
+                          <path d="M10 14L21 3" />
+                          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                        </svg>
+                        <span>View Full Certificate</span>
+                      </div>
+                    </a>
+                  </div>
+                )}
               </div>
               {it.meta && <div className="m">{it.meta}</div>}
             </div>
@@ -1135,6 +1151,133 @@ function AboutAppView({
         {/* ELSEWHERE SECTION */}
         <ElsewhereCard heading="ELSEWHERE" />
       </div>
+    </div>
+  );
+}
+
+function ResumeAppView({
+  onBack,
+  isDarkMode,
+}: {
+  onBack: () => void;
+  isDarkMode: boolean;
+}) {
+  const { scrollRef, pointerHandlers } = useSmoothAppScroll();
+  const [downloadToast, setDownloadToast] = useState(false);
+  const filesApp = apps.find((a) => a.id === "files");
+
+  const handleDownload = () => {
+    setDownloadToast(true);
+    setTimeout(() => {
+      setDownloadToast(false);
+    }, 2800);
+  };
+
+  return (
+    <div className="settings-window-body resume-window-body" ref={scrollRef} {...pointerHandlers}>
+      <div className="settings-app-view resume-app-view">
+        {/* Upper Header: Circular Back (orange chevron) on left, Circular Download (orange icon) on right, Large Resume Title, and Name/Subtitle */}
+        <div className="resume-header scroll-reveal-item">
+          <div className="resume-top-actions">
+            <button
+              className="settings-back-btn resume-circle-btn"
+              onClick={onBack}
+              aria-label="Back"
+              title="Back"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="20"
+                height="20"
+                stroke="#ff6433"
+                strokeWidth="2.8"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+            </button>
+
+            <a
+              href="/resume.pdf"
+              download="Reyansh_Bhardwaj_Resume.pdf"
+              className="settings-back-btn resume-circle-btn"
+              onClick={handleDownload}
+              aria-label="Download Resume"
+              title="Download Resume"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="20"
+                height="20"
+                stroke="#ff6433"
+                strokeWidth="2.4"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+            </a>
+          </div>
+
+          <h1 className="resume-main-title">Resume</h1>
+
+          <div className="resume-author-info">
+            <span className="resume-author-name">{profile.name}</span>
+            <span className="resume-author-sub">{settingsProfile.subtitle}</span>
+          </div>
+        </div>
+
+        {/* Content Blocks (Education, Technical Skills, Core Tech, Certifications, Links) */}
+        <div className="resume-blocks">
+          {filesApp?.blocks?.map((b, i) => (
+            <BlockView block={b} key={i} />
+          ))}
+        </div>
+
+        {/* Bottom Button to Download Resume */}
+        <div className="resume-bottom-action scroll-reveal-item">
+          <a
+            href="/resume.pdf"
+            download="Reyansh_Bhardwaj_Resume.pdf"
+            className="resume-bottom-download-btn"
+            onClick={handleDownload}
+          >
+            <span className="resume-btn-icon-wrap">
+              <svg
+                viewBox="0 0 24 24"
+                width="20"
+                height="20"
+                stroke="currentColor"
+                strokeWidth="2.4"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+            </span>
+            <span className="resume-btn-label">Download Resume</span>
+            <span className="resume-btn-badge">PDF</span>
+          </a>
+        </div>
+      </div>
+
+      {/* Floating Download Toast */}
+      {downloadToast && (
+        <div className="resume-toast" role="status">
+          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2.5" fill="none">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          <span>Downloading Reyansh_Bhardwaj_Resume.pdf</span>
+        </div>
+      )}
     </div>
   );
 }
@@ -2076,6 +2219,7 @@ function AppWindow({
         win.querySelector(".photos-scroll-content") ||
         win.querySelector(".mail-app-container") ||
         win.querySelector(".github-scroll-body") ||
+        win.querySelector(".yt-main-scrollable") ||
         win.querySelector(".app-body")) as any;
       if (!scrollEl) return;
 
@@ -2117,7 +2261,7 @@ function AppWindow({
   return (
     <section
       ref={windowRef}
-      className={`app-window${closing ? " closing" : ""}${opened && !closing ? " opened" : ""}${app.id === "settings" || app.id === "about" ? " is-settings-app is-about-app" : ""}${app.id === "photos" ? " is-photos-app" : ""}${app.id === "mail" ? " is-mail-app" : ""}${app.id === "github" ? " is-github-app" : ""}`}
+      className={`app-window${closing ? " closing" : ""}${opened && !closing ? " opened" : ""}${app.id === "settings" || app.id === "about" || app.id === "files" ? " is-settings-app is-about-app is-resume-app" : ""}${app.id === "photos" ? " is-photos-app" : ""}${app.id === "mail" ? " is-mail-app" : ""}${app.id === "github" ? " is-github-app" : ""}${app.id === "tv" ? " is-youtube-app" : ""}`}
       style={{ "--ox": origin.x, "--oy": origin.y } as CSSProperties}
       onAnimationEnd={handleEnd}
       role="dialog"
@@ -2150,6 +2294,16 @@ function AppWindow({
           onBack={onBack}
           isDarkMode={isDarkMode}
           onOpenApp={onOpenApp}
+        />
+      ) : app.id === "files" ? (
+        <ResumeAppView
+          onBack={onBack}
+          isDarkMode={isDarkMode}
+        />
+      ) : app.id === "tv" ? (
+        <YouTubeAppView
+          onBack={onBack}
+          isDarkMode={isDarkMode}
         />
       ) : (
         <>

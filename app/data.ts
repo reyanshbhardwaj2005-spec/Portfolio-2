@@ -24,7 +24,7 @@ export type Block =
   | {
       kind: "items";
       heading?: string;
-      items: { title: string; sub?: string; meta?: string; badge?: string }[];
+      items: { title: string; sub?: string; meta?: string; badge?: string; image?: string }[];
     }
   | { kind: "chips"; heading: string; chips: string[] }
   | {
@@ -456,12 +456,12 @@ export const apps: AppDef[] = [
   },
   {
     id: "tv",
-    label: "TV",
-    icon: "eye",
-    c1: "#1f2937",
-    c2: "#0f172a",
-    title: "TV & Keynotes",
-    subtitle: "Featured Showcases & Technical Demos",
+    label: "YouTube",
+    icon: "play",
+    c1: "#ff0000",
+    c2: "#cc0000",
+    title: "YouTube",
+    subtitle: "Reyansh Bhardwaj • Tech & Keynotes",
     blocks: [
       {
         kind: "items",
@@ -972,8 +972,8 @@ export const apps: AppDef[] = [
         heading: "Communication Channels",
         links: [
           { label: "Send Direct Message", href: "#mail", hint: "Direct Message" },
-          { label: "Connect on LinkedIn", href: profile.linkedin, hint: "linkedin.com/in/reyansh-bhardwaj" },
-          { label: "GitHub Profile", href: profile.github, hint: "github.com/reyanshbhardwaj2005-spec" },
+          { label: "Connect on LinkedIn", href: profile.linkedin, hint: "linkedin.com" },
+          { label: "GitHub Profile", href: profile.github, hint: "github.com" },
           { label: "Follow on X", href: profile.x, hint: "@ReyanshB292" },
         ],
       },
@@ -991,55 +991,110 @@ export const apps: AppDef[] = [
     c1: "#ffffff",
     c2: "#f1f5f9",
     dock: true,
-    title: "Files & Documents",
-    subtitle: "Curriculum Vitae, Specs & Code Samples",
+    title: "Resume",
+    subtitle: "Reyansh Bhardwaj • Engineer + Occasional Designer",
     blocks: [
       {
         kind: "items",
-        heading: "Documents & Downloads",
+        heading: "Education & Academics",
         items: [
           {
-            title: "Reyansh_Bhardwaj_Resume.pdf",
-            sub: "Complete curriculum vitae with project histories, metrics, and academic credentials.",
-            meta: "PDF • 240 KB",
+            title: "Bachelor of Technology (B.Tech) — IIIT Sonepat",
+            sub: "Computer Science & Engineering • Batch 2025 - 2029 • Focus on Core Systems, Backend & Mobile Development",
+            meta: "8.7 CGPA",
           },
           {
-            title: "Full_Stack_System_Architecture.pdf",
-            sub: "Engineering design doc detailing distributed microservices and caching topology.",
-            meta: "PDF • 1.2 MB",
+            title: "Senior Secondary (Class XII) — J.P. International",
+            sub: "Central Board of Secondary Education (CBSE) • Science with Mathematics (PCM) • 92% Aggregate",
+            meta: "92% Boards",
           },
           {
-            title: "3D_Spatial_Web_Whitepaper.pdf",
-            sub: "Technical research on hardware-accelerated 3D CSS and WebGL rendering passes.",
-            meta: "PDF • 890 KB",
+            title: "JEE Mains (Joint Entrance Examination)",
+            sub: "98.12 Percentile • All India Rank (AIR): 28,834 • National Testing Agency (NTA)",
+            meta: "AIR 28,834",
           },
           {
-            title: "Biometrics_Engine_Spec.pdf",
-            sub: "Bluetooth Low Energy protocol specifications and offline sync schemas.",
-            meta: "PDF • 450 KB",
+            title: "Core Academic Foundations",
+            sub: "Data Structures & Algorithms, Object-Oriented Programming, Operating Systems, DBMS, Computer Networks",
+            meta: "Coursework",
           },
+        ],
+      },
+      {
+        kind: "items",
+        heading: "Technical Skills & Competencies",
+        items: [
+          {
+            title: "Mobile & Android Engineering",
+            sub: "Android Studio, Jetpack Compose, Java, Kotlin, Room DB, BLE Telemetry, Material 3 UI",
+            meta: "Android",
+          },
+          {
+            title: "Backend & Distributed Systems",
+            sub: "Spring Boot, Spring AI, Kafka, REST APIs, Microservices, Spring Security, Hibernate/JPA, Node.js",
+            meta: "Backend",
+          },
+          {
+            title: "Programming Languages",
+            sub: "Java, Kotlin, Python, C, C++, JavaScript, TypeScript, Dart, SQL",
+            meta: "Languages",
+          },
+          {
+            title: "Databases & Storage Engines",
+            sub: "MySQL, PostgreSQL, Redis, SQLite / Room DB, Supabase",
+            meta: "Databases",
+          },
+          {
+            title: "DevOps & Developer Tooling",
+            sub: "Git, GitHub, Docker, Kubernetes, Postman, CI/CD Automation, Linux, AWS Deployment",
+            meta: "DevOps",
+          },
+        ],
+      },
+      {
+        kind: "chips",
+        heading: "Skills & Core Technologies",
+        chips: [
+          "Java",
+          "Android Studio",
+          "Spring Boot",
+          "Spring AI",
+          "Kafka",
+          "Kotlin",
+          "Jetpack Compose",
+          "Python",
+          "C++",
+          "MySQL",
+          "PostgreSQL",
+          "Redis",
+          "REST APIs",
+          "Room DB",
+          "TypeScript",
+          "Git & GitHub",
+          "Docker",
+          "Kubernetes",
         ],
       },
       {
         kind: "items",
         heading: "Certifications & Credentials",
         items: [
-          { title: "AWS Certified Solutions Architect", sub: "Issued by Amazon Web Services • Associate level", meta: "Certified" },
-          { title: "Google Cloud Professional Architect", sub: "Cloud infrastructure, distributed databases, security", meta: "Certified" },
+          {
+            title: "Spring Boot 0 to 100 — Coding Shuttle",
+            sub: "Cohort 5.0 [AI + DevOps + System Design] • Completed 15/10/2026 • Verified ID: 3K031L0B",
+            meta: "Certified",
+            image: "/certificate-coding-shuttle.jpg",
+          },
         ],
       },
       {
         kind: "links",
-        heading: "Downloads & External View",
+        heading: "External Profiles & Repositories",
         links: [
-          { label: "Download Resume (PDF)", href: "/resume.pdf", hint: "Direct PDF" },
-          { label: "GitHub Repositories", href: profile.github, hint: "Open source" },
+          { label: "View Coding Shuttle Certificate", href: "/certificate-coding-shuttle.jpg", hint: "Certificate" },
+          { label: "GitHub Repositories", href: profile.github, hint: "github.com" },
+          { label: "LinkedIn Profile", href: profile.linkedin, hint: "linkedin.com" },
         ],
-      },
-      {
-        kind: "chips",
-        heading: "Storage Metrics",
-        chips: ["Encrypted Vault AES-256", "Cloud Sync Enabled", "512 GB Total Capacity"],
       },
     ],
   },
@@ -1086,7 +1141,7 @@ export const apps: AppDef[] = [
         kind: "links",
         heading: "External Profile",
         links: [
-          { label: "View Complete GitHub Profile", href: profile.github, hint: "github.com/reyanshbhardwaj2005-spec" },
+          { label: "View Complete GitHub Profile", href: profile.github, hint: "github.com" },
         ],
       },
     ],
@@ -1262,11 +1317,11 @@ export const githubProfileData: GitHubProfileData = {
     },
     {
       category: "Backend & Databases",
-      items: ["Spring Boot", "REST APIs", "MySQL", "PostgreSQL", "Redis", "Supabase", "Spring Security"],
+      items: ["Spring Boot", "Spring AI", "Kafka", "REST APIs", "MySQL", "PostgreSQL", "Redis", "Supabase", "Spring Security"],
     },
     {
       category: "DevOps & Tools",
-      items: ["Git", "GitHub", "AWS Deployment", "Postman", "CI/CD Pipelines", "Docker"],
+      items: ["Git", "GitHub", "Docker", "Kubernetes", "AWS Deployment", "Postman", "CI/CD Pipelines"],
     },
   ],
   repos: [
