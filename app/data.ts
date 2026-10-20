@@ -3,6 +3,7 @@ import type { IconName } from "./icons";
 export const profile = {
   name: "Reyansh Bhardwaj",
   role: "Full-Stack & Mobile Engineer",
+  avatar: "/avatar.jpg",
   status: "Available for hire",
   location: "Meerut, India",
   tagline: "Crafting fluid digital experiences & high-performance systems",

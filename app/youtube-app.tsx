@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import type { CSSProperties, PointerEvent as ReactPointerEvent } from "react";
-import { profile, settingsProfile } from "./data";
+import { profile } from "./data";
 import { useHorizontalScroll } from "./github-app";
 
 /* =========================================================================
