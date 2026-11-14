@@ -2542,8 +2542,8 @@ function PhoneStage({
     const currentRx = rot.current.rx;
     const currentRy = rot.current.ry;
 
-    const rxStr = currentRx.toFixed(1);
-    const ryStr = currentRy.toFixed(1);
+    const rxStr = currentRx.toFixed(2);
+    const ryStr = currentRy.toFixed(2);
 
     el.style.transform = `rotateX(${rxStr}deg) rotateY(${ryStr}deg)`;
 
@@ -2670,21 +2670,18 @@ function PhoneStage({
       let needNextFrame = false;
 
       if (mode.current === "dragging") {
-        // Near-instant tracking with minimal micro-cushion (lower base = less lag)
-        const followFactor = 1 - Math.pow(0.02, dt);
-        rot.current.rx += (targetRot.current.rx - rot.current.rx) * followFactor;
-        rot.current.ry += (targetRot.current.ry - rot.current.ry) * followFactor;
-        applyTransform();
+        // applyTransform() is called synchronously in onPointerMove for zero-lag input.
+        // The RAF loop just keeps alive to handle the final frame on pointer release.
         needNextFrame = true;
       } else if (mode.current === "inertia") {
         // Silky, luxurious momentum glide for continuous 360-degree rotation
-        const friction = Math.pow(0.975, dt);
+        const friction = Math.pow(0.988, dt);
         velocity.current.vx *= friction;
         velocity.current.vy *= friction;
 
         rot.current.ry += velocity.current.vx * dt;
         // As phone coasts, gently restore vertical tilt to 0 (vertically upright)
-        const restoreFactor = 1 - Math.pow(0.90, dt);
+        const restoreFactor = 1 - Math.pow(0.93, dt);
         rot.current.rx += (0 - rot.current.rx) * restoreFactor;
         targetRot.current = { ...rot.current };
 
@@ -2707,7 +2704,7 @@ function PhoneStage({
             onComplete: () => setActivePreset("front"),
           };
           needNextFrame = true;
-        } else if (speed > 0.015 || diffRx > 0.05) {
+        } else if (speed > 0.008 || diffRx > 0.03) {
           applyTransform();
           needNextFrame = true;
         } else {
@@ -2939,13 +2936,18 @@ function PhoneStage({
     const nextRx = targetRot.current.rx - dy * 0.32;
     targetRot.current.rx = Math.max(-MAX_RX, Math.min(MAX_RX, nextRx));
 
+    // Mirror rotation immediately — zero-lag 1:1 pointer tracking
+    rot.current.rx = targetRot.current.rx;
+    rot.current.ry = targetRot.current.ry;
+    applyTransform();
+
     // Instant velocity normalized to standard 60fps frame (16.67ms)
     const instVx = (dx / deltaMs) * 16.67 * 0.40;
     const instVy = (dy / deltaMs) * 16.67 * 0.32;
 
-    // Exponential moving average filter: responsive tracking with minimal jitter smoothing
-    velocity.current.vx = velocity.current.vx * 0.18 + instVx * 0.82;
-    velocity.current.vy = velocity.current.vy * 0.18 + instVy * 0.82;
+    // Exponential moving average filter: responsive tracking with smooth velocity for natural flick
+    velocity.current.vx = velocity.current.vx * 0.25 + instVx * 0.75;
+    velocity.current.vy = velocity.current.vy * 0.25 + instVy * 0.75;
   };
 
   const endDrag = (e: ReactPointerEvent<HTMLDivElement>) => {
