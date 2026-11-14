@@ -503,9 +503,9 @@ a {
   left: 0;
   top: 0;
   width: var(--facet-w, calc(var(--corner) * 0.128));
-  height: calc(var(--depth) + 0.6px);
+  height: calc(var(--depth) + 1.6px);
   margin-left: var(--facet-ml, calc(var(--corner) * -0.064));
-  margin-top: calc((var(--depth) + 0.6px) * -0.5);
+  margin-top: calc((var(--depth) + 1.6px) * -0.5);
   background-color: var(--titanium-2);
   background:
     /* Delicate satin longitudinal reflection */
@@ -524,7 +524,7 @@ a {
   transform-origin: center center;
   backface-visibility: visible !important;
   -webkit-backface-visibility: visible !important;
-  outline: none;
+  outline: 0.5px solid var(--titanium-2);
   border: none;
   opacity: 1 !important;
   box-shadow:
@@ -543,17 +543,17 @@ a {
   position: absolute;
   left: 0;
   top: 0;
-  width: calc(var(--facet-w) * 1.25);
-  height: calc(var(--depth) + 0.5px);
-  margin-left: calc(var(--facet-ml) * 1.25);
-  margin-top: calc((var(--depth) + 0.5px) * -0.5);
+  width: calc(var(--facet-w) * 1.35);
+  height: calc(var(--depth) + 1.6px);
+  margin-left: calc(var(--facet-ml) * 1.35);
+  margin-top: calc((var(--depth) + 1.6px) * -0.5);
   background-color: var(--titanium-2);
   background: var(--titanium-2);
   transform: rotateZ(var(--facet-deg)) translateY(calc(-1 * (var(--corner) - 0.6px))) rotateX(90deg);
   transform-origin: center center;
   backface-visibility: visible !important;
   -webkit-backface-visibility: visible !important;
-  outline: none;
+  outline: 0.5px solid var(--titanium-2);
   border: none;
   opacity: 1 !important;
 }
@@ -572,10 +572,11 @@ a {
 
 .edge-top {
   position: absolute;
-  top: calc((var(--depth) + 0.5px) * -0.5);
-  left: calc(var(--corner) - 0.6px);
-  width: calc(var(--dw) - var(--corner) * 2 + 1.2px);
-  height: calc(var(--depth) + 0.5px);
+  top: calc((var(--depth) + 1.6px) * -0.5);
+  left: calc(var(--corner) - 1.5px);
+  width: calc(var(--dw) - var(--corner) * 2 + 3px);
+  height: calc(var(--depth) + 1.6px);
+  background-color: var(--titanium-2);
   background:
     linear-gradient(to bottom,
       rgba(255, 255, 255, 0.12) 0%,
@@ -583,6 +584,9 @@ a {
       transparent 80%,
       rgba(255, 255, 255, 0.08) 100%),
     var(--titanium-2);
+  outline: 0.5px solid var(--titanium-2);
+  backface-visibility: visible;
+  -webkit-backface-visibility: visible;
   box-shadow:
     /* Back face junction (top of element when rotateX(90deg) is at Z = -depth/2) */
     inset 0 0.85px 0 0 rgba(35, 25, 20, 0.48),
@@ -598,10 +602,11 @@ a {
 
 .edge-bottom {
   position: absolute;
-  bottom: calc((var(--depth) + 0.5px) * -0.5);
-  left: calc(var(--corner) - 0.6px);
-  width: calc(var(--dw) - var(--corner) * 2 + 1.2px);
-  height: calc(var(--depth) + 0.5px);
+  bottom: calc((var(--depth) + 1.6px) * -0.5);
+  left: calc(var(--corner) - 1.5px);
+  width: calc(var(--dw) - var(--corner) * 2 + 3px);
+  height: calc(var(--depth) + 1.6px);
+  background-color: var(--titanium-2);
   background:
     linear-gradient(to bottom,
       rgba(255, 255, 255, 0.08) 0%,
@@ -609,6 +614,9 @@ a {
       transparent 80%,
       rgba(255, 255, 255, 0.12) 100%),
     var(--titanium-2);
+  outline: 0.5px solid var(--titanium-2);
+  backface-visibility: visible;
+  -webkit-backface-visibility: visible;
   box-shadow:
     /* Front face junction (top of element when rotateX(-90deg) is at Z = +depth/2) */
     inset 0 0.85px 0 0 rgba(35, 25, 20, 0.48),
@@ -625,10 +633,11 @@ a {
 /* Left Edge: exact matching body color with hairline seam & chamfer highlights */
 .edge-left {
   position: absolute;
-  left: calc((var(--depth) + 0.5px) * -0.5);
-  top: calc(var(--corner) - 0.6px);
-  width: calc(var(--depth) + 0.5px);
-  height: calc(var(--dh) - var(--corner) * 2 + 1.2px);
+  left: calc((var(--depth) + 1.6px) * -0.5);
+  top: calc(var(--corner) - 1.5px);
+  width: calc(var(--depth) + 1.6px);
+  height: calc(var(--dh) - var(--corner) * 2 + 3px);
+  background-color: var(--titanium-2);
   background:
     linear-gradient(to right,
       rgba(255, 255, 255, 0.12) 0%,
@@ -636,6 +645,9 @@ a {
       transparent 80%,
       rgba(255, 255, 255, 0.08) 100%),
     var(--titanium-2);
+  outline: 0.5px solid var(--titanium-2);
+  backface-visibility: visible;
+  -webkit-backface-visibility: visible;
   box-shadow:
     /* Back face junction (left of element when rotateY(-90deg) is at Z = -depth/2) */
     inset 0.85px 0 0 0 rgba(35, 25, 20, 0.48),
@@ -652,10 +664,11 @@ a {
 /* Right Edge: exact matching body color with hairline seam & chamfer highlights */
 .edge-right {
   position: absolute;
-  right: calc((var(--depth) + 0.5px) * -0.5);
-  top: calc(var(--corner) - 0.6px);
-  width: calc(var(--depth) + 0.5px);
-  height: calc(var(--dh) - var(--corner) * 2 + 1.2px);
+  right: calc((var(--depth) + 1.6px) * -0.5);
+  top: calc(var(--corner) - 1.5px);
+  width: calc(var(--depth) + 1.6px);
+  height: calc(var(--dh) - var(--corner) * 2 + 3px);
+  background-color: var(--titanium-2);
   background:
     linear-gradient(to right,
       rgba(255, 255, 255, 0.08) 0%,
@@ -663,6 +676,9 @@ a {
       transparent 80%,
       rgba(255, 255, 255, 0.12) 100%),
     var(--titanium-2);
+  outline: 0.5px solid var(--titanium-2);
+  backface-visibility: visible;
+  -webkit-backface-visibility: visible;
   box-shadow:
     /* Front face junction (left of element when rotateY(90deg) is at Z = +depth/2) */
     inset 0.85px 0 0 0 rgba(35, 25, 20, 0.48),
@@ -746,27 +762,9 @@ a {
   opacity: calc(0.12 + var(--light-bottom, 0.5) * 0.28 + var(--spec-bottom, 0.5) * 0.38);
 }
 
-/* Antenna band lines matching side profile photos */
+/* Antenna band lines matching side profile photos - hidden to ensure seamless, tear-free titanium edges */
 .antenna-line {
-  position: absolute;
-  height: 1.5px;
-  left: 0;
-  right: 0;
-  background: #383431;
-  box-shadow:
-    0 0.5px 0.5px rgba(255, 255, 255, 0.45),
-    0 -0.5px 0.5px rgba(0, 0, 0, 0.25);
-  z-index: 2;
-}
-
-.edge-left .antenna-1,
-.edge-right .antenna-1 {
-  top: 5.2%;
-}
-
-.edge-left .antenna-2,
-.edge-right .antenna-2 {
-  bottom: 8.5%;
+  display: none !important;
 }
 
 /* Left Rail Microphone / Sensor Pinhole */
